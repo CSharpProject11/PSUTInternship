@@ -1,0 +1,50 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "students": {
+      ".read": "auth != null"
+    },
+    "opportunities": {
+      ".read": true
+    },
+    "applications": {
+      "$studentId": {
+        ".read": "auth != null && auth.uid === $studentId",
+        "$opportunityId": {
+          ".write": "auth != null && auth.uid === $studentId && !data.exists() && root.child('students').child(auth.uid).child('isActive').val() === true && root.child('students').child(auth.uid).child('role').val() === 'student' && root.child('opportunities').child($opportunityId).child('status').val() === true",
+          ".validate": "newData.hasChildren(['studentId', 'opportunityId', 'status', 'reason', 'appliedAt', 'details']) && newData.child('studentId').val() === $studentId && newData.child('opportunityId').val() === $opportunityId && ((!data.exists() && newData.child('status').val() === 'Pending' && !newData.child('studentResponse').exists()) || (data.exists() && newData.child('status').val() === data.child('status').val()))",
+          "studentResponse": {
+            ".write": "auth != null && auth.uid === $studentId && !data.exists() && newData.exists() && data.parent().child('status').val() === 'Approved' && root.child('students').child(auth.uid).child('isActive').val() === true && root.child('students').child(auth.uid).child('role').val() === 'student' && root.child('internshipConfirmations').child($studentId).child('applicationId').val() !== $opportunityId",
+            ".validate": "newData.hasChildren(['decision', 'respondedAt'])",
+            "decision": {
+              ".validate": "newData.val() === 'Declined'"
+            },
+            "respondedAt": {
+              ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 40"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      }
+    },
+    "internshipConfirmations": {
+      "$studentId": {
+        ".read": "auth != null && auth.uid === $studentId",
+        ".write": "auth != null && auth.uid === $studentId && !data.exists() && newData.exists() && root.child('students').child(auth.uid).child('isActive').val() === true && root.child('students').child(auth.uid).child('role').val() === 'student' && root.child('applications').child($studentId).child(newData.child('applicationId').val()).child('studentId').val() === $studentId && root.child('applications').child($studentId).child(newData.child('applicationId').val()).child('status').val() === 'Approved' && !root.child('applications').child($studentId).child(newData.child('applicationId').val()).child('studentResponse').exists()",
+        ".validate": "newData.hasChildren(['applicationId', 'confirmedAt'])",
+        "applicationId": {
+          ".validate": "newData.isString() && newData.val().length > 0"
+        },
+        "confirmedAt": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 40"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    }
+  }
+}

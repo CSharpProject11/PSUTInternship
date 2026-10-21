@@ -1,0 +1,3 @@
+<%@ Control Language="C#" %>
+<div class="psut-modal" id="login"><div class="modalbox"><div class="modalhead"><h2>PSUT Internship Portal</h2><button class="close" aria-label="Close" onclick="closeModal('login')">×</button></div><p>The portal sign-in will be added in the next phase. This version includes the full public homepage only.</p></div></div>
+<div class="psut-modal" id="detail"><div class="modalbox" id="detailContent"></div></div><div class="psut-modal" id="action"><div class="modalbox" id="actionContent"></div></div><div class="toast" id="toast" role="status" aria-live="polite"></div>

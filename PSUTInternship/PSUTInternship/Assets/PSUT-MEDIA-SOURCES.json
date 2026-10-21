@@ -1,0 +1,61 @@
+{
+  "gallery": "https://www.psut.edu.jo/ar/media",
+  "images": [
+    {
+      "file": "psut-entrance.jpg",
+      "source": "https://www.psut.edu.jo/uploads/2023/05/entrance.jpg",
+      "album": "Campus",
+      "bytes": 355520,
+      "albumPage": "https://www.psut.edu.jo/ar/media/get-photos/5"
+    },
+    {
+      "file": "psut-aerial.jpg",
+      "source": "https://www.psut.edu.jo/uploads/2023/05/topview.jpg",
+      "album": "Campus",
+      "bytes": 931669,
+      "albumPage": "https://www.psut.edu.jo/ar/media/get-photos/5"
+    },
+    {
+      "file": "psut-rooftop.jpg",
+      "source": "https://www.psut.edu.jo/uploads/2023/05/psut-roof-top-iii.jpg",
+      "album": "Campus",
+      "bytes": 381678,
+      "albumPage": "https://www.psut.edu.jo/ar/media/get-photos/5"
+    },
+    {
+      "file": "psut-walkway.jpg",
+      "source": "https://www.psut.edu.jo/uploads/2023/05/walking-lane.jpg",
+      "album": "Campus",
+      "bytes": 885461,
+      "albumPage": "https://www.psut.edu.jo/ar/media/get-photos/5"
+    },
+    {
+      "file": "psut-graduation.jpg",
+      "source": "https://www.psut.edu.jo/uploads/2023/05/graduation-ceremony-1.jpg",
+      "album": "Campus",
+      "bytes": 321103,
+      "albumPage": "https://www.psut.edu.jo/ar/media/get-photos/5"
+    },
+    {
+      "file": "psut-students.jpeg",
+      "source": "https://www.psut.edu.jo/uploads/2025/03/4.jpeg",
+      "album": "New students",
+      "bytes": 189751,
+      "albumPage": "https://www.psut.edu.jo/ar/media/get-photos/21"
+    },
+    {
+      "file": "psut-community.jpeg",
+      "source": "https://www.psut.edu.jo/uploads/2025/03/3.jpeg",
+      "album": "New students",
+      "bytes": 154905,
+      "albumPage": "https://www.psut.edu.jo/ar/media/get-photos/21"
+    },
+    {
+      "file": "psut-welcome.jpeg",
+      "source": "https://www.psut.edu.jo/uploads/2025/03/1.jpeg",
+      "album": "New students",
+      "bytes": 164234,
+      "albumPage": "https://www.psut.edu.jo/ar/media/get-photos/21"
+    }
+  ]
+}

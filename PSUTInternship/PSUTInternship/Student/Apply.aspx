@@ -66,7 +66,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p class="text-muted">Enter your academic, student, and training organization details. All fields are required unless marked optional.</p>
+                        <p class="text-muted">Your saved student information is filled in automatically. Review it and complete any missing academic and training organization details. All fields are required unless marked optional.</p>
                         <fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">General Information</legend><div class="row g-3">
 <div class="col-12 col-md-6"><label class="form-label" for="faculty">Faculty</label><input class="form-control" id="faculty" name="faculty" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="department">Department</label><input class="form-control" id="department" name="department" type="text" required="required" /></div>
@@ -107,9 +107,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <p class="text-muted small w-100 mb-1" id="applicationNotice">Submission is not available yet. This form is not connected to application storage.</p>
+                        <p class="text-muted small w-100 mb-1" id="applicationNotice">Your application will be submitted for review with a Pending status.</p>
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" disabled="disabled">Submit Application</button>
+                        <button type="submit" runat="server" onserverclick="SubmitApplication_Click" class="btn btn-primary">Submit Application</button>
                     </div>
                 </div>
             </div>
@@ -118,5 +118,6 @@
     <script src="../Scripts/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 
 
