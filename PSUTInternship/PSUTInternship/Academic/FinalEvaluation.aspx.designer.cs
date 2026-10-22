@@ -13,6 +13,8 @@ namespace PSUTInternship.Academic
 
     public partial class FinalEvaluation
     {
+        protected global::System.Web.UI.WebControls.DropDownList Opportunity;
+        protected global::System.Web.UI.WebControls.Label PercentageError, CommentsError, RecommendationError;
 
         /// <summary>
         /// form1 control.

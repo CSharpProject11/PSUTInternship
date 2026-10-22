@@ -132,10 +132,13 @@ public partial class ContactMessages : PortalPage
             return;
         }
 
+        bool delivered = false;
         try
         {
             CoordinatorData.RequireCoordinator();
-            // PATCH updates only reply fields, preserving other message data.
+            await ContactReplyMailer.Send(message.Email, message.Subject, ReplyText);
+            delivered = true;
+            // Record delivery only after the SMTP provider accepts the message.
             await PortalRepository.Patch("contactMessages/" + PortalRepository.Key(message.Id), new {
                 reply = ReplyText,
                 repliedAt = DateTime.UtcNow.ToString("o"),
@@ -146,9 +149,9 @@ public partial class ContactMessages : PortalPage
             message.Reply = ReplyText;
             ResolvedThisRequestId = message.Id;
             message.Status = "Resolved";
-            Notice = "Reply saved to Firebase and message marked Resolved. This is not an email delivery.";
+            Notice = "Reply sent to " + message.Email + " and saved. Message marked Resolved.";
         }
-        catch(Exception ex) { ReplyError = ex.Message; return; }
+        catch(Exception ex) { ReplyError = delivered ? "The email provider accepted your reply, but its portal record could not be saved. Contact the administrator before resending." : ex.Message; return; }
 
         ReplyText = "";
     }

@@ -211,6 +211,7 @@ namespace PSUTInternship.Admin
             string college = collegeTextBox.Text.Trim();
             string department = departmentTextBox.Text.Trim();
             string specialization = specializationTextBox.Text.Trim();
+            if (college != PSUTInternship.Shared.AcademicCatalog.College || !PSUTInternship.Shared.AcademicCatalog.ValidProgram(department)) { messageLabel.Text = "Select a college and program from the PSUT computing catalogue."; ShowForm(); return; }
             string editId = Request.QueryString["edit"];
             bool isEditing = editId != null && editId != "";
 
@@ -330,9 +331,9 @@ namespace PSUTInternship.Admin
                 Dictionary<string, object> supervisor = supervisors[uid];
                 nameTextBox.Text = GetValue(supervisor, "fullName");
                 emailTextBox.Text = GetValue(supervisor, "email");
-                collegeTextBox.Text = GetValue(supervisor, "college");
-                departmentTextBox.Text = GetValue(supervisor, "department");
-                specializationTextBox.Text = GetValue(supervisor, "specialization");
+                PSUTInternship.Shared.AcademicCatalog.Select(collegeTextBox, GetValue(supervisor, "college"));
+                PSUTInternship.Shared.AcademicCatalog.Select(departmentTextBox, GetValue(supervisor, "department"));
+                PSUTInternship.Shared.AcademicCatalog.Select(specializationTextBox, GetValue(supervisor, "specialization"));
                 phoneTextBox.Text = GetValue(supervisor, "phoneNumber");
                 passwordTextBox.Enabled = false;
                 formTitleLabel.Text = "Edit academic supervisor";

@@ -1,4 +1,4 @@
-﻿using PSUTInternship.Shared;
+using PSUTInternship.Shared;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,7 +21,7 @@ namespace PSUTInternship.Company
 
         protected async void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)
+            try { if (!IsPostBack)
             {
                 await LoadDashboard();
 
@@ -32,7 +32,7 @@ namespace PSUTInternship.Company
                 string reportId = Request.QueryString["report"];
                 if (!string.IsNullOrWhiteSpace(reportId))
                     await OpenReport(reportId);
-            }
+            } } catch (Exception ex) { ShowMessage(ex.Message); }
         }
 
         private async System.Threading.Tasks.Task LoadDashboard()
@@ -41,9 +41,12 @@ namespace PSUTInternship.Company
             {
                 Dictionary<string, JObject> reports = await ReadCollection(client, "reports.json");
                 Dictionary<string, JObject> evaluations = (await ReadCollection(client, "evaluations.json")).Where(x => (string)x.Value["evaluatorRole"] == "companySupervisor").ToDictionary(x => x.Key, x => x.Value);
-                Dictionary<string, JObject> users = await ReadCollection(client, "students.json");
 
-                LoadStudents(users);
+                Opportunity.Items.Clear(); Opportunity.Items.Add(new ListItem("Select opportunity", ""));
+                var placements = await PortalRepository.Collection("internships");
+                foreach (var group in placements.Values.Where(x => (string)x["companyId"] == PortalRepository.CompanyId ).Where(x => !string.IsNullOrWhiteSpace((string)x["opportunityId"])).GroupBy(x => (string)x["opportunityId"]))
+                    Opportunity.Items.Add(new ListItem(((string)group.First()["opportunityTitle"] ?? group.Key) + " (" + group.Key + ")", group.Key));
+                EvaluationStudent.Items.Clear(); EvaluationStudent.Items.Add(new ListItem("Select opportunity first", ""));
                 RenderEvaluations(evaluations);
                 RenderReports(reports);
 
@@ -143,139 +146,84 @@ namespace PSUTInternship.Company
             }
         }
 
-        protected void NewEvaluation_Click(object sender, EventArgs e)
+        protected async void NewEvaluation_Click(object sender, EventArgs e)
         {
+            try {
+            await LoadDashboard(); SaveDraft.Enabled = SendEvaluation.Enabled = true;
+            OpportunityError.Text = StudentError.Text = PeriodError.Text = SupervisorError.Text = EmailError.Text = FeedbackError.Text = CriteriaError.Text = "";
+            string opportunityId = Request.QueryString["opportunityId"];
+            if (Opportunity.Items.FindByValue(opportunityId ?? "") != null) { Opportunity.SelectedValue = opportunityId ?? ""; await LoadOpportunityStudents(); }
             EvaluationId.Value = "";
-            EvaluationModal.Visible = true;
+            EvaluationModal.Visible = true; DashboardContent.Visible = false;
             OverallFeedback.Text = "";
             EvaluationPeriod.Text = "";
             AcademicSupervisor.Text = "";
             AcademicSupervisorEmail.Text = "";
             SelectedStudentName.Text = EvaluationStudent.SelectedItem == null ? "" : HttpUtility.HtmlEncode(EvaluationStudent.SelectedItem.Text);
-            RegisterClientScript("newCriteria", "document.getElementById('criteriaList').innerHTML='';addCriterion('','','');");
+            RegisterClientScript("newCriteria", "document.getElementById('criteriaList').innerHTML='';addCriterion('','');");
+            } catch (Exception ex) { ShowMessage(ex.Message); }
         }
 
         protected void CloseEvaluation_Click(object sender, EventArgs e)
         {
-            EvaluationModal.Visible = false;
+            EvaluationModal.Visible = false; DashboardContent.Visible = true;
         }
 
-        protected async void SaveEvaluation_Click(object sender, EventArgs e)
-        {
-            Button button = sender as Button;
-            string status = button == null ? "Draft" : button.CommandArgument;
-            if (string.IsNullOrWhiteSpace(EvaluationStudent.SelectedValue) ||
-                string.IsNullOrWhiteSpace(EvaluationPeriod.Text.Trim()) ||
-                string.IsNullOrWhiteSpace(AcademicSupervisor.Text.Trim()) ||
-                !IsValidEmail(AcademicSupervisorEmail.Text.Trim()))
-            {
-                ShowMessage("Choose a student, enter the evaluation period and supervisor name, and provide a valid supervisor email.");
-                EvaluationModal.Visible = true;
-                RestoreCriteriaEditor();
-                return;
-            }
-
+        private async System.Threading.Tasks.Task LoadOpportunityStudents() {
+            var placements = await PortalRepository.Collection("internships");
+            var ids = new HashSet<string>(placements.Values.Where(x => (string)x["companyId"] == PortalRepository.CompanyId && (string)x["status"] == "active" && (string)x["opportunityId"] == Opportunity.SelectedValue).Select(x => (string)x["studentId"]));
+            LoadStudents((await PortalRepository.Collection("students")).Where(x => ids.Contains(x.Key)).ToDictionary(x => x.Key, x => x.Value));
+            EvaluationStudent.Items.Insert(0, new ListItem("Select trainee", "")); EvaluationStudent.SelectedIndex = 0;
+        }
+        protected async void Opportunity_Changed(object sender, EventArgs e) {
+            try { await LoadOpportunityStudents(); } catch (Exception ex) { ShowMessage(ex.Message); }
+            RestoreCriteriaEditor(); EvaluationModal.Visible = true; DashboardContent.Visible = false;
+        }
+        protected async void SaveEvaluation_Click(object sender, EventArgs e) {
+            EvaluationModal.Visible = true; DashboardContent.Visible = false;
+            OpportunityError.Text = string.IsNullOrEmpty(Opportunity.SelectedValue) ? "Select an opportunity." : "";
+            StudentError.Text = string.IsNullOrEmpty(EvaluationStudent.SelectedValue) ? "Select a trainee from this opportunity." : "";
+            PeriodError.Text = TaskWorkflow.ValidText(EvaluationPeriod.Text, 3, 100) ? "" : "Enter a period of 3–100 characters.";
+            SupervisorError.Text = System.Text.RegularExpressions.Regex.IsMatch(AcademicSupervisor.Text.Trim(), @"\A[\p{L} .'-]{3,150}\z") ? "" : "Enter a supervisor name of 3–150 letters, spaces or name punctuation.";
+            EmailError.Text = System.Text.RegularExpressions.Regex.IsMatch(AcademicSupervisorEmail.Text.Trim(), @"\A[^\s@]+@[^\s@]+\.[^\s@]+\z") && IsValidEmail(AcademicSupervisorEmail.Text.Trim()) ? "" : "Enter a valid supervisor email.";
+            FeedbackError.Text = TaskWorkflow.ValidText(OverallFeedback.Text, 10, 3000) ? "" : "Enter feedback of 10–3,000 characters.";
             string[] names = Request.Form.GetValues("CriterionName") ?? new string[0];
-            string[] scores = Request.Form.GetValues("CriterionScore") ?? new string[0];
-            string[] maximums = Request.Form.GetValues("CriterionMax") ?? new string[0];
-            if (names.Length == 0 || names.Length != scores.Length || names.Length != maximums.Length)
-            {
-                ShowMessage("Add at least one complete evaluation criterion.");
-                EvaluationModal.Visible = true;
-                RestoreCriteriaEditor();
-                return;
+            string[] percentages = Request.Form.GetValues("CriterionPercentage") ?? new string[0];
+            JArray criteria = new JArray(); decimal total = 0; CriteriaError.Text = "";
+            if (names.Length == 0 || names.Length > 50 || names.Length != percentages.Length) CriteriaError.Text = "Add 1–50 complete criteria.";
+            else for (int i = 0; i < names.Length; i++) {
+                decimal percent;
+                if (!TaskWorkflow.ValidText(names[i], 3, 150) || !PercentageRules.TryParse(percentages[i], out percent)) {
+                    CriteriaError.Text = "Each criterion needs a name of 3–150 characters and a percentage from 0–100 with at most two decimals."; break;
+                }
+                total += percent; criteria.Add(new JObject { ["Name"] = names[i].Trim(), ["percentage"] = percent });
             }
-
-            JArray criteria = new JArray();
-            decimal totalScore = 0;
-            decimal totalMaximum = 0;
-            for (int i = 0; i < names.Length; i++)
-            {
-                decimal score;
-                decimal maximum;
-                if (string.IsNullOrWhiteSpace(names[i]) ||
-                    !decimal.TryParse(scores[i], NumberStyles.Number, CultureInfo.InvariantCulture, out score) ||
-                    !decimal.TryParse(maximums[i], NumberStyles.Number, CultureInfo.InvariantCulture, out maximum) ||
-                    maximum <= 0 || score < 0 || score > maximum)
-                {
-                    ShowMessage("Each criterion needs a name, a valid score, and a maximum greater than zero. Scores must be within their maximum.");
-                    EvaluationModal.Visible = true;
-                    RestoreCriteriaEditor();
-                    return;
-                }
-
-                JObject criterion = new JObject();
-                criterion["Name"] = names[i].Trim();
-                criterion["Score"] = score;
-                criterion["MaxPoints"] = maximum;
-                criteria.Add(criterion);
-                totalScore += score;
-                totalMaximum += maximum;
-            }
-
-            string studentId = EvaluationStudent.SelectedValue;
-            string studentName = EvaluationStudent.SelectedItem.Text;
-            var placement = await PortalRepository.PlacementForStudent(studentId);
-            if (placement == null || (string)placement["companyId"] != PSUTInternship.Shared.PortalRepository.CompanyId)
-            { ShowMessage("Select one of your confirmed trainees."); return; }
-            JObject evaluation = new JObject();
-            evaluation["studentId"] = studentId;
-            evaluation["companyId"] = PSUTInternship.Shared.PortalRepository.CompanyId;
-            evaluation["academicSupervisorId"] = (string)placement["academicSupervisorId"];
-            evaluation["internshipId"] = DatabaseSchema.Id(placement);
-            evaluation["evaluationType"] = "final";
-            evaluation["evaluatorId"] = PSUTInternship.Shared.PortalRepository.UserId;
-            evaluation["evaluatorRole"] = "companySupervisor";
-            evaluation["status"] = IsSent(status) ? "submitted" : "draft";
-            evaluation["overallScore"] = totalScore;
-            evaluation["totalMaximum"] = totalMaximum;
-            evaluation["comments"] = OverallFeedback.Text.Trim();
-            evaluation["submittedAt"] = DateTime.UtcNow.ToString("o");
-            var savedEvaluation = await PortalRepository.EvaluationForPlacement(studentId, DatabaseSchema.Id(placement), "companySupervisor");
-            if (string.Equals((string)savedEvaluation?["status"], "submitted", StringComparison.OrdinalIgnoreCase)) { ShowMessage("This final evaluation has already been submitted."); return; }
-            EvaluationId.Value = savedEvaluation == null ? "company_" + DatabaseSchema.Id(placement) : DatabaseSchema.Id(savedEvaluation);
-            evaluation["StudentId"] = studentId;
-            evaluation["StudentName"] = studentName;
-            evaluation["EvaluationPeriod"] = EvaluationPeriod.Text.Trim();
-            evaluation["AcademicSupervisor"] = AcademicSupervisor.Text.Trim();
-            evaluation["AcademicSupervisorEmail"] = AcademicSupervisorEmail.Text.Trim();
-            evaluation["Criteria"] = criteria;
-            evaluation["TotalScore"] = totalScore;
-            evaluation["TotalMaximum"] = totalMaximum;
-            evaluation["OverallFeedback"] = OverallFeedback.Text.Trim();
-            evaluation["Status"] = status;
-            evaluation["UpdatedAtUtc"] = DateTime.UtcNow.ToString("o");
-            if (IsSent(status)) evaluation["SentAtUtc"] = DateTime.UtcNow.ToString("o");
-            else evaluation["DraftedAtUtc"] = DateTime.UtcNow.ToString("o");
-
-            using (HttpClient client = PSUTInternship.Shared.FirebaseConfig.CreateClient())
-            using (StringContent content = new StringContent(evaluation.ToString(Formatting.None), Encoding.UTF8, "application/json"))
-            {
-                HttpResponseMessage response;
-                string url = DatabaseUrl + "evaluations";
-                if (string.IsNullOrWhiteSpace(EvaluationId.Value))
-                {
-                    response = await client.PostAsync(url + ".json", content);
-                }
-                else
-                {
-                    HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), url + "/" + HttpUtility.UrlEncode(EvaluationId.Value) + ".json");
-                    request.Content = content;
-                    response = await client.SendAsync(request);
-                }
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    ShowMessage("Could not save the evaluation to Firebase. Please try again.");
-                    EvaluationModal.Visible = true;
-                    RestoreCriteriaEditor();
-                    return;
-                }
-            }
-
-            EvaluationModal.Visible = false;
-            ShowMessage(IsSent(status) ? "Evaluation saved and sent to the academic supervisor." : "Evaluation draft saved to Firebase.");
-            await LoadDashboard();
+            if (total > 100) CriteriaError.Text = "The total percentage cannot exceed 100%.";
+            if (new[] { OpportunityError, StudentError, PeriodError, SupervisorError, EmailError, FeedbackError, CriteriaError }.Any(x => x.Text.Length > 0)) { RestoreCriteriaEditor(); return; }
+            try {
+                string studentId = EvaluationStudent.SelectedValue;
+                var placement = await PortalRepository.PlacementForStudent(studentId);
+                if (placement == null || (string)placement["companyId"] != PortalRepository.CompanyId || (string)placement["status"] != "active" || (string)placement["opportunityId"] != Opportunity.SelectedValue)
+                    throw new InvalidOperationException("Select a confirmed trainee from this opportunity.");
+                var existing = await PortalRepository.EvaluationForPlacement(studentId, DatabaseSchema.Id(placement), "companySupervisor");
+                if (string.Equals((string)existing?["status"], "submitted", StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException("This final evaluation has already been sent.");
+                string id = existing == null ? "company_" + DatabaseSchema.Id(placement) : DatabaseSchema.Id(existing);
+                bool send = IsSent(((Button)sender).CommandArgument);
+                var evaluation = new JObject {
+                    ["studentId"] = studentId, ["studentName"] = EvaluationStudent.SelectedItem.Text,
+                    ["companyId"] = PortalRepository.CompanyId, ["academicSupervisorId"] = (string)placement["academicSupervisorId"],
+                    ["internshipId"] = DatabaseSchema.Id(placement), ["opportunityId"] = Opportunity.SelectedValue,
+                    ["evaluationType"] = "final", ["evaluatorId"] = PortalRepository.UserId, ["evaluatorRole"] = "companySupervisor",
+                    ["Status"] = send ? "submitted" : "draft", ["status"] = send ? "submitted" : "draft", ["TotalScore"] = total, ["TotalMaximum"] = 100, ["overallScore"] = total, ["totalMaximum"] = 100, ["totalPercentage"] = total,
+                    ["comments"] = OverallFeedback.Text.Trim(), ["OverallFeedback"] = OverallFeedback.Text.Trim(),
+                    ["EvaluationPeriod"] = EvaluationPeriod.Text.Trim(), ["AcademicSupervisor"] = AcademicSupervisor.Text.Trim(),
+                    ["AcademicSupervisorEmail"] = AcademicSupervisorEmail.Text.Trim(), ["Criteria"] = criteria,
+                    ["UpdatedAtUtc"] = DateTime.UtcNow.ToString("o"), ["updatedAt"] = DateTime.UtcNow.ToString("o"), ["submittedAt"] = send ? (JToken)DateTime.UtcNow.ToString("o") : null
+                };
+                await PortalRepository.Patch("evaluations/" + PortalRepository.Key(id), evaluation);
+                EvaluationModal.Visible = false; DashboardContent.Visible = true;
+                await LoadDashboard(); ShowMessage(send ? "Evaluation saved and sent to the academic supervisor." : "Evaluation draft saved.");
+            } catch (Exception ex) { ShowMessage(ex.Message); RestoreCriteriaEditor(); }
         }
 
         private async System.Threading.Tasks.Task OpenEvaluation(string id)
@@ -298,28 +246,29 @@ namespace PSUTInternship.Company
                 AcademicSupervisorEmail.Text = Read(evaluation, "AcademicSupervisorEmail");
                 OverallFeedback.Text = Read(evaluation, "OverallFeedback", "Comments", "comments");
 
+                Opportunity.SelectedValue = (string)placement["opportunityId"] ?? "";
+                await LoadOpportunityStudents();
                 string studentId = Read(evaluation, "studentId", "StudentId");
                 if (EvaluationStudent.Items.FindByValue(studentId) != null)
                     EvaluationStudent.SelectedValue = studentId;
-                else
-                {
-                    string studentName = Read(evaluation, "StudentName", "Student", "student");
-                    ListItem student = EvaluationStudent.Items.FindByText(studentName);
-                    if (student != null) EvaluationStudent.SelectedValue = student.Value;
-                }
+                else { EvaluationStudent.Items.Add(new ListItem(Read(evaluation,"studentName","StudentName","studentId"),studentId)); EvaluationStudent.SelectedValue=studentId; }
+                SaveDraft.Enabled = SendEvaluation.Enabled = !IsSent(Read(evaluation,"status","Status")) && (string)placement["status"] == "active";
                 SelectedStudentName.Text = EvaluationStudent.SelectedItem == null ? "" : HttpUtility.HtmlEncode(EvaluationStudent.SelectedItem.Text);
-                EvaluationModal.Visible = true;
+                EvaluationModal.Visible = true; DashboardContent.Visible = false;
 
                 JArray criteria = evaluation["Criteria"] as JArray;
                 if (criteria != null && criteria.Count > 0)
                 {
                     StringBuilder script = new StringBuilder("document.getElementById('criteriaList').innerHTML='';");
+                    decimal rawTotal = 0, roundedTotal = 0;
                     foreach (JObject item in criteria.OfType<JObject>())
                     {
                         string name = HttpUtility.JavaScriptStringEncode(Read(item, "Name", "name"));
-                        string score = HttpUtility.JavaScriptStringEncode(Read(item, "Score", "score"));
-                        string maximum = HttpUtility.JavaScriptStringEncode(Read(item, "MaxPoints", "maxPoints"));
-                        script.Append("addCriterion('").Append(name).Append("','").Append(score).Append("','").Append(maximum).Append("');");
+                        decimal legacyTotal = (decimal?)evaluation["totalMaximum"] ?? (decimal?)evaluation["TotalMaximum"] ?? 100;
+                        decimal percentage = (decimal?)item["percentage"] ?? (legacyTotal > 0 ? ((decimal?)item["Score"] ?? (decimal?)item["score"] ?? 0) / legacyTotal * 100 : 0);
+                        percentage = PercentageRules.RoundedContribution(percentage, ref rawTotal, ref roundedTotal);
+                        string score = percentage.ToString("0.##", CultureInfo.InvariantCulture);
+                        script.Append("addCriterion('").Append(name).Append("','").Append(score).Append("');");
                     }
                     RegisterClientScript("loadCriteria", script.ToString());
                 }
@@ -473,18 +422,13 @@ namespace PSUTInternship.Company
         private void RestoreCriteriaEditor()
         {
             string[] names = Request.Form.GetValues("CriterionName") ?? new string[0];
-            string[] scores = Request.Form.GetValues("CriterionScore") ?? new string[0];
-            string[] maximums = Request.Form.GetValues("CriterionMax") ?? new string[0];
-            int count = Math.Min(names.Length, Math.Min(scores.Length, maximums.Length));
-            if (count == 0) return;
-
+            string[] scores = Request.Form.GetValues("CriterionPercentage") ?? new string[0];
+            int count = Math.Min(names.Length, scores.Length);
             StringBuilder script = new StringBuilder("document.getElementById('criteriaList').innerHTML='';");
-            for (int i = 0; i < count; i++)
-            {
-                script.Append("addCriterion('").Append(HttpUtility.JavaScriptStringEncode(names[i] ?? ""))
-                    .Append("','").Append(HttpUtility.JavaScriptStringEncode(scores[i] ?? ""))
-                    .Append("','").Append(HttpUtility.JavaScriptStringEncode(maximums[i] ?? "")).Append("');");
-            }
+            for (int i = 0; i < count; i++) script.Append("addCriterion('").Append(HttpUtility.JavaScriptStringEncode(names[i] ?? ""))
+                .Append("','").Append(HttpUtility.JavaScriptStringEncode(scores[i] ?? "")).Append("');");
+            if (count == 0) script.Append("addCriterion('','');");
+            script.Append("document.querySelectorAll('#criteriaList .criterion').forEach(function(row){row.validateTitle();});");
             RegisterClientScript("restoreCriteria", script.ToString());
         }
 

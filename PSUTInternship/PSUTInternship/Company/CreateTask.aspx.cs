@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using PSUTInternship.Shared;
 namespace PSUTInternship.Company
@@ -10,30 +11,44 @@ namespace PSUTInternship.Company
         protected async void Page_Load(object sender, EventArgs e)
         {
             if (IsPostBack) return;
-            try
-            {
+            try {
+                Opportunity.Items.Add(new ListItem("Select opportunity", ""));
                 var placements = await PortalRepository.Collection("internships");
-                foreach (var p in placements.Where(p => (string)p.Value["status"] == "active"))
-                    cblStudents.Items.Add(new ListItem((string)p.Value["studentName"] ?? (string)p.Value["studentId"], (string)p.Value["studentId"]));
+                foreach (var group in placements.Values.Where(x => (string)x["status"] == "active" && (string)x["companyId"] == PortalRepository.CompanyId)
+                    .Where(x => !string.IsNullOrWhiteSpace((string)x["opportunityId"])).GroupBy(x => (string)x["opportunityId"]))
+                    Opportunity.Items.Add(new ListItem(((string)group.First()["opportunityTitle"] ?? group.Key) + " (" + group.Key + ")", group.Key));
+                var selected = Opportunity.Items.FindByValue(Request.QueryString["opportunityId"] ?? "");
+                if (selected != null) { Opportunity.SelectedValue = selected.Value; await LoadTrainees(); }
+            } catch (Exception ex) { PageMessage.Text = Server.HtmlEncode(ex.Message); }
+        }
+        private async Task LoadTrainees() {
+            cblStudents.Items.Clear();
+            var placements = await PortalRepository.Collection("internships");
+            foreach (var item in placements.Values.Where(x => (string)x["status"] == "active" && (string)x["companyId"] == PortalRepository.CompanyId && (string)x["opportunityId"] == Opportunity.SelectedValue).GroupBy(x => (string)x["studentId"])) {
+                var student = await PortalRepository.Get<Newtonsoft.Json.Linq.JObject>("students/" + PortalRepository.Key(item.Key));
+                cblStudents.Items.Add(new ListItem(DatabaseSchema.FirstText(student, "fullName") + " (" + item.Key + ")", item.Key));
             }
-            catch (Exception ex) { ErorrAssign.Text = Server.HtmlEncode(ex.Message); }
+        }
+        protected async void Opportunity_Changed(object sender, EventArgs e) {
+            try { await LoadTrainees(); } catch (Exception ex) { PageMessage.Text = Server.HtmlEncode(ex.Message); }
         }
         protected void txtassingeto_TextChanged(object sender, EventArgs e) { }
         protected void Cancel_Click(object sender, EventArgs e) { Response.Redirect("Tasks.aspx", false); Context.ApplicationInstance.CompleteRequest(); }
         protected async void CreateTask_Click(object sender, EventArgs e)
         {
-            try
-            {
-                decimal maximum;
-                DateTime deadline;
-                if (!decimal.TryParse(Scoreinput.Value, NumberStyles.Number, CultureInfo.InvariantCulture, out maximum) || !DateTime.TryParse(Deadlineinput.Text, out deadline))
-                    throw new ArgumentException("Enter a valid maximum score and deadline.");
-                await TaskWorkflow.Create(Titelinput.Value, Descriptioniput.Value, EvaluationCriteriainput.Value, prorityinput.SelectedValue,
-                    maximum, deadline, cblStudents.Items.Cast<ListItem>().Where(x => x.Selected).Select(x => x.Value));
-                Response.Redirect("Tasks.aspx", false);
-                Context.ApplicationInstance.CompleteRequest();
-            }
-            catch (Exception ex) { ErorrAssign.Text = Server.HtmlEncode(ex.Message); }
+            DateTime deadline;
+            ErrorTitel.Text = TaskWorkflow.ValidText(Titelinput.Value, 3, 150) ? "" : "Enter a title of 3–150 characters without control characters.";
+            ErorrDescreption.Text = TaskWorkflow.ValidText(Descriptioniput.Value, 10, 5000) ? "" : "Enter a description of 10–5,000 characters.";
+            ErorrEvaluation.Text = TaskWorkflow.ValidText(EvaluationCriteriainput.Value, 5, 3000) ? "" : "Enter criteria of 5–3,000 characters.";
+            OpportunityError.Text = string.IsNullOrEmpty(Opportunity.SelectedValue) ? "Select a training opportunity." : "";
+            var ids = cblStudents.Items.Cast<ListItem>().Where(x => x.Selected).Select(x => x.Value).ToList();
+            ErorrAssign.Text = ids.Count == 0 ? "Select at least one trainee from this opportunity." : "";
+            ErorrDeadline.Text = DateTime.TryParseExact(Deadlineinput.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out deadline) && deadline.Date > TaskWorkflow.Today ? "" : "Choose a future deadline.";
+            if (new[] { ErrorTitel, ErorrDescreption, ErorrEvaluation, OpportunityError, ErorrAssign, ErorrDeadline }.Any(x => x.Text.Length > 0)) return;
+            try {
+                await TaskWorkflow.Create(Titelinput.Value, Descriptioniput.Value, EvaluationCriteriainput.Value, prorityinput.SelectedValue, deadline, ids, Opportunity.SelectedValue);
+                Response.Redirect("Tasks.aspx", false); Context.ApplicationInstance.CompleteRequest();
+            } catch (Exception ex) { PageMessage.Text = Server.HtmlEncode(ex.Message); }
         }
     }
 }

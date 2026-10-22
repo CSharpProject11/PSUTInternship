@@ -1,4 +1,4 @@
-﻿// Offline workflow tests. Firebase operations use the in-memory adapter below.
+// Offline workflow tests. Firebase operations use the in-memory adapter below.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -129,7 +129,7 @@ public static class WorkflowTests
         await Reject(() => TaskWorkflow.Review(taskId, "Reviewed", "Good work", 15), "unsubmitted tasks cannot be graded");
         Set("submissions/" + taskId, new { taskId = taskId, studentId = "student-a", companyId = "company-a", academicSupervisorId = "academic-a", status = "Submitted", answer = "Completed work" });
         await Reject(() => TaskWorkflow.Review(taskId, "Reviewed", "Good work", 21), "task review enforces the task's own maximum score");
-        await TaskWorkflow.Review(taskId, "Revision Requested", "Please provide more detail", null);
+        await TaskWorkflow.Review(taskId, "Revision Requested", "Please provide more detail", null, TaskWorkflow.Today.AddDays(3));
         Assert((string)FirebaseRestClient.Data["tasks"][taskId]["status"] == "Revision Requested", "revision requests reach the student's task");
         await TaskWorkflow.Review(taskId, "Reviewed", "Complete and correct", 18);
         Assert((int)FirebaseRestClient.Data["tasks"][taskId]["score"] == 18 && ((JObject)FirebaseRestClient.Data["reviewHistory"][taskId]).Count == 2, "grading stores the score and preserves review history");
@@ -164,11 +164,62 @@ public static class WorkflowTests
         Assert((decimal)report["finalGrade"] == 84 && (string)FirebaseRestClient.Data["internships"]["student-a"]["status"] == "completed", "coordinator approval publishes the report and completes the placement");
         await Reject(() => CompletionWorkflow.Approve("academic_student-a"), "approved completion reports cannot be overwritten");
         await Reject(() => TrainingHoursWorkflow.Review(hourId, false), "approved completion freezes the training hours");
+        await NewTaskRequirements();
         await SuppliedShape();
         report["studentName"] = "أحمد الطالب — Unicode verification";
         byte[] pdf = CompletionReportPdf.Create(report);
         Directory.CreateDirectory(output); File.WriteAllBytes(Path.Combine(output, "completion-report.pdf"), pdf);
         Assert(Encoding.ASCII.GetString(pdf, 0, 8).StartsWith("%PDF-1.4") && pdf.Length > 10000, "approved reports generate a printable PDF with Unicode names");
+    }
+    private static async Task NewTaskRequirements() {
+        Identity("company-new", "Company Supervisor");
+        Set("students/student-new", new { fullName="New trainee", academicSupervisorId="academic-new" });
+        Set("internships/placement-new", new { studentId="student-new",companyId="company-new",academicSupervisorId="academic-new",opportunityId="opening-new",status="active" });
+        await Reject(() => TaskWorkflow.Create("New task", "A valid description here", "Clear requirements", "Medium",TaskWorkflow.Today.AddDays(2),new[]{"student-new"},"wrong-opening"), "task assignment rejects a trainee from another opportunity");
+        await TaskWorkflow.Create("New task", "A valid description here", "Clear requirements", "Medium",TaskWorkflow.Today.AddDays(2),new[]{"student-new"},"opening-new");
+        var task = ((JObject)FirebaseRestClient.Data["tasks"]).Properties().Single(x=>(string)x.Value["studentId"]=="student-new");
+        string id=task.Name;
+        Assert(task.Value["maximumScore"].Type==JTokenType.Null && (string)task.Value["opportunityId"]=="opening-new" && DateTimeOffset.Parse((string)task.Value["createdAt"]).Year>2020, "score-free tasks persist opportunity and full creation date");
+        Identity("student-new","student");
+        await TaskWorkflow.Submit(id,"First solution","https://example.test/first.pdf");
+        var first = await PortalRepository.SubmissionForTask(id,"student-new");
+        Assert((string)first["fileUrl"]=="https://example.test/first.pdf", "student solution is retrievable for the exact task and student");
+        Identity("company-new","Company Supervisor");
+        await Reject(()=>TaskWorkflow.Review(id,"Revision Requested","Try again",null),"Resolve requires a new deadline");
+        await Reject(()=>TaskWorkflow.Review(id,"Revision Requested","Try again",null,TaskWorkflow.Today),"Resolve rejects a deadline that is not in the future");
+        await TaskWorkflow.Review(id,"Revision Requested","Please revise the document",null,TaskWorkflow.Today.AddDays(4));
+        Assert((string)FirebaseRestClient.Data["tasks"][id]["dueDate"]==TaskWorkflow.Today.AddDays(4).ToString("yyyy-MM-dd"),"Resolve saves the new deadline with the status and feedback");
+        Identity("student-new","student");
+        await TaskWorkflow.Submit(id,"Updated solution","");
+        Assert((string)(await PortalRepository.SubmissionForTask(id,"student-new"))["fileUrl"]=="https://example.test/first.pdf", "answer-only resubmission retains the existing solution file");
+        Set("tasks/"+id+"/dueDate",TaskWorkflow.Today.AddDays(-1).ToString("yyyy-MM-dd")); Set("tasks/"+id+"/status","Resolve");
+        await Reject(()=>TaskWorkflow.Submit(id,"Late revision","https://example.test/late.pdf"),"expired Resolve tasks cannot bypass the new deadline");
+        Set("tasks/"+id+"/dueDate",TaskWorkflow.Today.AddDays(4).ToString("yyyy-MM-dd"));
+        Identity("company-new","Company Supervisor");
+        await TaskWorkflow.Review(id,"Reviewed","Complete without grading",null);
+        Assert((string)FirebaseRestClient.Data["tasks"][id]["feedback"]=="Complete without grading" && (string)FirebaseRestClient.Data["submissions"][DatabaseSchema.Id(first)]["status"]=="Reviewed", "Complete without score persists feedback and updates the same student's submission");
+        Identity("student-new","student");
+        await Reject(()=>TaskWorkflow.Submit(id,"Closed answer","https://example.test/closed.pdf"),"Complete blocks further student submissions");
+        Set("submissions/newer-own",new { taskId=id,studentId="student-new",updatedAt="2026-10-23T13:00:00+03:00",fileUrl="https://example.test/new.pdf" });
+        Set("submissions/older-offset",new { taskId=id,studentId="student-new",updatedAt="2026-10-23T11:00:00+02:00",fileUrl="https://example.test/old.pdf" });
+        Set("submissions/foreign-newest",new { taskId=id,studentId="another-student",updatedAt="2099-01-01T00:00:00Z",fileUrl="https://example.test/foreign.pdf" });
+        // Isolate timestamp selection from the current-time submission generated above.
+        Set("submissions/"+DatabaseSchema.Id(first)+"/updatedAt","2020-01-01T00:00:00Z");
+        Assert(DatabaseSchema.Id(await PortalRepository.SubmissionForTask(id,"student-new"))=="newer-own", "latest solution compares actual instants and excludes another student's newer file");
+        Identity("coordinator-new","coordinator");
+        Set("internships/historical-placement",new {studentId="student-new",companyId="company-new",academicSupervisorId="original-supervisor",opportunityId="old-opening",status="completed"});
+        Set("tasks/historical-task",new {studentId="student-new",internshipId="historical-placement",academicSupervisorId="original-supervisor",status="Reviewed"});
+        Set("evaluations/historical-evaluation",new {studentId="student-new",internshipId="historical-placement",evaluatorRole="academicSupervisor",evaluatorId="original-supervisor",status="submitted"});
+        var reassign=new Dictionary<string,object>(); await AcademicAssignments.AddChanges("student-new","replacement-supervisor",reassign);
+        Assert(reassign.ContainsKey("internships/placement-new/academicSupervisorId") && !reassign.Keys.Any(x=>x.Contains("historical")),"supervisor reassignment updates current placement without rewriting historical tasks or evaluations");
+        decimal percentage;
+        decimal rawTotal = 0, roundedTotal = 0, roundedSum = 0;
+        for (int i = 0; i < 6; i++) roundedSum += PercentageRules.RoundedContribution(100m/6,ref rawTotal,ref roundedTotal);
+        Assert(roundedSum == 100m, "legacy percentage conversion cannot introduce a total above 100 through rounding");
+        Assert(PercentageRules.TryParse("100",out percentage) && percentage==100 && PercentageRules.TryParse("0.01",out percentage), "percentage validation accepts exact bounds and hundredths");
+        Assert(new[]{"100.01","-1","1e2","1,00","NaN","99.999",""}.All(x=>!PercentageRules.TryParse(x,out percentage)), "percentage regex rejects overflow, signs, exponent notation and excess precision");
+        Assert(AcademicCatalog.SameDepartment("Cybersecurity","Cyber Security") && !AcademicCatalog.SameDepartment("Software Engineering","Computer Science"), "department aliases match without permitting unrelated assignments");
+        Assert(DatabaseSchema.WorkflowStatus("Complete")=="Reviewed" && DatabaseSchema.WorkflowStatus("Resolve")=="Revision Requested", "legacy and requested status labels share one workflow");
     }
     private static async Task SuppliedShape()
     {

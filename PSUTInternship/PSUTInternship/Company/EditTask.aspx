@@ -1,31 +1,11 @@
-<%@ Register Src="~/Shared/CompanyLinks.ascx" TagPrefix="psut" TagName="CompanyLinks" %>
-<%@ Page MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="EditTask.aspx.cs" Inherits="PSUTInternship.Company.EditTask" %>
-<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
-
-</asp:Content>
-<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server"><h1>Edit task</h1>
-<asp:Label ID="subject" runat="server" CssClass="message" role="status"></asp:Label>
-         <br />
-        <div id="describtion" runat="server">
-            <asp:Literal ID="TaskDetails" runat="server"></asp:Literal>
-        </div>
-
-        <p>
-            <asp:Label ID="State" runat="server" Text="State"></asp:Label>
-        </p>
-        <p>
-            <asp:DropDownList ID="stateDrop" runat="server">
-                <asp:ListItem>Select state</asp:ListItem>
-                <asp:ListItem>Resolve</asp:ListItem>
-                <asp:ListItem>Complete</asp:ListItem>
-            </asp:DropDownList>
-        </p>
-        <br />
-        <asp:Label ID="Feedback" runat="server" Text="Feedback"></asp:Label>
-        <p>
-            <textarea id="Feedbackinput" cols="20" name="S1" rows="2" runat="server"></textarea></p>
-        <p><asp:Label runat="server" AssociatedControlID="maximumInput" Text="Task maximum score" /><asp:TextBox ID="maximumInput" runat="server" /></p>
-        <p><label for="scoreInput">Awarded score</label><asp:TextBox ID="scoreInput" runat="server" /></p>
-        <asp:Button ID="Save" runat="server" Text="Save" OnClick="Save_Click" />
-        <asp:Button ID="Cansale" runat="server" Text="Cancel" OnClick="Cansale_Click" CausesValidation="false"/>
+<%@ Page Title="Review task" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="EditTask.aspx.cs" Inherits="PSUTInternship.Company.EditTask" %>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<a class="sd-back" href="Tasks.aspx">Back to tasks</a><h1>Review task</h1>
+<asp:Label ID="subject" runat="server" CssClass="message" role="status" />
+<section class="panel portal-form-panel"><div id="describtion" runat="server"><asp:Literal ID="TaskDetails" runat="server" /></div>
+<div class="fields">
+<div class="field"><asp:Label ID="State" runat="server" AssociatedControlID="stateDrop" Text="Status" /><asp:DropDownList ID="stateDrop" runat="server" AutoPostBack="true" OnSelectedIndexChanged="State_Changed"><asp:ListItem Value="">Select status</asp:ListItem><asp:ListItem Value="Revision Requested">Resolve</asp:ListItem><asp:ListItem Value="Reviewed">Complete</asp:ListItem></asp:DropDownList><asp:Label ID="StateError" runat="server" CssClass="field-error" /></div>
+<asp:Panel ID="DeadlinePanel" runat="server" CssClass="field" Visible="false"><asp:Label runat="server" AssociatedControlID="NewDeadline" Text="New resubmission deadline" /><asp:TextBox ID="NewDeadline" runat="server" TextMode="Date" /><asp:Label ID="DeadlineError" runat="server" CssClass="field-error" /></asp:Panel>
+<div class="field wide"><label for="<%= Feedbackinput.ClientID %>">Feedback</label><textarea ID="Feedbackinput" runat="server" rows="5"></textarea><asp:Label ID="FeedbackError" runat="server" CssClass="field-error" /></div></div>
+<div class="portal-form-actions"><asp:Button ID="Cansale" runat="server" Text="Cancel" CssClass="btn light" OnClick="Cansale_Click" CausesValidation="false" formnovalidate="formnovalidate" /><asp:Button ID="Save" runat="server" Text="Save review" CssClass="btn" OnClick="Save_Click" /></div></section>
 </asp:Content>

@@ -11,7 +11,7 @@ namespace PSUTInternship.Models
         [JsonProperty("companyId")] public string CompanyId { get; set; }
         [JsonProperty("academicSupervisorId")] public string AcademicSupervisorId { get; set; }
         [JsonProperty("internshipId")] public string InternshipId { get; set; }
-        [JsonProperty("maximumScore")] public decimal MaximumScore { get; set; }
+        [JsonProperty("maximumScore")] public decimal? MaximumScore { get; set; }
         [JsonProperty("score")] public decimal? Score { get; set; }
         [JsonProperty("feedback")] public string Feedback { get; set; }
         [JsonProperty("priority")] public string Priority { get; set; }

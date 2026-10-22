@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -19,7 +19,7 @@ namespace PSUTInternship
             string[] segments = path.Split('/');
             string area = segments.Length > 2 ? segments[1].ToLowerInvariant() : "";
             bool protectedPage = area == "student" || area == "company" || area == "academic" || area == "admin"
-                || path.Equals("~/ChangePassword.aspx", StringComparison.OrdinalIgnoreCase) || path.Equals("~/CompletionReport.aspx", StringComparison.OrdinalIgnoreCase) || path.Equals("~/MeetingApi.aspx", StringComparison.OrdinalIgnoreCase);
+                || path.Equals("~/ChangePassword.aspx", StringComparison.OrdinalIgnoreCase) || path.Equals("~/CompletionReport.aspx", StringComparison.OrdinalIgnoreCase) || path.Equals("~/MeetingApi.aspx", StringComparison.OrdinalIgnoreCase) || path.Equals("~/TaskSolution.aspx", StringComparison.OrdinalIgnoreCase);
             if (!protectedPage || path.Equals("~/Company/Login.aspx", StringComparison.OrdinalIgnoreCase)) return;
             try
             {

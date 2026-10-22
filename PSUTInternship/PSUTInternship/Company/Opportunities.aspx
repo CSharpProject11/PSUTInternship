@@ -35,11 +35,9 @@
                         <%= o.IsOpen ? "Open" : "Closed" %>
                     </td>
                     <td>
-                        <a href="OpportunityForm.aspx?id=<%= H(o.Id) %>">Edit</a> &nbsp; <% if(o.IsOpen){ %>
+                        <a class="btn light" href="OpportunityForm.aspx?id=<%= H(o.Id) %>">Edit</a> &nbsp; <% if(o.IsOpen){ %>
 
-                            <input type="hidden" name="action" value="close"/>
-                            <input type="hidden" name="id" value="<%= H(o.Id) %>"/>
-                            <button class="link-button" type="submit">Close</button>
+                            <button class="btn light" type="submit" name="closeOpportunity" value="<%= H(o.Id) %>">Close</button>
 
                         <% } else { %>
                         <span class="muted">Closed</span>

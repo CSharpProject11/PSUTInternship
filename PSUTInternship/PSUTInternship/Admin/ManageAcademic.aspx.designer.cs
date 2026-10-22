@@ -165,7 +165,7 @@ namespace PSUTInternship.Admin
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox collegeTextBox;
+        protected global::System.Web.UI.WebControls.DropDownList collegeTextBox;
 
         /// <summary>
         /// departmentTextBox control.
@@ -174,7 +174,7 @@ namespace PSUTInternship.Admin
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox departmentTextBox;
+        protected global::System.Web.UI.WebControls.DropDownList departmentTextBox;
 
         /// <summary>
         /// specializationTextBox control.
@@ -183,7 +183,7 @@ namespace PSUTInternship.Admin
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox specializationTextBox;
+        protected global::System.Web.UI.WebControls.DropDownList specializationTextBox;
 
         /// <summary>
         /// phoneTextBox control.

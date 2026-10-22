@@ -25,9 +25,9 @@
                     <article class="card sd-card sd-apply-card">
                     <asp:Image runat="server"
                         CssClass="img-fluid w-100"
-                        ImageUrl='<%# Eval("ImageUrl") %>'
+                        ImageUrl='<%# ApplicationImage(Eval("ImageUrl")) %>'
                         AlternateText='<%# Eval("Title") %>'
-                        Visible='<%# !string.IsNullOrWhiteSpace(Convert.ToString(Eval("ImageUrl"))) %>' />
+                         />
                     <div class="card-body p-3 p-md-4">
                     <h2 class="h2 text-break mb-3"><%#: Eval("Title") %></h2>
                     <span class="badge bg-secondary"><%#: Convert.ToBoolean(Eval("Status")) ? "Open" : "Closed" %></span>
@@ -66,21 +66,21 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p class="text-muted">Your saved student information is filled in automatically. Review it and complete any missing academic details. All fields are required unless marked optional.</p>
-                        <fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">General Information</legend><div class="row g-3">
-<div class="col-12 col-md-6"><label class="form-label" for="faculty">Faculty</label><input class="form-control" id="faculty" name="faculty" type="text" required="required" /></div>
+                        <p class="text-muted">Your identity and program information is retrieved from your profile and cannot be edited here. Complete the remaining application details. All fields are required unless marked optional.</p>
+                        <fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">General Information</legend><div class="row g-3"><div class="col-12 col-md-6"><label class="form-label" for="university">University</label><input class="form-control" id="university" name="university" readonly="readonly" /></div>
+<div class="col-12 col-md-6"><label class="form-label" for="faculty">Faculty</label><input class="form-control" id="faculty" name="faculty" readonly="readonly" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="department">Department</label><input class="form-control" id="department" name="department" type="text" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="program">Program</label><input class="form-control" id="program" name="program" type="text" required="required" /></div>
+<div class="col-12 col-md-6"><label class="form-label" for="program">Program</label><input class="form-control" id="program" name="program" readonly="readonly" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="semester">Semester</label><input class="form-control" id="semester" name="semester" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="academicYear">Academic Year</label><input class="form-control" id="academicYear" name="academicYear" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="applicationDate">Application Date</label><input class="form-control" id="applicationDate" name="applicationDate" type="date" required="required" /></div>
 </div></fieldset>
 <fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">Student Information</legend><div class="row g-3">
-<div class="col-12 col-md-6"><label class="form-label" for="studentName">Student Name</label><input class="form-control" id="studentName" name="studentName" type="text" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="universityId">University ID</label><input class="form-control" id="universityId" name="universityId" type="text" required="required" /></div>
+<div class="col-12 col-md-6"><label class="form-label" for="studentName">Student Name</label><input class="form-control" id="studentName" name="studentName" readonly="readonly" type="text" required="required" /></div>
+<div class="col-12 col-md-6"><label class="form-label" for="universityId">University ID</label><input class="form-control" id="universityId" name="universityId" readonly="readonly" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="completedCreditHours">Completed Credit Hours</label><input class="form-control" id="completedCreditHours" name="completedCreditHours" type="number" required="required" min="0" step="1" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="studentPhone">Phone Number</label><input class="form-control" id="studentPhone" name="studentPhone" type="tel" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="studentEmail">Email Address</label><input class="form-control" id="studentEmail" name="studentEmail" type="email" required="required" /></div>
+<div class="col-12 col-md-6"><label class="form-label" for="studentEmail">Email Address</label><input class="form-control" id="studentEmail" name="studentEmail" readonly="readonly" type="email" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="alternativePhone">Alternative Phone Number (optional)</label><input class="form-control" id="alternativePhone" name="alternativePhone" type="tel" /></div>
 </div></fieldset>
                         <div class="mt-4">

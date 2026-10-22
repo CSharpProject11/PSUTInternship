@@ -19,7 +19,7 @@ The web API key identifies the Firebase application; never put service-account c
 1. A company supervisor publishes an opportunity. The public homepage shows its limited preview; students sign in for the description and application form.
 2. A student applies. The company's application review records approval or rejection with a reason.
 3. The student confirms one approved offer in **My applications**. An immutable confirmation and a retryable placement projection connect the student, company and academic supervisor. Company approval alone does not activate a trainee.
-4. The company assigns tasks to its confirmed trainees, sets each task's maximum score and evaluation criteria, and reviews submissions or requests revisions. Students submit descriptions and HTTPS file or work links. Submission and review histories are retained.
+4. The company selects an opportunity and assigns tasks to its confirmed trainees, with a deadline and evaluation criteria. Tasks do not require scores. Resolve requires a new future deadline; Complete closes submission. Students can upload solution files, write an answer or provide an HTTPS work link. Submission and review histories are retained.
 5. Students log training hours. The company approves or rejects individual logs; approved totals are recalculated with conditional writes. Completing a task never approves hours automatically.
 6. The company submits its final evaluation. The assigned academic supervisor monitors the work, adds academic comments to the final assessment, and forwards the evaluation to the coordinator.
 7. The coordinator reviews both evaluations, approved hours and outstanding tasks. Approval publishes the student's final result and enables an authenticated PDF completion-report download. Confidential supervisor final evaluations are not exposed to students.
@@ -60,7 +60,7 @@ Profile keys must be Firebase Authentication UIDs. `profileId` uses that same UI
 | `applications/{applicationId}` | Existing flat records retain their IDs. `coverLetter`, `cvUrl`, `isOfferConfirmed` and optional full application `details` are supported. New applications use a stable student/opportunity key. |
 | `internshipConfirmations/{studentUid}` | One immutable selected application |
 | `internships/{internshipId}` | Placement found through `studentId`; its key does not have to equal the student UID. |
-| `tasks/{taskId}` | One student's assignment with student/company/academic IDs, deadline, criteria and maximum score |
+| `tasks/{taskId}` | One student's assignment with opportunity/student/company/academic IDs, deadline, criteria and creation timestamp; legacy grades remain readable |
 | `submissions/{submissionId}` / `taskFeedback/{taskId}` | Submissions join by `taskId` and retain their existing keys; `fileUrl`, `submissionLink` and older `attachmentUrl` are understood. |
 | `submissionHistory/{taskId}/{id}` / `reviewHistory/{taskId}/{id}` | Previous submissions and reviews |
 | `trainingHours/{id}` | Dated hour log, description and supervisor approval |
@@ -69,11 +69,11 @@ Profile keys must be Firebase Authentication UIDs. `profileId` uses that same UI
 | `completionReports/{reportId}` | Existing pending records are promoted to approved using their real IDs. PDF downloads require coordinator approval. |
 | `contactMessages/{id}` | Public contact form submissions and coordinator responses saved in the system |
 
-Coordinator contact responses are stored in the portal; no email delivery is implemented. File submissions use HTTPS links to externally hosted files; the app does not upload binaries to Firebase Storage. The completion PDF renders a high-resolution page to preserve Unicode names; it is printable but its text is not selectable.
+Coordinator contact responses are sent through a server-configured SMTP provider and recorded after delivery is accepted. Configure `UIMS_SMTP_HOST`, `UIMS_SMTP_FROM`, `UIMS_SMTP_PORT` (default 587), `UIMS_SMTP_USERNAME` and `UIMS_SMTP_PASSWORD` in the server environment; TLS is required. Missing configuration or failed delivery produces an error rather than a success message. Uploaded solutions (up to 10 MB) are stored privately in `App_Data/TaskSolutions`, scoped to the task and student; Firebase stores their metadata. Grant the application identity write access and preserve this folder across deployments/backups. The authenticated `TaskSolution.aspx` endpoint downloads the latest solution. Existing HTTPS work links remain supported and redirect to their original provider. The completion PDF renders a high-resolution page to preserve Unicode names; it is printable but its text is not selectable.
 
 ## Existing Firebase data
 
-The supplied export is supported directly; it does not need its record keys renamed or its text values converted. `Shared/DatabaseSchema.cs` handles format differences and joins tasks, submissions, hour logs, evaluations and reports to their actual internship IDs. Existing `requiredTrainingHours` is accepted alongside `requiredHours`. A missing task maximum must be entered by the company supervisor on the review page before grading; the app does not invent grades.
+The supplied export is supported directly; it does not need its record keys renamed or its text values converted. `Shared/DatabaseSchema.cs` handles format differences and joins tasks, submissions, hour logs, evaluations and reports to their actual internship IDs. Existing `requiredTrainingHours` is accepted alongside `requiredHours`. New tasks and Complete reviews do not require grades. Historic scores and review histories remain readable; no grade is invented for a task without a score.
 
 The updated rules template uses scoped queries and relationship lookups for these records. Deploy it to the configured database before a live walkthrough. The template includes indexes for `studentId`, `internshipId`, `taskId` and supervisor queries. Signing in as coordinator fills only missing reverse links/previews; it does not overwrite explicit assignments or create fictitious accounts. Resolve conflicting assignments through the coordinator's assignment screen.
 
@@ -81,7 +81,7 @@ Authentication accounts must exist in this same Firebase project and profile key
 
 ## Evaluation policy
 
-The default **proposed project policy** is 60% company evaluation, 40% academic evaluation, an academic maximum of 100 and a passing final grade of 50. These values are configurable in `Web.config`; they are **not a verified official PSUT grading scheme**. Company criteria and tasks each use their own maximum scores. Required training hours are set per student by the coordinator. Confirm the college's official policy before operational use.
+The default **proposed project policy** is 60% company evaluation, 40% academic evaluation, an academic maximum of 100 and a passing final grade of 50. These values are configurable in `Web.config`; they are **not a verified official PSUT grading scheme**. New company evaluations use criterion percentages whose combined total cannot exceed 100%; academic assessments also accept 0–100%. Existing point-based final evaluations remain readable and continue to normalize against their recorded maximum. Task review is independent of final evaluation percentages. Required training hours are set per student by the coordinator. Confirm the college's official policy before operational use.
 
 ## Verification
 
@@ -104,3 +104,7 @@ Full Web Forms markup compilation can also be checked with the .NET Framework `a
 `opportunities` is the only opportunity collection used by the application. The old `publicOpportunities` collection is no longer read, written or generated. After deploying the application and `Firebase/database.rules.example.json`, the obsolete `publicOpportunities` node can be deleted from Firebase Console; retain `opportunities` and its IDs so existing applications remain linked. No live records are deleted by this code update.
 
 Anonymous homepage requests return no opportunity previews; authenticated requests project preview fields from `opportunities`. Full opportunity records remain protected by the active-user Firebase read rule. Specialization is descriptive text, not an exact student-major restriction. Explicit college restrictions, active status and deadlines still apply.
+
+## UIMS improvement verification (23 October 2026)
+
+See [the requirement coverage and deployment checklist](docs/uims-improvements.md) for the text/PDF changes, local verification evidence and the live checks left to the project owner. The source changes do not deploy Firebase rules, configure SMTP credentials or alter live records.

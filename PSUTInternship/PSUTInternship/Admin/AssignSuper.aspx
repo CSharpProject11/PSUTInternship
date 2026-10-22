@@ -247,7 +247,7 @@
                     <p>Department:
                         <asp:Label ID="viewDepartmentLabel" runat="server" /></p>
                     <p>Academic supervisor:
-                        <asp:Label ID="viewSupervisorLabel" runat="server" /></p>
+                        <asp:Label ID="viewSupervisorLabel" runat="server" /></p><div class="field"><asp:Label runat="server" AssociatedControlID="ReplacementSupervisor" Text="Change academic supervisor" /><asp:DropDownList ID="ReplacementSupervisor" runat="server" /><asp:Button ID="ReassignSupervisor" runat="server" Text="Save supervisor assignment" CssClass="btn" OnClick="ReassignSupervisor_Click" /></div>
                     <h3>Students in this group</h3>
                     <asp:Literal ID="viewStudentsTable" runat="server" />
                     <hr />

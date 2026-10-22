@@ -158,6 +158,7 @@
     <Content Include="index.html" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Content Include="TaskSolution.aspx" />
     <Content Include="Login.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
@@ -755,6 +756,14 @@
     <Compile Include="Shared\PortalRepository.cs" />
     <Compile Include="Shared\DatabaseSchema.cs" />
     <Compile Include="Shared\TaskWorkflow.cs" />
+    <Compile Include="Shared\TaskFileStore.cs" />
+    <Compile Include="Shared\PercentageRules.cs" />
+    <Compile Include="Shared\ContactReplyMailer.cs" />
+    <Compile Include="Shared\AcademicCatalog.cs" />
+    <Compile Include="TaskSolution.aspx.cs">
+      <DependentUpon>TaskSolution.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Shared\TrainingHoursWorkflow.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -783,20 +792,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Shared\CoordinatorData.cs" />
-
-
-
-
-
-
-
-
-
-
-
-
   </ItemGroup>
-  <ItemGroup><Content Include="Admin\Coordinator.css" /><Content Include="Admin\FinalCompletionReview.css" /></ItemGroup>
+  <ItemGroup>
+    <Content Include="Admin\Coordinator.css" />
+    <Content Include="Admin\FinalCompletionReview.css" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Portal.Master" />
     <Content Include="Assets\psut-emblem.png" />

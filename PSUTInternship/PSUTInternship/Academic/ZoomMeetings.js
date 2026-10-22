@@ -12,7 +12,7 @@ function render() {
     const invitations = all.filter(m => filter === 'all' ? m.status === 'Pending' : m.status === filter && m.status !== 'Accepted');
     $('invitationsList').innerHTML = invitations.map(m => F.card(m, (m.status === 'Pending' ? '<p class="waiting-note">Waiting for student response</p>' : '') + (m.status === 'Pending' ? `<button type="button" class="cancel-button" data-cancel="${F.safe(m.id)}">Cancel Invitation</button>` : ''))).join('') || F.empty;
     $('upcomingList').innerHTML = all.filter(m => m.status === 'Accepted').map(m => F.card(m, `<a class="join-button" target="_blank" rel="noopener noreferrer" href="${F.roomLink(m)}"><i class="bi bi-camera-video"></i> Join Meeting</a><button type="button" class="cancel-button" data-cancel="${F.safe(m.id)}">Cancel Invitation</button>`)).join('') || F.empty;
-    $('activityList').innerHTML = all.slice(0, 5).map(m => `<div class="activity-item"><strong>${F.safe(m.studentName)} · ${F.safe(m.status)}</strong><small>${F.safe(m.createdAt || '')}</small></div>`).join('') || F.empty;
+    $('activityList').innerHTML = [...all].sort((a,b)=>String(b.respondedAt||b.updatedAt||b.createdAt).localeCompare(String(a.respondedAt||a.updatedAt||a.createdAt))).slice(0, 5).map(m => `<div class="activity-item"><strong>${F.safe(m.studentName)} · ${F.safe(m.status)}</strong><small>${F.safe(F.formatActivityDate(m.respondedAt || m.updatedAt || m.createdAt))}</small></div>`).join('') || F.empty;
 }
 async function refresh() { try { all = await F.meetings(); render(); } catch (e) { message(e.message); } }
 $('portalForm').addEventListener('submit', async event => {

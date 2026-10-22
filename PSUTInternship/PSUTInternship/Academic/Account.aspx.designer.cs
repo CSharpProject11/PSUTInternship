@@ -13,6 +13,7 @@ namespace PSUTInternship.Academic
 
     public partial class Account
     {
+        protected global::System.Web.UI.WebControls.Label ProfileMessage, PersonalError, AcademicError;
 
         /// <summary>
         /// form1 control.

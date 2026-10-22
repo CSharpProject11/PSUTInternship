@@ -88,10 +88,10 @@
             <asp:TextBox ID="search" runat="server" placeholder="Search task or student" AutoPostBack="true" OnTextChanged="search_TextChanged"></asp:TextBox>
             <asp:DropDownList AutoPostBack="true" ID="DropDownList1" runat="server" OnSelectedIndexChanged="DropDownList1_SelectedIndexChanged">
                 <asp:ListItem>All statuses</asp:ListItem>
-                <asp:ListItem>Pending Review</asp:ListItem>
-                <asp:ListItem>In Progress</asp:ListItem>
-                <asp:ListItem>Revision Requested</asp:ListItem>
-                <asp:ListItem>Reviewed</asp:ListItem>
+                <asp:ListItem Value="Submitted">Pending Review</asp:ListItem>
+                <asp:ListItem Value="Assigned">In Progress</asp:ListItem>
+                <asp:ListItem Value="Revision Requested">Resolve</asp:ListItem>
+                <asp:ListItem Value="Reviewed">Complete</asp:ListItem>
             </asp:DropDownList>
         </p>
 
@@ -100,10 +100,10 @@
                 <tr>
                     <th>Task</th>
                     <th>Student</th>
-                    <th>Deadline</th>
+                    <th>Deadline</th><th>Created Date</th>
                     <th>Priority</th>
                     <th>Status</th>
-                    <th>Score</th>
+
                     <th>Action</th>
                 </tr>
             </thead>

@@ -14,7 +14,7 @@
                 <asp:Repeater ID="OpportunitiesRepeater" runat="server" OnItemCommand="OpportunitiesRepeater_ItemCommand">
                     <ItemTemplate>
                         <article class="sd-card sd-opportunity">
-                            <asp:Image runat="server" ImageUrl='<%# Eval("ImageUrl") %>' AlternateText='<%# Eval("Title") %>' />
+                            <asp:Image runat="server" ImageUrl='<%# OpportunityImage(Eval("ImageUrl")) %>' AlternateText='<%# Eval("Title") %>' />
                             <div class="sd-opportunity-body">
                                 <h2><%#: Eval("Title") %></h2>
                                 <p class="sd-opportunity-meta"><%#: Eval("CompanyId") %> · <%#: Eval("Location") %> · <%#: Eval("WorkMode") %></p>

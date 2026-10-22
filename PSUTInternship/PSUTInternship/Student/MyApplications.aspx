@@ -13,7 +13,7 @@
             <div class="sd-applications">
                 <asp:Repeater ID="ApplicationsRepeater" runat="server" OnItemCommand="ApplicationsRepeater_ItemCommand">
                     <ItemTemplate>
-                        <article class="sd-card sd-application">
+                        <article class="sd-card sd-application" data-status='<%# Eval("Status") %>'>
                             <div><h2><%#: Eval("Details.OrganizationName") %></h2><p>Training field: <%#: Eval("Details.TrainingField") %></p><p>Status: <strong><%#: GetApplicationStatus(Container.DataItem) %></strong></p></div>
                             <p><%#: Eval("RejectionReason") %></p><div class="sd-application-actions">
                                 <asp:Button ID="AcceptButton" runat="server" Text="Accept offer" CommandName="AcceptOffer" CommandArgument='<%# Eval("Id") %>' OnClientClick="return portalConfirmAction(this, 'Confirm this internship? You can confirm only one offer.');" Visible='<%# CanAcceptOffer(Container.DataItem) %>' />

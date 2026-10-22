@@ -36,7 +36,7 @@ namespace PSUTInternship
         public int RejectedCount { get; private set; }
         public bool ApplicationsAvailable { get; private set; }
         public string ActivityLabel { get { return Role == "student" ? "Your applications" : Role == "company" ? "Candidate activity" : Role == "academic" ? "Student activity" : "Placement activity"; } }
-        public string EmptyTitle { get { return ApplicationsAvailable ? "Your next chapter starts here" : "No activity available yet"; } }
+        public string EmptyTitle { get { if (Role == "company" && ApplicationsAvailable) return "Nothing to review at the moment."; return ApplicationsAvailable ? "Your next chapter starts here" : "No activity available yet"; } }
         public string EmptyDescription { get { return ApplicationsAvailable ? "Applications will appear here as students begin their placement journey." : "The current database permissions do not provide application activity for this workspace. Contact the internship coordinator for access."; } }
 
         protected void Page_Load(object sender, EventArgs e)

@@ -274,9 +274,9 @@
                         <div class="field">
                             <label>University number</label><asp:Label ID="generatedNumberLabel" runat="server" Text="Generated after saving" /></div>
                         <div class="field">
-                            <label>College *</label><asp:TextBox ID="collegeTextBox" runat="server" /></div>
+                            <label>College *</label><asp:DropDownList ID="collegeTextBox" runat="server"><asp:ListItem Text="Select college" Value="" /><asp:ListItem>King Hussein School of Computing Sciences</asp:ListItem></asp:DropDownList></div>
                         <div class="field">
-                            <label>Major *</label><asp:TextBox ID="majorTextBox" runat="server" /></div>
+                            <label>Major *</label><asp:DropDownList ID="majorTextBox" runat="server"><asp:ListItem Text="Select program or department" Value="" /><asp:ListItem>Computer Science</asp:ListItem><asp:ListItem>Computer Graphics and Animation</asp:ListItem><asp:ListItem>Software Engineering</asp:ListItem><asp:ListItem>Data Science and Artificial Intelligence</asp:ListItem><asp:ListItem>Cyber Security</asp:ListItem></asp:DropDownList></div>
                         <div class="field">
                             <label for="academicSupervisorList">Academic supervisor *</label><asp:DropDownList ID="academicSupervisorList" runat="server" /></div><div class="field">
                             <label>Required training hours *</label><asp:TextBox ID="requiredHoursTextBox" runat="server" Text="96" TextMode="Number" /></div>

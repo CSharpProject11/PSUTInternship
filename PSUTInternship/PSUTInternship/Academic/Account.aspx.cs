@@ -162,23 +162,25 @@ namespace PSUTInternship.Academic
 
         private void ShowPersonalEdit(bool editing)
         {
-            pnlPersonalView.Visible = !editing;
+            pnlPersonalView.Visible = true;
             pnlPersonalEdit.Visible = editing;
         }
 
         private void ShowAcademicEdit(bool editing)
         {
-            pnlAcademicView.Visible = !editing;
+            pnlAcademicView.Visible = true;
             pnlAcademicEdit.Visible = editing;
         }
 
         protected void btnEditPersonal_Click(object sender, EventArgs e)
         {
+            RegisterAsyncTask(new PageAsyncTask(LoadProfileAsync));
             ShowPersonalEdit(true);
         }
 
         protected void btnEditAcademic_Click(object sender, EventArgs e)
         {
+            RegisterAsyncTask(new PageAsyncTask(LoadProfileAsync));
             ShowAcademicEdit(true);
         }
 
@@ -204,8 +206,9 @@ namespace PSUTInternship.Academic
         {
             string name = (txtName.Text ?? "").Trim();
             string phone = (txtPhone.Text ?? "").Trim();
-            if (string.IsNullOrWhiteSpace(name))
-                return;
+            PersonalError.Text = "";
+            if (!PSUTInternship.Shared.TaskWorkflow.ValidText(name,3,100)) { PersonalError.Text = "Enter a name of 3–100 characters."; return; }
+            if (phone.Length > 0 && !System.Text.RegularExpressions.Regex.IsMatch(phone,@"\A[+0-9 ()-]{7,20}\z")) { PersonalError.Text = "Enter a valid phone number of 7–20 characters."; return; }
 
             try
             {
@@ -217,11 +220,11 @@ namespace PSUTInternship.Academic
                     });
 
                 await LoadProfileAsync();
-                ShowPersonalEdit(false);
+                ShowPersonalEdit(false); ProfileMessage.Text = "Personal information saved.";
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError("Account personal save failed: " + ex);
+                System.Diagnostics.Trace.TraceError("Account personal save failed: " + ex); PersonalError.Text = "Could not save personal information. Please retry.";
             }
         }
 
@@ -249,11 +252,11 @@ namespace PSUTInternship.Academic
                     });
 
                 await LoadProfileAsync();
-                ShowAcademicEdit(false);
+                ShowAcademicEdit(false); ProfileMessage.Text = "Academic information saved.";
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError("Account academic save failed: " + ex);
+                System.Diagnostics.Trace.TraceError("Account academic save failed: " + ex); AcademicError.Text = "Could not save academic information. Please retry.";
             }
         }
     }

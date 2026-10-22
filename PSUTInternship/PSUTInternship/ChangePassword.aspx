@@ -1,9 +1,9 @@
 <%@ Page Title="Change password" MasterPageFile="~/Portal.Master" Language="C#" Async="true" AutoEventWireup="true" CodeBehind="ChangePassword.aspx.cs" Inherits="PSUTInternship.ChangePassword" %>
 <asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
-    <h1>Change password</h1><p class="subtitle">Choose a new password before opening your workspace.</p>
+    <h1>Change password</h1><p class="subtitle">Update your account password securely.</p>
     <section class="panel portal-form-panel"><h2>Secure your account</h2>
         <asp:Label ID="passwordMessage" runat="server" CssClass="message error" role="alert" />
-        <div class="fields">
+        <div class="fields"><div class="field"><asp:Label runat="server" AssociatedControlID="currentPassword" Text="Current password" /><asp:TextBox ID="currentPassword" runat="server" TextMode="Password" autocomplete="current-password" /></div>
             <div class="field"><asp:Label runat="server" AssociatedControlID="newPassword" Text="New password" /><asp:TextBox ID="newPassword" runat="server" TextMode="Password" autocomplete="new-password" /></div>
             <div class="field"><asp:Label runat="server" AssociatedControlID="confirmPassword" Text="Confirm password" /><asp:TextBox ID="confirmPassword" runat="server" TextMode="Password" autocomplete="new-password" /></div>
         </div>

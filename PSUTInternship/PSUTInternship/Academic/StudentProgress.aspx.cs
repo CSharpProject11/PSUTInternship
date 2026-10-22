@@ -211,7 +211,7 @@ namespace PSUTInternship.Academic
                 foreach (var t in tasks.Where(t => S(t.Value, "studentId") == student.StudentId && S(t.Value, "internshipId") == student.InternshipId))
                 {
                     var matches = submissions.Values.Where(s => S(s, "studentId") == student.StudentId &&
-                        S(s, "taskId") == t.Key && S(s, "internshipId") == student.InternshipId).ToList();
+                        S(s, "taskId") == t.Key && (string.IsNullOrWhiteSpace(S(s, "internshipId")) || S(s, "internshipId") == student.InternshipId)).OrderByDescending(PSUTInternship.Shared.PortalRepository.SubmissionTime).Take(1).ToList();
                     if (matches.Count == 0) matches.Add(null);
                     foreach (var submission in matches)
                     {
@@ -224,11 +224,11 @@ namespace PSUTInternship.Academic
                             Status = S(t.Value, "status", "Unknown"),
                             SubmissionStatus = S(submission, "status", "Not submitted"),
                             SubmittedAt = S(submission, "submittedAt", "Not submitted"),
-                            FileName = S(submission, "fileName", "No file uploaded"),
-                            FileUrl = SafeHttps(S(submission, "fileUrl")),
+                            FileName = S(submission?["uploadedFile"] as JObject, "name", S(submission, "fileName", "Submitted work")),
+                            FileUrl = submission?["uploadedFile"] is JObject ? "../TaskSolution.aspx?taskId=" + HttpUtility.UrlEncode(t.Key) : SafeHttps(S(submission, "fileUrl")),
                             SubmissionLink = SafeHttps(S(submission, "attachmentUrl")),
                             Score = S(t.Value, "score", "—") + " / " + S(t.Value, "maximumScore", "—"),
-                            Feedback = S(submission, "feedback", "No feedback yet"),
+                            Feedback = S(t.Value, "feedback", S(submission, "feedback", "No feedback yet")),
                             ReviewedAt = S(submission, "reviewedAt", "Not reviewed")
                         });
                     }
@@ -279,7 +279,7 @@ namespace PSUTInternship.Academic
             return Uri.TryCreate(value, UriKind.Absolute, out uri) && uri.Scheme == Uri.UriSchemeHttps
                 ? uri.AbsoluteUri : "";
         }
-        protected bool HasUrl(object value) { return !string.IsNullOrEmpty(SafeHttps(Convert.ToString(value))); }
+        protected bool HasUrl(object value) { return Convert.ToString(value).StartsWith("../TaskSolution.aspx?taskId=", StringComparison.Ordinal) || !string.IsNullOrEmpty(SafeHttps(Convert.ToString(value))); }
         protected void btnCloseModal_Click(object sender, EventArgs e) { CloseAllModals(); }
         private void CloseAllModals() { pnlTasksModal.Visible = false; pnlEvaluationModal.Visible = false; }
         protected string GetStatusClass(object x)

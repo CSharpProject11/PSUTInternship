@@ -29,8 +29,8 @@ namespace PSUTInternship.Shared
                 case "assigned": return "Assigned";
                 case "pending": return "Pending";
                 case "submitted": return "Submitted";
-                case "reviewed": return "Reviewed";
-                case "revision requested": case "revisionrequested": return "Revision Requested";
+                case "complete": case "completed": case "reviewed": return "Reviewed";
+                case "resolve": case "revision requested": case "revisionrequested": return "Revision Requested";
                 case "accepted": case "approved": return "Approved";
                 case "rejected": return "Rejected";
                 default: return value;
@@ -50,6 +50,11 @@ namespace PSUTInternship.Shared
                 row.AddAnnotation(new RecordIdentity { Id = item.Key });
                 if (new[] { "tasks", "submissions", "taskFeedback", "trainingHours", "applications" }.Contains(collection) && row["status"] != null)
                     row["status"] = WorkflowStatus((string)row["status"]);
+                if (collection == "tasks") {
+                    string status = ((string)row["status"] ?? "").Trim().ToLowerInvariant();
+                    if (status == "pending" || status == "in progress") row["status"] = "Assigned";
+                    if (status == "pending review") row["status"] = "Submitted";
+                }
                 if (collection == "students")
                 {
                     if (row["role"] == null) row["role"] = "student";

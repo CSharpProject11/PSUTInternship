@@ -2,7 +2,7 @@
 /* PSUT logo background blue with the homepage supporting palette; curved navigation from the supplied rail reference.
    At 1440: 12 outside + 240 nav + 1176 sheet + 12 outside.
    The sheet's 28px gutters and 16px grid gap are shared by every role. */
-:root{--portal-navy:#001870;--portal-nav:#c7e3f2;--portal-ground:#f7f8f8;--portal-surface:#fff;--portal-raised:#f1f6fa;--portal-ink:#102838;--portal-muted:#506779;--portal-line:#e1e9ee;--portal-control:#b4c5d1;--portal-accent:#0078b5;--portal-pale:#d7ecf6;--portal-danger:#a33134;--portal-radius:16px;--portal-gap:16px}
+:root{--portal-navy:#001870;--portal-nav:#c7e3f2;--portal-ground:#f7f8f8;--portal-surface:#edf3f8;--portal-raised:#f1f6fa;--portal-ink:#102838;--portal-muted:#506779;--portal-line:#e1e9ee;--portal-control:#b4c5d1;--portal-accent:#0078b5;--portal-pale:#d7ecf6;--portal-danger:#a33134;--portal-radius:16px;--portal-gap:16px}
 body.portal-app{--navy:var(--portal-ink);--blue:var(--portal-accent);--cyan:var(--portal-pale);--ink:var(--portal-ink);--text:var(--portal-ink);--muted:var(--portal-muted);--line:var(--portal-line);--bg:var(--portal-ground);--green:var(--portal-accent);--primary:var(--portal-ink);--wd-paper:var(--portal-surface);--wd-ink:var(--portal-ink);--wd-navy:var(--portal-navy);--wd-blue:var(--portal-accent);--wd-muted:var(--portal-muted);--wd-line:var(--portal-line);--wd-pale:var(--portal-pale);--wd-sky:var(--portal-pale);margin:0;padding:12px;background:var(--portal-navy);color:var(--portal-ink);font:14px/1.55 Manrope,Arial,sans-serif;min-height:100svh}
 .portal-app *{box-sizing:border-box;font-family:inherit}
 .portal-app [hidden]{display:none!important}
@@ -147,7 +147,7 @@ body.portal-app{--navy:var(--portal-ink);--blue:var(--portal-accent);--cyan:var(
 .portal-content .wd-action-tile p{font-size:14px;color:var(--portal-muted)}
 .portal-content .wd-action-tile>span{font-size:14px}
 .portal-content .wd-action-tile:hover{background:#e2eff7}
-.portal-content .wd-action-photo{justify-content:flex-start;background:#e4f0f8}
+.portal-content .wd-action-photo{justify-content:flex-start;background:var(--portal-surface)}
 .portal-content .wd-action-photo h3 br{display:none}
 .portal-content .wd-table-toolbar{padding:0 0 18px}
 .portal-content .wd-table-toolbar h2{margin:0}
@@ -337,3 +337,49 @@ body.portal-app{--navy:var(--portal-ink);--blue:var(--portal-accent);--cyan:var(
 
 /* Bootstrap's backdrop is at 1050; keep its dialog above it and avoid double dimming. */
 .portal-content .modal.fade{z-index:1060;background:transparent}
+
+/* Profile sections and task forms share the established PSUT workspace tokens. */
+.portal-content .profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-block:24px}
+.portal-content .profile-grid>section:last-child:nth-child(odd){grid-column:1/-1}
+.portal-content .profile-details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:0}
+.portal-content .profile-details dt{font-size:13px;color:var(--portal-muted);margin-bottom:5px}
+.portal-content .profile-details dd{margin:0;overflow-wrap:anywhere;color:var(--portal-ink)}
+.portal-content .profile-dialog{position:fixed;inset:0;width:min(700px,calc(100vw - 32px));max-height:85svh;overflow:auto;background:var(--portal-ground);color:var(--portal-ink);padding:28px;border:0;border-radius:14px}
+.portal-content .profile-dialog::backdrop{background:rgb(7 31 50 / .55)}
+.portal-content .profile-dialog .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.portal-content .field-error{display:block;margin-top:5px;white-space:normal}
+.portal-content .field-error:empty{display:none}
+.portal-content .table-wrap td p{white-space:normal;max-width:55ch}
+.portal-content .table-wrap td details{white-space:normal;min-width:260px;max-width:460px}
+.portal-content .sd-applications{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
+.portal-content .sd-application{min-width:0;flex-wrap:wrap;align-content:start}
+.portal-content .sd-application-actions{flex-wrap:wrap}
+@media(max-width:1100px){.portal-content .sd-applications{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.portal-content .profile-grid,.portal-content .profile-details,.portal-content .profile-dialog .fields,.portal-content .sd-applications{grid-template-columns:1fr}.portal-content .profile-grid>section{grid-column:auto!important}.portal-content .profile-dialog{padding:20px}}
+
+.portal-content .wd-action-tile{background:var(--portal-surface)}
+.portal-content .wd-action-tile:hover{background:var(--portal-pale)}
+.portal-content .sd-application[data-status="Pending"] strong{color:#765100}
+.portal-content .sd-application[data-status="Approved"] strong{color:#17613d}
+.portal-content .sd-application[data-status="Rejected"] strong{color:var(--portal-danger)}
+.portal-content :is(.btn,.button-primary,.sd-button):not(.light):not(.secondary):not(.btn-light):not(.btn-outline){background:var(--portal-navy)!important;color:#fff!important}
+.portal-content :is(.btn,.button-primary,.sd-button):hover{background:var(--portal-accent)!important;color:#fff!important}
+.portal-content :is(.btn.light,.btn.secondary,.btn-outline){background:#fff!important;color:var(--portal-navy)!important;border:1px solid var(--portal-control)}
+.portal-content input[placeholder*="Search"],.portal-content input[placeholder*="search"]{width:min(440px,100%);min-height:42px}
+.portal-content .meeting-card{background:#e4eef7!important;color:var(--portal-ink)}
+.portal-content .meeting-card:nth-child(3n+2){background:#d3e6f3!important}
+.portal-content .meeting-card:nth-child(3n){background:#c2ddee!important}
+.portal-content .card-actions :is(button,a){display:inline-flex;align-items:center;justify-content:center;min-height:42px}
+.portal-content .activity-item small{display:block;margin-top:4px;font-variant-numeric:tabular-nums}
+.portal-content :is(.wd-overview-grid,.wd-action-rail,.summary-cards){margin-block:24px}
+.portal-content .field select{width:100%}
+.portal-content .portal-form-actions{gap:12px;margin-top:24px}
+
+.portal-content .modal button.btn-close{position:relative;min-width:36px;min-height:36px;opacity:1}
+.portal-content .modal button.btn-close::before,.portal-content .modal button.btn-close::after{content:"";position:absolute;top:17px;left:8px;width:20px;height:2px;background:currentColor;transform:rotate(45deg)}
+.portal-content .modal button.btn-close::after{transform:rotate(-45deg)}
+
+.portal-content .tablewrap{overflow-x:auto;max-width:100%;scrollbar-width:thin;scrollbar-color:var(--portal-control) var(--portal-raised)}
+.portal-content .tablewrap table{min-width:1000px;border-collapse:separate;border-spacing:0}
+.portal-content .tablewrap :is(th,td){padding:14px 18px;vertical-align:top}
+.portal-content .tablewrap .actions{display:flex;gap:10px;flex-wrap:wrap}

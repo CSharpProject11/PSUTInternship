@@ -10,8 +10,8 @@ namespace PSUTInternship.Company
         {
             LoadCompanyData();
             if (!IsPostBack && Request.HttpMethod != "POST") return;
-            if (Request.HttpMethod != "POST" || PostedValue("action") != "close") return;
-            CompanyOpportunity row = OpportunityRows.FirstOrDefault(x => x.Id == PostedValue("id"));
+            if (Request.HttpMethod != "POST" || string.IsNullOrWhiteSpace(PostedValue("closeOpportunity"))) return;
+            CompanyOpportunity row = OpportunityRows.FirstOrDefault(x => x.Id == PostedValue("closeOpportunity"));
             if (row != null && TryFirebase(() => UpdateOpportunityStatus(row.Id, false))) GoTo("Opportunities.aspx");
         }
     }

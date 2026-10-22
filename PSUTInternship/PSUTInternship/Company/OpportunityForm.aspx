@@ -20,7 +20,7 @@
                     <input type="number" min="0" name="seats" required value="<%= Opportunity == null ? "1" : Opportunity.Seats.ToString() %>"/>
                     <label>Application deadline</label>
                     <input type="date" name="deadline" required value="<%= Opportunity == null ? "" : H(Opportunity.Deadline) %>"/>
-                    <p>
+                    <p><a class="btn secondary" href="Opportunities.aspx">Close</a>
                         <button class="btn" type="submit">
                             <%= IsEdit ? "Save changes" : "Publish opportunity" %>
                         </button>

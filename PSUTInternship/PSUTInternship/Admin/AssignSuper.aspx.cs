@@ -329,7 +329,7 @@ namespace PSUTInternship.Admin
             {
                 Dictionary<string, object> supervisor = item.Value;
                 if (NormalizeRole(GetValue(supervisor, "role")) != NormalizeRole("academicSupervisor") || GetValue(supervisor, "isActive").ToLower() != "true") continue;
-                if (!String.Equals(GetValue(supervisor, "department").Trim(), department.Trim(), StringComparison.OrdinalIgnoreCase)) continue;
+                if (!PSUTInternship.Shared.AcademicCatalog.SameDepartment(GetValue(supervisor, "department"), department)) continue;
                 string name = GetValue(supervisor, "fullName") + " — " + GetValue(supervisor, "department");
                 supervisorDropDown.Items.Add(new ListItem(name, item.Key));
             }
@@ -338,7 +338,7 @@ namespace PSUTInternship.Admin
             {
                 Dictionary<string, object> student = item.Value;
                 if (NormalizeRole(GetValue(student, "role")) != "student") continue;
-                if (!String.Equals(GetValue(student, "major").Trim(), department.Trim(), StringComparison.OrdinalIgnoreCase)) continue;
+                if (!PSUTInternship.Shared.AcademicCatalog.SameDepartment(GetValue(student, "major"), department)) continue;
                 string label = GetValue(student, "fullName") + " — " + GetValue(student, "studentNumber") + " — " + GetValue(student, "major");
                 studentsCheckBoxList.Items.Add(new ListItem(label, item.Key));
             }
@@ -380,7 +380,7 @@ namespace PSUTInternship.Admin
                 if (!supervisors.ContainsKey(supervisorId)) throw new Exception("The selected supervisor was not found.");
 
                 Dictionary<string, object> supervisor = supervisors[supervisorId];
-                if (!String.Equals(GetValue(supervisor, "department").Trim(), department.Trim(), StringComparison.OrdinalIgnoreCase))
+                if (!PSUTInternship.Shared.AcademicCatalog.SameDepartment(GetValue(supervisor, "department"), department))
                     throw new Exception("Choose a supervisor from the selected department.");
 
                 string groupId = Guid.NewGuid().ToString("N");
@@ -483,8 +483,41 @@ namespace PSUTInternship.Admin
             viewGroupNameLabel.Text = HttpUtility.HtmlEncode(group.name);
             viewDepartmentLabel.Text = HttpUtility.HtmlEncode(group.department);
             viewSupervisorLabel.Text = HttpUtility.HtmlEncode(group.supervisorName);
+            ReplacementSupervisor.Items.Clear();
+            foreach (var item in supervisors.Where(x => GetValue(x.Value,"isActive").Equals("true",StringComparison.OrdinalIgnoreCase) && PSUTInternship.Shared.AcademicCatalog.SameDepartment(GetValue(x.Value,"department"),group.department)))
+                ReplacementSupervisor.Items.Add(new ListItem(GetValue(item.Value,"fullName"),item.Key));
+            if (ReplacementSupervisor.Items.FindByValue(group.supervisorId) != null) ReplacementSupervisor.SelectedValue = group.supervisorId;
             RenderGroupStudents(group, students);
             FillAddStudents(group, students);
+        }
+
+        protected async void ReassignSupervisor_Click(object sender, EventArgs e) {
+            try {
+                PSUTInternship.Shared.CoordinatorData.RequireCoordinator();
+                var supervisors = await GetRecordsForRole("academicSupervisors", "academicSupervisor");
+                var students = await GetRecordsForRole("students", "student");
+                var group = FindGroup(Request.QueryString["view"], supervisors);
+                string next = ReplacementSupervisor.SelectedValue;
+                if (group == null || !supervisors.ContainsKey(next) || !GetValue(supervisors[next],"isActive").Equals("true",StringComparison.OrdinalIgnoreCase) || !PSUTInternship.Shared.AcademicCatalog.SameDepartment(group.department,GetValue(supervisors[next],"department"))) throw new Exception("Select an active supervisor from the same department.");
+                if (next == group.supervisorId) { messageLabel.Text = "This supervisor is already assigned."; return; }
+                var changes = new Dictionary<string,object>();
+                var replacement = new Dictionary<string,object>(group.data);
+                replacement["supervisorId"] = next; replacement["supervisorName"] = GetValue(supervisors[next],"fullName");
+                changes["academicSupervisors/"+next+"/groups/"+group.id] = replacement;
+                if (!group.id.StartsWith("old-")) changes["academicSupervisors/"+group.supervisorId+"/groups/"+group.id] = null;
+                else { changes["academicSupervisors/"+group.supervisorId+"/groupName"] = null; changes["academicSupervisors/"+group.supervisorId+"/assignedStudentIds"] = null; }
+                foreach (string uid in group.studentIds.Keys) {
+                    if (!students.ContainsKey(uid) || !PSUTInternship.Shared.AcademicCatalog.SameDepartment(GetValue(students[uid],"major"),group.department)) throw new Exception("A student's department does not match this group. Correct that assignment first.");
+                    foreach (string collection in new[] {"students","users"}) {
+                        changes[collection+"/"+uid+"/academicSupervisorId"] = next;
+                        changes[collection+"/"+uid+"/academicSupervisorName"] = GetValue(supervisors[next],"fullName");
+                    }
+                    if (!group.id.StartsWith("old-")) changes["academicSupervisors/"+group.supervisorId+"/assignedStudentIds/"+uid] = null;
+                    await PSUTInternship.Shared.AcademicAssignments.AddChanges(uid,next,changes);
+                }
+                await PSUTInternship.Shared.PortalRepository.Patch("",changes);
+                ShowGroup(group.id,await GetRecordsForRole("academicSupervisors","academicSupervisor"),await GetRecordsForRole("students","student")); messageLabel.Text="Supervisor assignment saved across all linked records.";
+            } catch(Exception ex) { messageLabel.Text = HttpUtility.HtmlEncode(ex.Message); }
         }
 
         private StudentGroup FindGroup(string id, Dictionary<string, Dictionary<string, object>> supervisors)

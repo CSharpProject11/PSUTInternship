@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -93,8 +93,12 @@ namespace PSUTInternship.Shared
         public static async Task<JObject> SubmissionForTask(string taskId, string studentId)
         {
             var rows = await Collection(Query("submissions", "taskId", Key(taskId))).ConfigureAwait(false);
-            return rows.Values.Where(x => (string)x["studentId"] == studentId)
-                .OrderByDescending(x => DatabaseSchema.FirstText(x, "updatedAt", "submittedAt")).FirstOrDefault();
+            return rows.Values.Where(x => (string)x["studentId"] == studentId && (string)x["taskId"] == taskId)
+                .OrderByDescending(x => SubmissionTime(x)).ThenByDescending(x => DatabaseSchema.Id(x), StringComparer.Ordinal).FirstOrDefault();
+        }
+        public static DateTimeOffset SubmissionTime(JObject submission) {
+            DateTimeOffset date;
+            return DateTimeOffset.TryParse(DatabaseSchema.FirstText(submission,"updatedAt","submittedAt"), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.AssumeUniversal, out date) ? date : DateTimeOffset.MinValue;
         }
         public static async Task<JObject> EvaluationForPlacement(string studentId, string internshipId, string role)
         {

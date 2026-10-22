@@ -21,9 +21,10 @@ namespace PSUTInternship.Company
             string title = PostedValue("title").Trim();
             int seats = PostedNumber("seats");
             DateTime deadline;
-            if (title.Length < 3 || seats < 1 || !DateTime.TryParse(PostedValue("deadline"), out deadline) || deadline.Date < DateTime.Today)
-            { FirebaseError = "Enter a title, at least one seat and a valid application deadline."; return; }
             CompanyOpportunity row = Opportunity ?? new CompanyOpportunity();
+            row.Title = title; row.Specialization = PostedValue("specialization").Trim(); row.Description = PostedValue("description").Trim(); row.Requirements = PostedValue("requirements").Trim(); row.Seats = seats; row.Deadline = PostedValue("deadline"); Opportunity = row;
+            if (string.IsNullOrWhiteSpace(row.Specialization) || row.Description.Trim().Length < 10 || title.Length < 3 || seats < 1 || !DateTime.TryParse(PostedValue("deadline"), out deadline) || deadline.Date < DateTime.Today)
+            { FirebaseError = "Enter a title, at least one seat and a valid application deadline."; return; }
             row.Title = title;
             row.Specialization = PostedValue("specialization").Trim();
             row.Description = PostedValue("description").Trim();

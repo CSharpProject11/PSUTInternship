@@ -248,6 +248,7 @@ namespace PSUTInternship.Admin
             string year = enrollmentYearTextBox.Text.Trim();
             string college = collegeTextBox.Text.Trim();
             string major = majorTextBox.Text.Trim();
+            if (college != PSUTInternship.Shared.AcademicCatalog.College || !PSUTInternship.Shared.AcademicCatalog.ValidProgram(major)) { messageLabel.Text = "Select a college and program from the PSUT computing catalogue."; ShowForm(); return; }
             string editId = Request.QueryString["edit"];
             bool isEditing = editId != null && editId != "";
             int yearNumber;
@@ -306,6 +307,7 @@ namespace PSUTInternship.Admin
                 var supervisorRecords = await GetRecords("academicSupervisors");
                 if (!supervisorRecords.ContainsKey(academicSupervisorList.SelectedValue))
                     throw new Exception("Select an active academic supervisor before creating this account.");
+                if (!PSUTInternship.Shared.AcademicCatalog.SameDepartment(major, GetValue(supervisorRecords[academicSupervisorList.SelectedValue], "department"))) throw new Exception("Choose an academic supervisor from the student's department.");
                 Dictionary<string, object> oldStudent = null;
                 string uid = editId;
 
@@ -473,8 +475,8 @@ namespace PSUTInternship.Admin
                     if (number.Length >= 4) enrollmentYearTextBox.Text = number.Substring(0, 4);
                 }
                 generatedNumberLabel.Text = HttpUtility.HtmlEncode(GetValue(student, "studentNumber"));
-                collegeTextBox.Text = GetValue(student, "college");
-                majorTextBox.Text = GetValue(student, "major");
+                PSUTInternship.Shared.AcademicCatalog.Select(collegeTextBox, GetValue(student, "college"));
+                PSUTInternship.Shared.AcademicCatalog.Select(majorTextBox, GetValue(student, "major"));
                 requiredHoursTextBox.Text = GetValue(student, "requiredHours");
                 startDateTextBox.Text = GetValue(student, "startDate");
                 endDateTextBox.Text = GetValue(student, "endDate");

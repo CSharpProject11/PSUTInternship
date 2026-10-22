@@ -17,7 +17,7 @@
 <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3"/></symbol>
 <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
 </defs></svg>
-            <div class="wd-heading"><div><h1><%: Heading %></h1><p><%: Description %></p></div><div class="sd-heading-tools"><span class="wd-date"><svg><use href="#i-clock"/></svg><%: DateLabel %></span><% if (Role == "student") { %><button type="button" class="sd-refresh" data-refresh><svg><use href="#i-refresh"/></svg><span>Refresh</span></button><% } %></div></div>
+            <div class="wd-heading"><div><h1><%: Heading %></h1><p><%: Description %></p></div><div class="sd-heading-tools"><span class="wd-date"><svg><use href="#i-clock"/></svg><%: DateLabel %></span></div></div>
             <% foreach (string notice in Notices) { %><p class="wd-notice" role="status"><svg><use href="#i-help"/></svg><%: notice %></p><% } %>
             <section data-panel="overview" id="overview" aria-label="Workspace overview">
                 <div class="wd-metrics"><% foreach (var metric in Metrics) { %><article><span><%: metric.Label %></span><strong><%: metric.Value %></strong><p><%: metric.Hint %></p></article><% } %></div>

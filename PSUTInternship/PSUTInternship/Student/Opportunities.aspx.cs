@@ -1,4 +1,4 @@
-﻿using PSUTInternship.Shared;
+using PSUTInternship.Shared;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -49,6 +49,10 @@ namespace PSUTInternship.Student
             OpportunitiesRepeater.DataSource = eligible;
             OpportunitiesRepeater.DataBind();
             EmptyMessage.Visible = eligible.Count == 0;
+        }
+        protected string OpportunityImage(object value) {
+            Uri image; string text = Convert.ToString(value);
+            return Uri.TryCreate(text,UriKind.Absolute,out image) && image.Scheme == "https" ? image.AbsoluteUri : ResolveUrl("~/Assets/technology.jpg");
         }
         protected void OpportunitiesRepeater_ItemCommand(object source, RepeaterCommandEventArgs e)
         {

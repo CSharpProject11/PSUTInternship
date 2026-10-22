@@ -4,7 +4,7 @@
 </asp:Content>
 <asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
 <%= PageHeader("", "Account settings", "Update the permitted contact details for your supervisor account.") %>
-        <div class="form-layout">
+        <p><a class="btn" href="../ChangePassword.aspx">Change password</a></p><div class="form-layout">
             <section class="form-card">
                 <h2>Details</h2>
                 <% if(SavedMessage.Length>0){ %>

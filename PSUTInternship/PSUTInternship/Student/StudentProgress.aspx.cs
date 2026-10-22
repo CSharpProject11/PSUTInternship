@@ -22,7 +22,7 @@ namespace PSUTInternship.Student
                 lblRevisions.Text = tasks.Values.Count(x => (string)x["status"] == "Revision Requested").ToString();
                 rptTasks.DataSource = tasks.Select(x => new { Title = (string)x.Value["title"], Status = (string)x.Value["status"], SubmissionDate = submissions.Values.Where(r => (string)r["taskId"] == x.Key).Select(r => (string)r["updatedAt"]).OrderByDescending(d => d).FirstOrDefault() ?? "—" }).ToList();
                 rptTasks.DataBind(); lblNoTasks.Visible = tasks.Count == 0;
-                rptEvaluations.DataSource = feedback.Select(x => new { Title = (string)x.Value["title"], Comments = (string)x.Value["comments"] + " (" + (string)x.Value["score"] + " / " + (string)x.Value["maximumScore"] + ")" }).ToList();
+                rptEvaluations.DataSource = feedback.Select(x => new { Title = (string)x.Value["title"], Comments = (string)x.Value["comments"] + (x.Value["score"] != null && x.Value["score"].Type != JTokenType.Null && ((decimal?)x.Value["maximumScore"] ?? 0) > 0 ? " (" + (string)x.Value["score"] + " / " + (string)x.Value["maximumScore"] + ")" : "") }).ToList();
                 rptEvaluations.DataBind(); lblNoEvaluations.Visible = feedback.Count == 0;
                 decimal approved = (decimal?)placement?["approvedHours"] ?? 0, required = (decimal?)placement?["requiredHours"] ?? 0;
                 lblApprovedHours.Text = approved.ToString(CultureInfo.InvariantCulture);

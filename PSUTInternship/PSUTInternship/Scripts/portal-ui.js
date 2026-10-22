@@ -155,3 +155,10 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 })();
+
+document.addEventListener('DOMContentLoaded',function(){
+    document.querySelectorAll('dialog.profile-dialog').forEach(function(dialog){
+        if (!dialog.open) dialog.showModal();
+        dialog.addEventListener('cancel',function(event){event.preventDefault();dialog.querySelector('[data-profile-cancel]').click();});
+    });
+});

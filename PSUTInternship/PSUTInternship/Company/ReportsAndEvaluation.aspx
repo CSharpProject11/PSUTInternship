@@ -25,37 +25,45 @@
         .field label{display:block;font-size:12px;font-weight:bold;margin-bottom:6px}
         input,select,textarea{width:100%;padding:10px 11px;border:1px solid;border-radius:7px;font:inherit}
         textarea{min-height:82px;resize:vertical}.criteria-list{display:grid;gap:9px;margin:14px 0}
-        .criterion{display:grid;grid-template-columns:minmax(120px,1fr) 90px 90px auto;align-items:center;gap:9px;padding:10px;border:1px solid;border-radius:9px}
+        .criterion{display:grid;grid-template-columns:minmax(120px,1fr) minmax(130px,180px) auto;align-items:center;gap:9px;padding:10px;border:1px solid;border-radius:9px}
         .criterion input{font-size:13px;padding:8px}.criterion small{grid-column:1/-1}
         .total{display:flex;justify-content:space-between;gap:12px;border:1px solid;border-radius:8px;padding:12px;font-weight:bold;margin:12px 0}
         .notice{font-size:12px;line-height:1.5;border:1px solid;border-radius:8px;padding:12px;margin:14px 0}
         .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
-        @media(max-width:740px){.stats{grid-template-columns:repeat(2,1fr)}.panel{padding:15px}.criterion{grid-template-columns:1fr 75px 75px auto}.modal-body{padding:15px}}
+        @media(max-width:740px){.stats{grid-template-columns:repeat(2,1fr)}.panel{padding:15px}.criterion{grid-template-columns:minmax(0,1fr) 120px auto}.modal-body{padding:15px}}
         @media(max-width:420px){.criterion{grid-template-columns:1fr 1fr}.criterion .remove-criterion{grid-column:2}.stat{padding:12px}.stat-title{min-height:35px}}
     </style>
     <script>
-        function addCriterion(name, score, maxPoints) {
-            var list = document.getElementById('criteriaList');
-            var row = document.createElement('div');
-            row.className = 'criterion';
-            var criterionName = document.createElement('input');
-            criterionName.name = 'CriterionName'; criterionName.setAttribute('aria-label', 'Criterion name'); criterionName.placeholder = 'Criterion'; criterionName.value = name || '';
-            var criterionScore = document.createElement('input');
-            criterionScore.name = 'CriterionScore'; criterionScore.type = 'number'; criterionScore.min = '0'; criterionScore.step = 'any'; criterionScore.setAttribute('aria-label', 'Score'); criterionScore.placeholder = 'Score'; criterionScore.value = score || '';
-            criterionScore.addEventListener('input', updateTotal);
-            var criterionMax = document.createElement('input');
-            criterionMax.name = 'CriterionMax'; criterionMax.type = 'number'; criterionMax.min = '0.01'; criterionMax.step = 'any'; criterionMax.setAttribute('aria-label', 'Maximum points'); criterionMax.placeholder = 'Max'; criterionMax.value = maxPoints || '';
-            criterionMax.addEventListener('input', updateTotal);
-            var remove = document.createElement('button');
-            remove.type = 'button'; remove.className = 'button small-button remove-criterion'; remove.textContent = 'Remove';
-            remove.addEventListener('click', function() { row.remove(); updateTotal(); });
-            row.appendChild(criterionName); row.appendChild(criterionScore); row.appendChild(criterionMax); row.appendChild(remove);
-            list.appendChild(row); updateTotal();
+        function addCriterion(name, percentage) {
+            var row = document.createElement('div'); row.className = 'criterion';
+            function field(label, input) {
+                var box = document.createElement('label'); box.className = 'field'; box.appendChild(document.createTextNode(label));
+                box.appendChild(input); var error = document.createElement('span'); error.className = 'field-error'; error.setAttribute('aria-live','polite'); box.appendChild(error); row.appendChild(box); return error;
+            }
+            var title = document.createElement('input'); title.name = 'CriterionName'; title.value = name || ''; title.maxLength = 150;
+            var titleError = field('Criterion', title);
+            var percent = document.createElement('input'); percent.name = 'CriterionPercentage'; percent.type = 'number'; percent.min = '0'; percent.max = '100'; percent.step = '0.01'; percent.value = percentage || '';
+            field('Percentage (%)', percent);
+            function validateTitle() { var ok = /^[^\x00-\x1f]{3,150}$/.test(title.value.trim()); titleError.textContent = ok ? '' : 'Enter a criterion of 3–150 characters.'; return ok; }
+            title.addEventListener('input',validateTitle); row.validateTitle = validateTitle;
+            percent.addEventListener('input',updateTotal);
+            var remove = document.createElement('button'); remove.type='button'; remove.className='button small-button'; remove.textContent='Remove';
+            remove.onclick=function(){row.remove();updateTotal();}; row.appendChild(remove);
+            document.getElementById('criteriaList').appendChild(row); updateTotal();
         }
         function updateTotal() {
-            var rows = document.querySelectorAll('#criteriaList .criterion'); var score = 0; var max = 0;
-            rows.forEach(function(row) { score += parseFloat(row.querySelector('[name="CriterionScore"]').value) || 0; max += parseFloat(row.querySelector('[name="CriterionMax"]').value) || 0; });
-            document.getElementById('totalScore').textContent = score + ' / ' + max;
+            var total = 0, valid = true;
+            document.querySelectorAll('[name="CriterionPercentage"]').forEach(function(input){
+                var value = input.value; var ok = /^(?:100(?:\.0{1,2})?|(?:[0-9]|[1-9][0-9])(?:\.[0-9]{1,2})?)$/.test(value);
+                input.setCustomValidity(ok ? '' : 'Enter 0–100 with at most two decimals.');
+                input.nextElementSibling.textContent = ok ? '' : 'Enter 0–100 with at most two decimals.';
+                total += ok ? Math.round(Number(value) * 100) : 0; valid = valid && ok;
+            });
+            var tooHigh = total > 10000;
+            document.getElementById('totalScore').textContent = (total / 100).toFixed(2) + '% / 100%';
+            document.getElementById('percentageError').textContent = tooHigh ? 'The total percentage cannot exceed 100%.' : '';
+            document.querySelectorAll('[data-evaluation-save]').forEach(function(button){button.disabled = tooHigh;});
+            return valid && !tooHigh;
         }
     </script>
 </asp:Content>
@@ -66,7 +74,7 @@
     <p class="intro">Review internship reports and submit your final evaluation to the academic supervisor.</p>
     <asp:Label ID="PageMessage" runat="server" CssClass="message" EnableViewState="false" />
 
-    <div class="stats">
+    <asp:Panel ID="DashboardContent" runat="server"><div class="stats">
         <div class="stat"><div class="stat-title">Reports Submitted</div><div class="stat-number"><asp:Label ID="ReportsSubmittedCount" runat="server" Text="0" /></div><div class="stat-note">From your trainees</div></div>
         <div class="stat"><div class="stat-title">Awaiting Review</div><div class="stat-number"><asp:Label ID="AwaitingReviewCount" runat="server" Text="0" /></div><div class="stat-note">Need your evaluation</div></div>
         <div class="stat"><div class="stat-title">Evaluations Drafted</div><div class="stat-number"><asp:Label ID="DraftedCount" runat="server" Text="0" /></div><div class="stat-note">Not yet submitted</div></div>
@@ -92,25 +100,26 @@
         </asp:Panel>
     </section>
 
+    </asp:Panel>
     <asp:Panel ID="EvaluationModal" runat="server" CssClass="modal" Visible="false">
         <div class="modal-card">
             <div class="modal-head"><div><h2>Final Company Evaluation</h2><asp:Label ID="SelectedStudentName" runat="server" CssClass="subtext" /></div>
-                <asp:Button ID="CloseEvaluation" runat="server" Text="Close" CssClass="button" CausesValidation="false" OnClick="CloseEvaluation_Click" /></div>
+                <asp:Button ID="CloseEvaluation" runat="server" Text="Close" CssClass="button" CausesValidation="false" formnovalidate="formnovalidate" OnClick="CloseEvaluation_Click" /></div>
             <div class="modal-body">
                 <p class="subtext">Complete the evaluation and send it to the academic supervisor.</p>
                 <asp:HiddenField ID="EvaluationId" runat="server" />
-                <div class="field"><label for="EvaluationStudent">Student</label><asp:DropDownList ID="EvaluationStudent" runat="server" /></div>
-                <div class="field"><label for="EvaluationPeriod">Evaluation Period</label><asp:TextBox ID="EvaluationPeriod" runat="server" MaxLength="100" placeholder="For example: Sep - Oct 2026" /></div>
-                <div class="field"><label for="AcademicSupervisor">Academic Supervisor</label><asp:TextBox ID="AcademicSupervisor" runat="server" MaxLength="150" /></div>
-                <div class="field"><label for="AcademicSupervisorEmail">Academic Supervisor Email</label><asp:TextBox ID="AcademicSupervisorEmail" runat="server" TextMode="Email" MaxLength="150" /></div>
-                <div id="criteriaList" class="criteria-list">
-                    <div class="criterion"><input name="CriterionName" aria-label="Criterion name" placeholder="Criterion" /><input name="CriterionScore" type="number" min="0" step="any" aria-label="Score" placeholder="Score" oninput="updateTotal()" /><input name="CriterionMax" type="number" min="0.01" step="any" aria-label="Maximum points" placeholder="Max points" oninput="updateTotal()" /><button type="button" class="button small-button remove-criterion" onclick="this.parentNode.remove();updateTotal()">Remove</button></div>
-                </div>
-                <button type="button" class="button" onclick="addCriterion('', '', '')">+ Add Criterion</button>
-                <div class="total"><span>Evaluation total</span><span id="totalScore">0 / 0</span></div>
-                <div class="field"><label for="OverallFeedback">Overall feedback</label><asp:TextBox ID="OverallFeedback" runat="server" TextMode="MultiLine" placeholder="Summarize performance, strengths and areas for improvement." /></div>
-                <div class="notice">Enter the university-approved criteria and point values. The total uses the maximum points you provide and does not assume a fixed grading scale.</div>
-                <div class="modal-actions"><asp:Button ID="SaveDraft" runat="server" Text="Save Draft" CssClass="button" OnClick="SaveEvaluation_Click" CommandArgument="Draft" /><asp:Button ID="SendEvaluation" runat="server" Text="Send Evaluation" CssClass="button button-primary" OnClick="SaveEvaluation_Click" CommandArgument="Sent to Academic Supervisor" /></div>
+                <div class="field"><asp:Label runat="server" AssociatedControlID="Opportunity" Text="Training opportunity" /><asp:DropDownList ID="Opportunity" runat="server" AutoPostBack="true" OnSelectedIndexChanged="Opportunity_Changed" /><asp:Label ID="OpportunityError" runat="server" CssClass="field-error" /></div>
+                <div class="field"><label for="EvaluationStudent">Student</label><asp:DropDownList ID="EvaluationStudent" runat="server" /><asp:Label ID="StudentError" runat="server" CssClass="field-error" /></div>
+                <div class="field"><label for="EvaluationPeriod">Evaluation Period</label><asp:TextBox ID="EvaluationPeriod" runat="server" MaxLength="100" placeholder="For example: Sep - Oct 2026" /><asp:Label ID="PeriodError" runat="server" CssClass="field-error" /></div>
+                <div class="field"><label for="AcademicSupervisor">Academic Supervisor</label><asp:TextBox ID="AcademicSupervisor" runat="server" MaxLength="150" /><asp:Label ID="SupervisorError" runat="server" CssClass="field-error" /></div>
+                <div class="field"><label for="AcademicSupervisorEmail">Academic Supervisor Email</label><asp:TextBox ID="AcademicSupervisorEmail" runat="server" TextMode="Email" MaxLength="150" /><asp:Label ID="EmailError" runat="server" CssClass="field-error" /></div>
+                <div id="criteriaList" class="criteria-list"></div>
+                <asp:Label ID="CriteriaError" runat="server" CssClass="field-error" /><span id="percentageError" class="field-error" role="alert"></span>
+                <button type="button" class="button" onclick="addCriterion('', '')">Add criterion</button>
+                <div class="total"><span>Evaluation total</span><span id="totalScore">0% / 100%</span></div>
+                <div class="field"><label for="OverallFeedback">Overall feedback</label><asp:TextBox ID="OverallFeedback" runat="server" TextMode="MultiLine" placeholder="Summarize performance, strengths and areas for improvement." /><asp:Label ID="FeedbackError" runat="server" CssClass="field-error" /></div>
+                <div class="notice">Enter the percentage earned for each criterion. The combined evaluation cannot exceed 100%.</div>
+                <div class="modal-actions"><asp:Button ID="SaveDraft" runat="server" data-evaluation-save="true" Text="Save Draft" CssClass="button" OnClick="SaveEvaluation_Click" CommandArgument="Draft" /><asp:Button ID="SendEvaluation" runat="server" data-evaluation-save="true" Text="Send Evaluation" CssClass="button button-primary" OnClick="SaveEvaluation_Click" CommandArgument="Sent to Academic Supervisor" /></div>
             </div>
         </div>
     </asp:Panel>

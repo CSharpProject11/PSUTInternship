@@ -13,7 +13,7 @@
             </section><footer class="footer">University Internship Management System · Student</footer>
         </main>
     </div>
-    <script src="../Shared/meetings.js"></script>
-    <script src="../Academic/StudentMeetings.js?v=20261022-workspace"></script>
+    <script src="../Shared/meetings.js?v=20261023"></script>
+    <script src="../Academic/StudentMeetings.js?v=20261023-workspace"></script>
 
 </asp:Content>

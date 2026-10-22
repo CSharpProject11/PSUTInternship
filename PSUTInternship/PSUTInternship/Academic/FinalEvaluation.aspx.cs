@@ -1,4 +1,4 @@
-﻿using PSUTInternship.Models;
+using PSUTInternship.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -39,18 +39,14 @@ namespace PSUTInternship.Academic
                 var name = Val(supervisor, "fullName", "Academic Supervisor");
                 lblSupervisor.Text = H(name);
                 lblSupervisorPrint.Text = H(name);
-                txtScore.Attributes["max"] = PSUTInternship.Shared.EvaluationPolicy.AcademicMaximum.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                txtScore.Attributes["max"] = "100";
                 lblInitials.Text = H(Initials(name));
                 var ids = await AssignedStudentIdsAsync(supervisor);
-                var students = Children(await ReadAsync("students"));
-                ddlStudent.Items.Clear();
-                ddlStudent.Items.Add(new ListItem("Select assigned student", ""));
-                foreach (var x in students.Where(x => ids.Contains(x.Key))
-                             .OrderBy(x => Val(x.Value, "fullName")))
-                {
-                    string label = Val(x.Value, "fullName", x.Key) + " — " + Val(x.Value, "studentNumber", "No number");
-                    ddlStudent.Items.Add(new ListItem(label, x.Key));
-                }
+                var placements = await PSUTInternship.Shared.PortalRepository.Collection("internships");
+                Opportunity.Items.Clear(); Opportunity.Items.Add(new ListItem("Select opportunity", ""));
+                foreach (var group in placements.Values.Where(x => (string)x["academicSupervisorId"] == SupervisorId).Where(x => !string.IsNullOrWhiteSpace((string)x["opportunityId"])).GroupBy(x => (string)x["opportunityId"]))
+                    Opportunity.Items.Add(new ListItem(((string)group.First()["opportunityTitle"] ?? group.Key) + " (" + group.Key + ")", group.Key));
+                ddlStudent.Items.Clear(); ddlStudent.Items.Add(new ListItem("Select opportunity first", ""));
                 pnlReport.Visible = false;
                 if (ids.Count == 0) Message("No students are assigned to this supervisor.", true);
             }
@@ -62,6 +58,16 @@ namespace PSUTInternship.Academic
             return new HashSet<string>((await PSUTInternship.Shared.PortalRepository.Collection("students")).Keys, StringComparer.Ordinal);
         }
 
+        protected void Opportunity_Changed(object sender, EventArgs e) { RegisterAsyncTask(new PageAsyncTask(async () => {
+            try {
+                var placements = await PSUTInternship.Shared.PortalRepository.Collection("internships");
+                var ids = new HashSet<string>(placements.Values.Where(x => (string)x["opportunityId"] == Opportunity.SelectedValue && (string)x["academicSupervisorId"] == SupervisorId).Select(x => (string)x["studentId"]));
+                var students = await PSUTInternship.Shared.PortalRepository.Collection("students");
+                ddlStudent.Items.Clear(); ddlStudent.Items.Add(new ListItem("Select assigned student", ""));
+                foreach (var student in students.Where(x => ids.Contains(x.Key))) ddlStudent.Items.Add(new ListItem(Val(student.Value, "fullName", student.Key), student.Key));
+                pnlReport.Visible = false;
+            } catch (Exception ex) { HandleFailure(ex); }
+        })); }
         protected void ddlStudent_SelectedIndexChanged(object sender, EventArgs e)
         {
             RegisterAsyncTask(new PageAsyncTask(LoadSelectedAsync));
@@ -99,7 +105,7 @@ namespace PSUTInternship.Academic
             await Task.WhenAll(iTask, companyTask, tasksTask, submissionsTask, evaluationsTask, reportsTask);
 
             var internship = Children(iTask.Result)
-                .Where(x => Val(x.Value, "studentId") == studentId && Val(x.Value, "academicSupervisorId") == SupervisorId)
+                .Where(x => Val(x.Value, "studentId") == studentId && Val(x.Value, "academicSupervisorId") == SupervisorId && Val(x.Value, "opportunityId") == Opportunity.SelectedValue)
                 .OrderByDescending(x => Val(x.Value, "startDate"))
                 .FirstOrDefault();
             var report = new AcademicReportData
@@ -126,7 +132,7 @@ namespace PSUTInternship.Academic
                 foreach (var task in taskRecords)
                 {
                     var match = submissionRecords.Where(x => Val(x.Value, "taskId") == task.Key)
-                        .OrderByDescending(x => Val(x.Value, "submittedAt")).FirstOrDefault();
+                        .OrderByDescending(x => PSUTInternship.Shared.PortalRepository.SubmissionTime(x.Value as JObject)).FirstOrDefault();
                     report.Tasks.Add(new EvaluationTaskRow
                     {
                         Title = Val(task.Value, "title", "Untitled task"),
@@ -185,7 +191,7 @@ namespace PSUTInternship.Academic
                 : !companySubmitted ? "The company's evaluation has not been submitted. Academic forwarding is unavailable until it is completed."
                 : alreadySubmitted ? "Your evaluation has already been submitted to the coordinator queue."
                 : "Company evaluation submitted. You can complete the academic assessment and forward it to the coordinator queue.";
-            txtScore.Text = Val(report.AcademicEvaluation, "overallScore");
+            txtScore.Text = report.AcademicEvaluation == null ? "" : ((decimal?)report.AcademicEvaluation["percentage"] ?? ((decimal?)report.AcademicEvaluation["overallScore"] ?? 0) / PSUTInternship.Shared.EvaluationPolicy.AcademicMaximum * 100).ToString("0.##", CultureInfo.InvariantCulture);
             txtComments.Text = Val(report.AcademicEvaluation, "comments");
             string recommendation = Val(report.AcademicEvaluation, "recommendation");
             ddlRecommendation.ClearSelection();
@@ -205,10 +211,10 @@ namespace PSUTInternship.Academic
             string recommendation = ddlRecommendation.SelectedValue;
             decimal score;
             if (string.IsNullOrEmpty(studentId)) { Message("Please select a student.", true); return; }
-            if (!decimal.TryParse(txtScore.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out score) || score < 0 || score > PSUTInternship.Shared.EvaluationPolicy.AcademicMaximum)
-            { Message("Enter an academic score within the configured maximum.", true); return; }
-            if (comments.Length < 10 || comments.Length > 3000) { Message("Academic feedback must contain 10 to 3000 characters.", true); return; }
-            if (string.IsNullOrWhiteSpace(recommendation)) { Message("Select an academic recommendation.", true); return; }
+            PercentageError.Text = PSUTInternship.Shared.PercentageRules.TryParse(txtScore.Text, out score) ? "" : "Enter a percentage from 0–100 with at most two decimals.";
+            CommentsError.Text = PSUTInternship.Shared.TaskWorkflow.ValidText(comments, 10, 3000) ? "" : "Enter feedback of 10–3,000 characters.";
+            RecommendationError.Text = string.IsNullOrWhiteSpace(recommendation) ? "Select a recommendation." : "";
+            if (PercentageError.Text.Length + CommentsError.Text.Length + RecommendationError.Text.Length > 0) return;
             try
             {
                 // Re-read on submission; do not trust the UI or previously loaded data.
@@ -234,7 +240,8 @@ namespace PSUTInternship.Academic
                     ["evaluatorId"] = SupervisorId,
                     ["studentId"] = studentId,
                     ["internshipId"] = report.InternshipId,
-                    ["overallScore"] = score,
+                    ["overallScore"] = score / 100 * PSUTInternship.Shared.EvaluationPolicy.AcademicMaximum,
+                    ["percentage"] = score,
                     ["comments"] = comments,
                     ["recommendation"] = recommendation,
                     ["status"] = "submitted",
@@ -324,19 +331,7 @@ namespace PSUTInternship.Academic
         {
             return await PSUTInternship.Shared.PortalRepository.ReadObject(path);
         }
-        private static async Task PatchAsync(string path, JObject body)
-        {
-            string url = DatabaseUrl.TrimEnd('/') + "/" + (string.IsNullOrEmpty(path) ? "" : path.Trim('/') + "/") + ".json";
-            using (var request = new HttpRequestMessage(new HttpMethod("PATCH"), url))
-            {
-                request.Content = new StringContent(body.ToString(Formatting.None), Encoding.UTF8, "application/json");
-                using (var response = await Http.SendAsync(request))
-                {
-                    if (!response.IsSuccessStatusCode)
-                        throw new HttpRequestException("Firebase save failed (HTTP " + (int)response.StatusCode + ").");
-                }
-            }
-        }
+        private static Task PatchAsync(string path, JObject body) { return PSUTInternship.Shared.PortalRepository.Patch(path, body); }
         private void Message(string message, bool error)
         {
             lblMessage.Text = H(message);

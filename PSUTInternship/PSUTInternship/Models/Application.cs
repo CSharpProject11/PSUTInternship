@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
 
@@ -47,6 +47,7 @@ namespace PSUTInternship.Models
 
     public class TrainingApplicationDetails
     {
+        [JsonProperty("university")] public string University { get; set; }
         [JsonProperty("faculty")]
         public string Faculty { get; set; }
 

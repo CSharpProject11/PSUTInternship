@@ -266,11 +266,11 @@
                         <div class="field">
                             <label>Temporary password (new account) *</label><asp:TextBox ID="passwordTextBox" runat="server" TextMode="Password" /></div>
                         <div class="field">
-                            <label>College *</label><asp:TextBox ID="collegeTextBox" runat="server" /></div>
+                            <label>College *</label><asp:DropDownList ID="collegeTextBox" runat="server"><asp:ListItem Text="Select college" Value="" /><asp:ListItem>King Hussein School of Computing Sciences</asp:ListItem></asp:DropDownList></div>
                         <div class="field">
-                            <label>Department *</label><asp:TextBox ID="departmentTextBox" runat="server" /></div>
+                            <label>Department *</label><asp:DropDownList ID="departmentTextBox" runat="server"><asp:ListItem Text="Select program or department" Value="" /><asp:ListItem>Computer Science</asp:ListItem><asp:ListItem>Computer Graphics and Animation</asp:ListItem><asp:ListItem>Software Engineering</asp:ListItem><asp:ListItem>Data Science and Artificial Intelligence</asp:ListItem><asp:ListItem>Cyber Security</asp:ListItem></asp:DropDownList></div>
                         <div class="field">
-                            <label>Specialization *</label><asp:TextBox ID="specializationTextBox" runat="server" /></div>
+                            <label>Specialization *</label><asp:DropDownList ID="specializationTextBox" runat="server"><asp:ListItem Text="Select program or department" Value="" /><asp:ListItem>Computer Science</asp:ListItem><asp:ListItem>Computer Graphics and Animation</asp:ListItem><asp:ListItem>Software Engineering</asp:ListItem><asp:ListItem>Data Science and Artificial Intelligence</asp:ListItem><asp:ListItem>Cyber Security</asp:ListItem></asp:DropDownList></div>
                         <div class="field">
                             <label>Phone number</label><asp:TextBox ID="phoneTextBox" runat="server" /></div>
                     </div>

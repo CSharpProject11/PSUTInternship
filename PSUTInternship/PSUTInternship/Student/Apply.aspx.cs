@@ -53,11 +53,13 @@ namespace PSUTInternship.Student
             RegisterAsyncTask(new PageAsyncTask(SubmitApplication));
         }
 
-        private string Field(string name)
-        {
-            return (Request.Form[name] ?? "").Trim();
+        protected string ApplicationImage(object value) { Uri image; return Uri.TryCreate(Convert.ToString(value),UriKind.Absolute,out image) && image.Scheme == "https" ? image.AbsoluteUri : ResolveUrl("~/Assets/technology.jpg"); }
+        private string Field(string name) {
+            string[] aliases = name == "studentName" ? new[] { "fullName" } : name == "studentEmail" ? new[] { "email" } : name == "universityId" ? new[] { "studentNumber", "studentId" } : name == "program" ? new[] { "major", "program" } : name == "faculty" ? new[] { "college", "faculty" } : name == "university" ? new[] { "university" } : null;
+            return aliases != null && AuthoritativeProfile != null ? DatabaseSchema.FirstText(AuthoritativeProfile, aliases) : (Request.Form[name] ?? "").Trim();
         }
 
+        private JObject AuthoritativeProfile;
         private async Task LoadStudentInformation()
         {
             var values = new Dictionary<string, string>
@@ -80,6 +82,7 @@ namespace PSUTInternship.Student
                         { "studentName", new[] { "fullName", "studentName" } },
                         { "universityId", new[] { "studentNumber", "universityId", "studentId" } },
                         { "studentEmail", new[] { "email" } },
+                        { "university", new[] { "university" } },
                         { "studentPhone", new[] { "phone", "phoneNumber" } },
                         { "alternativePhone", new[] { "alternativePhone" } },
                         { "faculty", new[] { "college", "faculty" } },
@@ -101,7 +104,7 @@ namespace PSUTInternship.Student
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is JsonException || ex is TaskCanceledException)
             {
-                MessageLabel.Text = "Your saved student information could not be loaded. Enter it in the application form or sign in again.";
+                MessageLabel.Text = "Your saved student information could not be loaded. Sign in again or ask the coordinator to complete your profile.";
             }
             string defaults = JsonConvert.SerializeObject(values, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml });
             ClientScript.RegisterStartupScript(GetType(), "studentInformation", "document.addEventListener('DOMContentLoaded', function () { var values = " + defaults
@@ -113,6 +116,8 @@ namespace PSUTInternship.Student
             await LoadOpportunity();
             try
             {
+                AuthoritativeProfile = await PortalRepository.Get<JObject>("students/" + PortalRepository.Key(CurrentProfileId));
+                if (AuthoritativeProfile == null) throw new ArgumentException("Your student profile could not be loaded.");
                 string id = Request.QueryString["id"];
                 string uid = Convert.ToString(Session["userId"]);
                 string token = Convert.ToString(Session["idToken"]);
@@ -164,7 +169,7 @@ namespace PSUTInternship.Student
                     CvUrl = (string)studentProfile?["cvUrl"], Id = uid + "_" + id, CompanyId = savedOpportunity.CompanyId, AcademicSupervisorId = (string)studentProfile?["academicSupervisorId"], StudentId = uid, OpportunityId = id, Reason = Field("applicationReason"),
                     Details = new TrainingApplicationDetails
                     {
-                        Faculty = Field("faculty"), Department = Field("department"), Program = Field("program"),
+                        Faculty = Field("faculty"), University = Field("university"), Department = Field("department"), Program = Field("program"),
                         Semester = Field("semester"), AcademicYear = Field("academicYear"), ApplicationDate = applicationDate,
                         StudentName = Field("studentName"), UniversityId = Field("universityId"), CompletedCreditHours = credits,
                         StudentPhone = Field("studentPhone"), StudentEmail = Field("studentEmail"), AlternativePhone = Field("alternativePhone")
@@ -205,6 +210,7 @@ namespace PSUTInternship.Student
             MessageLabel.Text = HttpUtility.HtmlEncode(message);
             var values = Request.Form.AllKeys.Where(k => k != null && !k.StartsWith("__"))
                 .ToDictionary(k => k, k => Request.Form[k]);
+            if (AuthoritativeProfile != null) foreach (string field in new[] {"studentName","studentEmail","universityId","university","faculty","program"}) values[field] = Field(field);
             string json = JsonConvert.SerializeObject(values, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml });
             ClientScript.RegisterStartupScript(GetType(), "restoreApplication", "document.addEventListener('DOMContentLoaded', function () { var values = " + json
                 + "; Object.keys(values).forEach(function (key) { var field = document.getElementById(key); if (field && /^(INPUT|TEXTAREA)$/.test(field.tagName)) field.value = values[key]; }); new bootstrap.Modal(document.getElementById('applicationModal')).show(); });", true);

@@ -18,8 +18,8 @@ let count=0;
 function check(expression,path,uid,newRoot,query,vars){
  if(typeof expression==='boolean')return expression;
  if(expression===undefined)return false;
- const names=['auth','root','data','newData','query',...Object.keys(vars)];
- const values=[uid?{uid}:null,new Snapshot(data),new Snapshot(data,path),new Snapshot(newRoot,path),query,...Object.values(vars)];
+ const names=['auth','root','data','newData','query','now',...Object.keys(vars)];
+ const values=[uid?{uid}:null,new Snapshot(data),new Snapshot(data,path),new Snapshot(newRoot,path),query,Date.now(),...Object.values(vars)];
  return Function(...names,'return ('+expression+');')(...values)===true;
 }
 function nodes(path){let node=rules;let vars={};const out=[{node,path:[],vars:{}}];for(let i=0;i<path.length;i++){const key=path[i];let match=Object.hasOwn(node,key)?key:Object.keys(node).find(k=>k.startsWith('$'));if(!match)break;if(match.startsWith('$'))vars={...vars,[match]:key};node=node[match];out.push({node,path:path.slice(0,i+1),vars});}return out;}
@@ -71,6 +71,31 @@ expect(allowed('write','completionReports/student','company',{value:{approvedByC
 expect(allowed('write','completionReports/student','admin',{value:{approvedByCoordinator:true,studentId:'student',internshipId:'student'}}),true,'only the coordinator can issue the final report');
 expect(allowed('write','publicOpportunities/opening','company',{value:{title:'Opening',companyName:'Company',status:true,description:'Private description'}}),false,'private descriptions cannot be placed in public previews');
 
+for (const name of ['fullName','email','studentNumber','university','college','major']) expect(allowed('write','students/student/'+name,'student',{value:'tampered'}),false,'student profile protects '+name);
+expect(allowed('write','students/student/gpa','student',{value:3.7}),true,'students can update a valid GPA');
+expect(allowed('write','students/student/gpa','student',{value:5}),false,'profile rules reject GPA beyond 4');
+expect(allowed('write','students/student/completedCreditHours','student',{value:1.5}),false,'credit hours must be whole numbers');
+// Existing legacy evaluations remain supported; the percentage schema enforces a hard total cap.
+const pct={studentId:'student',internshipId:'student',companyId:'company',academicSupervisorId:'academic',evaluatorId:'company',evaluatorRole:'companySupervisor',status:'draft',overallScore:100,totalMaximum:100,totalPercentage:100};
+expect(allowed('write','evaluations/new_percentage','admin',{value:pct}),true,'a 100 percent evaluation is accepted');
+expect(allowed('write','evaluations/new_percentage','admin',{value:{...pct,totalPercentage:100.01,overallScore:100.01}}),false,'percentage totals over 100 are rejected by database validation');
+expect(allowed('write','evaluations/new_percentage','admin',{value:{...pct,totalPercentage:80,overallScore:90}}),false,'percentage totals cannot disagree with the saved result');
+expect(allowed('write','evaluations/new_percentage','admin',{value:{...pct,percentage:101}}),false,'academic percentage cannot exceed 100');
+
+const solution={taskId:'task',studentId:'student',internshipId:'student',status:'Submitted',feedback:'',answer:'Solution'};
+data.tasks.task.dueAt=Date.now()-1000;
+expect(allowed('write','submissions/new_work','student',{value:solution}),false,'expired task deadlines prevent direct student submissions');
+expect(allowed('write','tasks/task/status','student',{value:'Submitted'}),false,'expired tasks cannot be marked submitted directly');
+data.tasks.task.dueAt=Date.now()+60000;
+expect(allowed('write','submissions/new_work','student',{value:solution}),true,'an active task accepts work before its deadline');
+data.tasks.task.active=false;
+expect(allowed('write','submissions/new_work','student',{value:solution}),false,'archived tasks reject direct student submissions');
+delete data.tasks.task.active;delete data.tasks.task.dueAt;
+data.tasks.task.status='Complete';
+expect(allowed('write','submissions/new_work','student',{value:solution}),false,'legacy Complete status blocks direct resubmission');
+expect(allowed('write','tasks/task/status','student',{value:'Submitted'}),false,'legacy Complete status cannot be undone by a student');
+data.tasks.task.status='Assigned';
+
 // Match the actual collection names and foreign keys from the supplied export.
 for (const key of Object.keys(data)) delete data[key];
 Object.assign(data, JSON.parse(fs.readFileSync(new URL('./fixtures/database-shape.json',import.meta.url),'utf8')));
@@ -100,4 +125,5 @@ expect(allowed('read','students/student1','superA1'),true,'studentGroups can sup
 data.students.student1.internshipId='internship1';
 expect(allowed('read','students/student1','superC1'),true,'reverse placement links authorize individual trainee profiles');
 expect(allowed('read','students/student1','foreign'),false,'reverse placement links do not expose profiles to other companies');
+
 console.log(count+' local rule assertions passed. Verify deployment with the Firebase Emulator Suite before production use.');
