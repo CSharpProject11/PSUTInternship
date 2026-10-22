@@ -27,7 +27,7 @@ namespace PSUTInternship.Student
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["userId"] == null || Session["idToken"] == null)
+            if (Session["userId"] == null || Session["idToken"] == null || !string.Equals(Convert.ToString(Session["userRole"]), "student", StringComparison.OrdinalIgnoreCase))
             {
                 Response.Redirect("~/Login.aspx");
                 return;

@@ -8,9 +8,10 @@
 <title>PSUT · Internship Portal</title>
 <link rel="icon" href="<%= ResolveUrl("~/Assets/psut-logo.jpg") %>">
 <link rel="stylesheet" href="<%= ResolveUrl("~/Content/vendor/bootstrap.min.css") %>">
-<link rel="stylesheet" href="<%= ResolveUrl("~/Content/portal.css") %>">
+<link rel="stylesheet" href="<%= ResolveUrl("~/Content/portal.css?v=20261021j") %>">
 <link rel="stylesheet" href="<%= ResolveUrl("~/Content/wellington.css") %>">
 <link rel="stylesheet" href="<%= ResolveUrl("~/Content/motion.css") %>">
+<link rel="stylesheet" href="<%= ResolveUrl("~/Content/homepage-interactions.css?v=20261021m") %>">
 </head>
 <body class="reference-homepage" data-role="" data-page="">
 <asp:ContentPlaceHolder ID="MainContent" runat="server" />
@@ -24,7 +25,9 @@
 
 <script src="<%= ResolveUrl("~/Scripts/wellington.js") %>">
 </script>
-<script src="<%= ResolveUrl("~/Scripts/motion.js") %>">
+<script src="<%= ResolveUrl("~/Scripts/motion.js?v=20261021c") %>">
 </script>
+<script src="<%= ResolveUrl("~/Scripts/interactions.js?v=20261021b") %>"></script>
+<script src="<%= ResolveUrl("~/Scripts/hero.js?v=20261021c") %>"></script>
 </body>
 </html>

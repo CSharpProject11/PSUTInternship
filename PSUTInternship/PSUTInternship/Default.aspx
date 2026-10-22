@@ -3,63 +3,14 @@
 <a class="skip-link" href="#main-content">Skip to content</a>
 <header class="well-header" id="top">
 <a class="well-logo" href="#home" aria-label="PSUT Internship Portal home"><img src="<%= ResolveUrl("~/Assets/") %>psut-logo.jpg" alt="Princess Sumaya University for Technology"><span>INTERNSHIP<br>PORTAL</span></a>
-<nav class="desktop-nav" aria-label="Primary navigation"><a href="#opportunities">Opportunities</a><a href="#journey">Your journey</a><a href="#our-psut">Life at PSUT</a></nav>
-<div class="well-actions"><button class="header-contact" onclick="showContact()">Contact</button><button class="header-signin" onclick="openModal('login')">Sign in <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button><button class="well-menu-button" id="wellMenuButton" aria-label="Open menu" aria-expanded="false" aria-controls="wellMenu" onclick="toggleWellMenu()"><i></i><i></i></button></div>
+<nav class="desktop-nav d-none d-lg-flex" aria-label="Primary navigation"><a href="#opportunities">Opportunities</a><a href="#where-next">Your workspace</a><a href="#our-psut">Life at PSUT</a></nav>
+<div class="well-actions"><button class="header-contact" onclick="showContact()">Contact</button><button class="header-signin" onclick="openModal('login')">Sign in <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button><button class="mobile-nav-toggle d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#mobilePrimaryNav" aria-controls="mobilePrimaryNav" aria-expanded="false">Menu</button></div>
+<div class="collapse site-mobile-nav d-lg-none" id="mobilePrimaryNav"><nav class="container-fluid py-3" aria-label="Mobile primary navigation"><a href="#opportunities">Opportunities</a><a href="#where-next">Your workspace</a><a href="#our-psut">Life at PSUT</a><a href="#contact-us">Contact us</a></nav></div>
 </header>
-<div class="well-menu-scrim" onclick="toggleWellMenu(false)"></div>
-<aside id="wellMenu" class="well-menu" role="dialog" aria-modal="true" aria-label="Main navigation" inert>
-<button class="menu-close" onclick="toggleWellMenu(false)" aria-label="Close menu"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button><nav>
-<details>
-<summary>About PSUT</summary>
-<a href="#welcome" onclick="toggleWellMenu(false)">Our internship purpose</a>
-<a href="#community" onclick="toggleWellMenu(false)">King Hussein School of Computing Sciences</a>
-<a href="#values" onclick="toggleWellMenu(false)">Placement principles</a>
-</details>
-<details>
-<summary>Internship opportunities</summary>
-<a href="#opportunities" onclick="toggleWellMenu(false)">Explore openings</a>
-<a href="#journey" onclick="toggleWellMenu(false)">How applications work</a>
-</details>
-<details>
-<summary>Students</summary>
-<button onclick="previewRole('student')">Student dashboard</button>
-<a href="#journey" onclick="toggleWellMenu(false)">Tasks, hours & feedback</a>
-<a href="#where-next" onclick="toggleWellMenu(false)">Your next step</a>
-</details>
-<details>
-<summary>Company supervisors</summary>
-<button onclick="previewRole('company')">Company workspace</button>
-<a href="#journey" onclick="toggleWellMenu(false)">Opportunities & evaluations</a>
-</details>
-<details>
-<summary>College supervisors</summary>
-<button onclick="previewRole('academic')">Academic workspace</button>
-<a href="#journey" onclick="toggleWellMenu(false)">Monitor student progress</a>
-</details>
-<details>
-<summary>Internship coordinator</summary>
-<button onclick="previewRole('admin')">Coordinator workspace</button>
-<a href="#journey" onclick="toggleWellMenu(false)">Accounts & completion review</a>
-</details>
-<a href="#our-psut" onclick="toggleWellMenu(false)">Campus life</a>
-<a href="#opportunities" onclick="toggleWellMenu(false)">What’s new</a>
-<button onclick="toggleWellMenu(false);showContact()">Contact</button>
-</nav>
-<div class="well-menu-secondary">
-<button onclick="toggleWellMenu(false);watchCampus()">Watch the campus film</button>
-<a href="#journey" onclick="toggleWellMenu(false)">Internship process</a>
-<a href="#community" onclick="toggleWellMenu(false)">Our community</a>
-<a href="#opportunities" onclick="toggleWellMenu(false)">Available opportunities</a>
-</div>
-<form class="menu-search" role="search" onsubmit="event.preventDefault();menuSearch()">
-<input aria-label="Search opportunities in menu" placeholder="Search opportunities" id="menuSearch">
-<button type="submit" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button></form>
-</aside><main id="main-content" tabindex="-1"><div id="landing"><section class="well-home" id="home" aria-labelledby="hero-title">
-<div class="hero-film"><video id="introVideo" muted loop playsinline preload="metadata" poster="<%= ResolveUrl("~/Assets/") %>psut-rooftop.jpg" aria-label="PSUT campus film"><source src="<%= ResolveUrl("~/Assets/") %>psut-2025.mp4" type="video/mp4"></video><div class="hero-shade"></div></div>
-
-<button class="film-toggle" id="introPlayback" onclick="toggleIntroPlayback()" aria-label="Play campus background film"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 10 6-10 6Z"/></svg><span>Play film</span></button>
-<a class="hero-scroll" href="#welcome" aria-label="Explore your internship portal">Scroll to explore <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a>
-<div class="hero-copy"><h1 id="hero-title">Realise your<br>potential.</h1><div class="hero-bottom"><p>We believe your potential grows through real experience,<br class="well-desktop"> meaningful challenges, and the right support.</p><div class="hero-buttons"><a class="well-pill" href="#opportunities">Explore opportunities <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a><a class="hero-secondary" href="#where-next">Find your workspace <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></a></div></div></div></section><section class="well-welcome" id="welcome">
+<main id="main-content" tabindex="-1"><div id="landing"><section class="well-home" id="home" aria-label="PSUT campus film">
+<div class="hero-scroll-stage position-relative"><div class="hero-sticky position-sticky top-0 min-vh-100 overflow-hidden"><div class="hero-film position-absolute top-0 start-0 w-100 h-100 overflow-hidden bg-dark"><video class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover" id="introVideo" autoplay muted loop playsinline preload="metadata" poster="<%= ResolveUrl("~/Assets/") %>psut-rooftop.jpg" aria-label="PSUT campus film"><source src="<%= ResolveUrl("~/Assets/") %>psut-2025.mp4" type="video/mp4"></video></div>
+</div></div>
+</section><section class="well-welcome" id="welcome">
 <h2>Your next <br><em>chapter.</em></h2>
 <div class="welcome-content">
 <p class="huge-statement">Bring your ambition. Build your experience. Become who you are ready to be.</p>
@@ -81,7 +32,7 @@
 <b>Your internship office</b>
 <span>King Hussein School of Computing Sciences</span>
 </div>
-<a class="well-pill" href="#journey">Meet your journey <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
+<a class="well-pill" href="#where-next">Find your workspace <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
 </a>
 </div></div></section><section class="well-next" id="where-next">
 <div class="section-heading"><h2>Where next?</h2><p>One team. Four connected roles.</p></div>
@@ -93,7 +44,7 @@
 <div class="next-links">
 <button onclick="previewRole('student')">My dashboard ›</button>
 <a href="#opportunities">Explore opportunities ›</a>
-<a href="#journey">Tasks, hours & feedback ›</a>
+<a href="#where-next">Tasks, hours & feedback ›</a>
 </div>
 </div>
 </article>
@@ -103,7 +54,7 @@
 <h3>Company supervisors </h3><p>Company supervisors manage opportunities and work.</p>
 <div class="next-links">
 <button onclick="previewRole('company')">Company workspace ›</button>
-<a href="#journey">Guide your trainees ›</a>
+<a href="#where-next">Guide your trainees ›</a>
 </div>
 </div>
 </article>
@@ -113,7 +64,7 @@
 <h3>College supervisors </h3><p>The college supervisor monitors tasks, submissions, feedback, training hours, and progress. Academic comments help you develop.</p>
 <div class="next-links">
 <button onclick="previewRole('academic')">Academic workspace ›</button>
-<a href="#journey">Monitor student progress ›</a>
+<a href="#where-next">Monitor student progress ›</a>
 </div>
 </div>
 </article>
@@ -123,7 +74,7 @@
 <h3>Internship coordinator </h3><p>One internship coordinator creates accounts, assigns supervisors, and approves final completion.</p>
 <div class="next-links">
 <button onclick="previewRole('admin')">Coordinator workspace ›</button>
-<a href="#journey">Verify completion ›</a>
+<a href="#where-next">Verify completion ›</a>
 </div>
 </div>
 </article>
@@ -169,13 +120,13 @@
 <form class="opportunity-tools" id="opportunity-search" role="search" onsubmit="event.preventDefault();searchOpps()">
 <input id="heroSearch" placeholder="Search opportunities" aria-label="Search opportunities">
 <button type="submit" aria-label="Search internships"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button></form><p id="searchStatus" class="search-status" role="status" aria-live="polite"></p>
-<div class="cards" id="publicCards">
+<div class="rail-hint"><span>Drag to explore opportunities</span><button type="button" aria-label="Previous opportunities" onclick="scrollOpportunityCards(-1)"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button><button type="button" aria-label="Next opportunities" onclick="scrollOpportunityCards(1)"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button></div><div class="cards" id="publicCards" data-drag-rail tabindex="0" role="region" aria-label="Opportunity cards; drag or use arrow keys to explore">
 </div>
 
-</section><section class="facts-section" aria-labelledby="facts-title"><div class="section-heading"><div><h2 id="facts-title">The internship experience.</h2><p>One shared goal. A clear process.</p></div><div class="rail-controls"><button onclick="scrollFacts(-1)" aria-label="Previous internship facts"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button><button onclick="scrollFacts(1)" aria-label="Next internship facts"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button></div></div><div id="internship-facts" class="experience-facts" tabindex="0" role="region" aria-label="Internship facts; scroll horizontally to explore"><article class="mosaic-card sky">
+</section><section class="facts-section" aria-labelledby="facts-title"><div class="section-heading"><div><h2 id="facts-title">The internship experience.</h2><p>One shared goal. A clear process.</p></div><div class="rail-controls"><button onclick="scrollFacts(-1)" aria-label="Previous internship facts"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button><button onclick="scrollFacts(1)" aria-label="Next internship facts"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button></div></div><div id="internship-facts" data-drag-rail class="experience-facts" tabindex="0" role="region" aria-label="Internship facts; scroll horizontally to explore"><article class="mosaic-card sky">
 <strong>4</strong>
 <p>roles connected around<br>your internship journey</p>
-<button class="well-pill" onclick="document.getElementById('roleStory').open=true;document.getElementById('roleStory').scrollIntoView({behavior:'smooth'})">One community <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
+<button class="well-pill" onclick="document.getElementById('where-next').scrollIntoView({behavior:'smooth'})">One community <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
 </button>
 </article><article class="mosaic-card pale">
 <strong class="outline-number">1</strong>
@@ -184,7 +135,7 @@
 </a>
 </article><article class="mosaic-card navy">
 <p class="mosaic-quote">Real tasks.<br>Useful feedback.<br>Skills that grow.</p>
-<a class="well-pill" href="#journey">Your training <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
+<a class="well-pill" href="#where-next">Your training <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
 </a>
 </article><article class="mosaic-card blue">
 <strong>2</strong>
@@ -224,7 +175,7 @@
 <b>Building your future</b>
 </button>
 </div>
-<div class="photo-strip">
+<div class="photo-strip" data-drag-rail tabindex="0" role="region" aria-label="PSUT photo gallery; drag or use arrow keys to explore">
 <img loading="lazy" src="<%= ResolveUrl("~/Assets/") %>psut-walkway.jpg" alt="A tree-lined walkway on the PSUT campus">
 <img loading="lazy" src="<%= ResolveUrl("~/Assets/") %>psut-students.jpeg" alt="PSUT students and staff gathered in a university auditorium">
 <img loading="lazy" src="<%= ResolveUrl("~/Assets/") %>psut-welcome.jpeg" alt="A welcome gathering in a PSUT auditorium">
@@ -232,113 +183,7 @@
 <img loading="lazy" src="<%= ResolveUrl("~/Assets/") %>psut-graduation.jpg" alt="Graduation celebrations at PSUT">
 </div>
 <a class="community-label" href="#our-psut">#OurPSUT <span>Explore the campus ↑</span>
-</a></section><section class="well-stories" id="journey"><div class="section-heading"><h2>Your training journey.</h2><p>Big ambitions. Personal guidance.</p></div>
-<details>
-<summary>
-<b>Your support system</b><span class="story-original">Big. Small.</span><span class="story-description">Big ambitions. Personal guidance.</span>
-<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></i>
-</summary>
-<div class="story-expanded">
-<img loading="lazy" src="<%= ResolveUrl("~/Assets/") %>psut-walkway.jpg" alt="A tree-lined walkway on the PSUT campus">
-<div>
-<h3>Your journey has a clear support system.</h3>
-<p>The coordinator assigns your student group to a college supervisor from account setup. Once your placement is confirmed, you can see your company supervisor and academic supervisor throughout your training.</p>
-<button class="well-pill" onclick="previewRole('student')">Student workspace <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
-</button>
-</div>
-</div>
-</details>
-<details>
-<summary>
-<b>Find your placement</b><span class="story-original">Everything. Anything.</span><span class="story-description">Your skills. Your possibilities.</span>
-<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></i>
-</summary>
-<div class="story-expanded">
-<img loading="lazy" src="<%= ResolveUrl("~/Assets/") %>psut-students.jpeg" alt="PSUT students and staff gathered in a university auditorium">
-<div>
-<h3>Find a placement that fits your specialization.</h3>
-<p>Browse public opportunity summaries. Sign in to view full details and apply. Companies review applications, provide decisions, and explain rejections. You can apply to more than one opportunity, then confirm only one accepted offer.</p>
-<a class="well-pill" href="#opportunities">Explore opportunities <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
-</a>
-</div>
-</div>
-</details>
-<details>
-<summary>
-<b>Track training hours</b><span class="story-original">Time. Space.</span><span class="story-description">Your hours. Your progress.</span>
-<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></i>
-</summary>
-<div class="story-expanded">
-<img loading="lazy" src="<%= ResolveUrl("~/Assets/") %>psut-welcome.jpeg" alt="A welcome gathering in a PSUT auditorium">
-<div>
-<h3>Make every approved training hour count.</h3>
-<p>Follow your tasks, deadlines and placement progress. Training hours follow supervisor approval; completing a task does not automatically approve hours. Your college’s official requirements determine the hours needed for completion.</p>
-<button class="well-pill" onclick="previewRole('student')">Track your progress <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
-</button>
-</div>
-</div>
-</details>
-<details>
-<summary>
-<b>Tasks and feedback</b><span class="story-original">Human. Intelligence.</span><span class="story-description">Learn. Apply. Improve.</span>
-<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></i>
-</summary>
-<div class="story-expanded">
-<img loading="lazy" src="<%= ResolveUrl("~/Assets/") %>psut-community.jpeg" alt="Students taking part in a PSUT welcome event">
-<div>
-<h3>Learning becomes experience through action.</h3>
-<p>Your company supervisor assigns tasks with deadlines and evaluation criteria. Submit a description, file, or link. Review your grade and feedback, respond to revision requests, and keep a clear history of your work.</p>
-<button class="well-pill" onclick="previewRole('company')">Company workspace <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
-</button>
-</div>
-</div>
-</details>
-<details>
-<summary>
-<b>Supervisor evaluations</b><span class="story-original">Perspective. Purpose.</span><span class="story-description">Feedback that moves you forward.</span>
-<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></i>
-</summary>
-<div class="story-expanded">
-<img loading="lazy" src="<%= ResolveUrl("~/Assets/") %>psut-students.jpeg" alt="PSUT students and staff gathered in a university auditorium">
-<div>
-<h3>Support from both sides of your placement.</h3>
-<p>The college supervisor monitors tasks, submissions, feedback, training hours, and progress. Academic comments help you develop. The company and college supervisors submit their final evaluations for the coordinator’s review.</p>
-<button class="well-pill" onclick="previewRole('academic')">College workspace <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
-</button>
-</div>
-</div>
-</details>
-<details id="roleStory">
-<summary>
-<b>Your connected team</b><span class="story-original">All. Together.</span><span class="story-description">One team. Four connected roles.</span>
-<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></i>
-</summary>
-<div class="story-expanded">
-<img loading="lazy" src="<%= ResolveUrl("~/Assets/") %>psut-graduation.jpg" alt="Graduation celebrations at PSUT">
-<div>
-<h3>Every step has a person responsible for it.</h3>
-<p>Students apply and train. Company supervisors manage opportunities and work. College supervisors provide academic oversight. One internship coordinator creates accounts, assigns supervisors, and approves final completion.</p>
-<a class="well-pill" href="#where-next">Choose your workspace <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
-</a>
-</div>
-</div>
-</details>
-<details>
-<summary>
-<b>Completion and reports</b><span class="story-original">Above. Beyond.</span><span class="story-description">Experience that carries you forward.</span>
-<i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16"/></svg></i>
-</summary>
-<div class="story-expanded">
-<img loading="lazy" src="<%= ResolveUrl("~/Assets/") %>psut-rooftop.jpg" alt="PSUT campus buildings and Amman skyline">
-<div>
-<h3>A completion report with a verified process.</h3>
-<p>After both final evaluations are received and the university requirements are verified, the coordinator approves completion and releases your official report for download and printing. Submitted supervisor final evaluations remain confidential.</p>
-<button class="well-pill" onclick="previewRole('admin')">Completion review <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
-</button>
-</div>
-</div>
-</details>
-</section><section class="well-values" id="values">
+</a></section><section class="well-values" id="values">
 <h2>Our principles.</h2>
 <div class="values-content">
 <h3>A successful placement grows through clear responsibilities and a shared commitment to learning.</h3>
@@ -350,7 +195,7 @@
 <span>Growth.</span>
 </div>
 <p>Know who guides you, what you need to complete, and how your work is reviewed. Your learning stays at the heart of the experience.</p>
-<a class="well-pill" href="#journey">How your journey works <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
+<a class="well-pill" href="#where-next">Explore the workspaces <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg>
 </a>
 </div>
 </section><section class="well-college" id="community">
@@ -363,7 +208,31 @@
 <span>Data Science & Artificial Intelligence</span>
 <span>Cybersecurity</span>
 </div>
-</section></div></main><footer class="well-footer" id="contact">
+</section></div><section class="contact-feature position-relative overflow-hidden text-white" id="contact-us" aria-labelledby="contact-feature-title">
+<img class="contact-feature-image position-absolute top-0 start-0 w-100 h-100 object-fit-cover" src="<%= ResolveUrl("~/Assets/") %>psut-aerial.jpg" alt="" aria-hidden="true" loading="lazy">
+<div class="contact-feature-shade position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-50" aria-hidden="true"></div>
+<div class="container position-relative py-5">
+<div class="row align-items-center justify-content-between gy-5 py-lg-5">
+<div class="col-lg-6">
+<span class="badge rounded-pill text-bg-light text-primary mb-4 px-3 py-2">PSUT Internship Office</span>
+<h2 class="display-4 fw-bold lh-sm mb-4" id="contact-feature-title">Questions about your internship?</h2>
+<p class="fs-5 text-white-50 mb-0">From applications to training hours and supervisor support, our team can help you find your next step.</p>
+</div>
+<div class="col-lg-6 col-xl-5">
+<div class="card contact-feature-card border-0 rounded-4 shadow-lg text-dark">
+<div class="card-body p-4 p-xl-5">
+<p class="text-uppercase text-primary fw-bold small mb-2">Get in touch</p>
+<h3 class="h2 fw-bold mb-4">We’re here to help.</h3>
+<div class="d-grid gap-4">
+<div class="d-flex align-items-center gap-3"><span class="contact-feature-icon rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg></span><div><span class="d-block text-secondary small">Email</span><a class="fw-semibold text-decoration-none" href="mailto:info@psut.edu.jo">info@psut.edu.jo</a></div></div>
+<div class="d-flex align-items-center gap-3"><span class="contact-feature-icon rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3h3l2 5-2 2a14 14 0 0 0 4 4l2-2 5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 5 5a2 2 0 0 1 2-2Z"/></svg></span><div><span class="d-block text-secondary small">Call the office</span><a class="fw-semibold text-decoration-none" href="tel:+96265359949">+962 6 535 9949</a></div></div>
+<div class="d-flex align-items-center gap-3"><span class="contact-feature-icon rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center flex-shrink-0"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><span class="d-block text-secondary small">Visit us</span><span class="fw-semibold">Khalil Saket Street, Al-Jubeiha, Amman</span></div></div>
+</div>
+<button class="btn btn-primary btn-lg rounded-pill w-100 mt-4" type="button" onclick="showContact()">Send a message <svg class="ms-2" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12h15m-6-6 6 6-6 6"/></svg></button>
+<p class="small text-secondary mt-3 mb-0">Messages are saved in this browser prototype. For a direct reply, email or call the office.</p>
+</div></div>
+</div></div></div>
+</section><div class="contact-feature-helper position-fixed bottom-0 end-0 p-3 p-md-4"><button class="btn btn-primary btn-lg rounded-pill shadow" type="button" onclick="showContact()">Questions? <span class="ms-1">Contact us</span><span class="contact-status-dot ms-2" aria-hidden="true"></span></button></div></main><footer class="well-footer" id="contact">
 <div class="footer-grid">
 <div class="footer-mission">
 <h3>
@@ -387,7 +256,7 @@
 <h3>Helpful links</h3>
 <div class="footer-useful">
 <a href="#opportunities">Internship opportunities</a>
-<a href="#journey">The training journey</a>
+<a href="#where-next">Choose your workspace</a>
 <button onclick="openModal('login')">Portal sign in</button>
 <a href="#community">Our college</a>
 <a href="#values">Placement principles</a>
@@ -405,5 +274,4 @@
 <a href="#home">Back to top ↑</a>
 </div>
 </footer>
-<nav class="mobile-dock" aria-label="Quick navigation"><a href="#opportunities" aria-label="Internship opportunities"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M9 7V4h6v3M4 12h16M10 12v3h4v-3"/></svg></a><a href="#opportunity-search" aria-label="Search opportunities"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></a><button class="dock-menu" aria-label="Open menu" aria-controls="wellMenu" aria-expanded="false" onclick="toggleWellMenu()"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7h18M3 17h18"/></svg></button><a href="#where-next" aria-label="Your workspace"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></a><button onclick="watchCampus()" aria-label="Watch campus film"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m10 8 6 4-6 4Z"/></svg></button></nav>
 </asp:Content>

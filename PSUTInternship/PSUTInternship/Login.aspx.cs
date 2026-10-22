@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -117,12 +117,15 @@ namespace PSUTInternship
             HttpResponseMessage response = await client.GetAsync(FirebaseConfig.DatabaseUrl + "/students.json" + query);
             if (!response.IsSuccessStatusCode)
                 throw new Exception("Could not search Firebase /students by email. Check Database rules.");
+
             string json = await response.Content.ReadAsStringAsync();
             if (String.IsNullOrWhiteSpace(json) || json == "null")
                 return new KeyValuePair<string, Dictionary<string, object>>(null, null);
+
             var students = serializer.Deserialize<Dictionary<string, Dictionary<string, object>>>(json);
             if (students == null || students.Count == 0)
                 return new KeyValuePair<string, Dictionary<string, object>>(null, null);
+
             foreach (var item in students)
                 return new KeyValuePair<string, Dictionary<string, object>>(item.Key, item.Value);
             return new KeyValuePair<string, Dictionary<string, object>>(null, null);
