@@ -1,3 +1,4 @@
+﻿using PSUTInternship.Shared;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,11 +13,11 @@ using System.Web.UI.WebControls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace internship_manegment
+namespace PSUTInternship.Company
 {
-    public partial class ReportsAndEvaluation : Page
+    public partial class ReportsAndEvaluation : PSUTInternship.Shared.PortalPage
     {
-        private const string DatabaseUrl = "https://student-management-syste-bc369-default-rtdb.asia-southeast1.firebasedatabase.app/";
+        private static readonly string DatabaseUrl = PSUTInternship.Shared.FirebaseConfig.DatabaseUrl.TrimEnd('/') + "/";
 
         protected async void Page_Load(object sender, EventArgs e)
         {
@@ -36,11 +37,11 @@ namespace internship_manegment
 
         private async System.Threading.Tasks.Task LoadDashboard()
         {
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = PSUTInternship.Shared.FirebaseConfig.CreateClient())
             {
-                Dictionary<string, JObject> reports = await ReadCollection(client, "Reports.json");
-                Dictionary<string, JObject> evaluations = await ReadCollection(client, "FinalEvaluations.json");
-                Dictionary<string, JObject> users = await ReadCollection(client, "Users.json");
+                Dictionary<string, JObject> reports = await ReadCollection(client, "reports.json");
+                Dictionary<string, JObject> evaluations = (await ReadCollection(client, "evaluations.json")).Where(x => (string)x.Value["evaluatorRole"] == "companySupervisor").ToDictionary(x => x.Key, x => x.Value);
+                Dictionary<string, JObject> users = await ReadCollection(client, "students.json");
 
                 LoadStudents(users);
                 RenderEvaluations(evaluations);
@@ -53,11 +54,9 @@ namespace internship_manegment
             }
         }
 
-        private static async System.Threading.Tasks.Task<Dictionary<string, JObject>> ReadCollection(HttpClient client, string path)
+        private async System.Threading.Tasks.Task<Dictionary<string, JObject>> ReadCollection(HttpClient client, string path)
         {
-            string json = await client.GetStringAsync(DatabaseUrl + path);
-            return JsonConvert.DeserializeObject<Dictionary<string, JObject>>(json)
-                ?? new Dictionary<string, JObject>();
+            return await PortalRepository.Collection(path.Replace(".json", ""));
         }
 
         private void LoadStudents(Dictionary<string, JObject> users)
@@ -66,8 +65,8 @@ namespace internship_manegment
             EvaluationStudent.Items.Clear();
             foreach (KeyValuePair<string, JObject> item in users)
             {
-                if (item.Value == null || !Read(item.Value, "Role", "role").Equals("Student", StringComparison.OrdinalIgnoreCase)) continue;
-                string name = Read(item.Value, "Name", "name");
+                if (item.Value == null) continue;
+                string name = Read(item.Value, "fullName", "Name", "name");
                 if (string.IsNullOrWhiteSpace(name)) continue;
                 EvaluationStudent.Items.Add(new ListItem(name, item.Key));
             }
@@ -89,7 +88,7 @@ namespace internship_manegment
             foreach (KeyValuePair<string, JObject> item in evaluations.OrderByDescending(x => Read(x.Value, "SentAtUtc", "DraftedAtUtc", "UpdatedAtUtc")))
             {
                 if (item.Value == null) continue;
-                string student = Read(item.Value, "StudentName", "Student", "student", "StudentName");
+                string student = Read(item.Value, "studentName", "StudentName", "studentId", "Student", "student");
                 string period = Read(item.Value, "EvaluationPeriod", "Period", "period");
                 string supervisor = Read(item.Value, "AcademicSupervisor", "AcademicSupervisorName", "academicSupervisor", "AcademicSupervisorEmail");
                 string status = Read(item.Value, "Status", "status");
@@ -103,7 +102,7 @@ namespace internship_manegment
                 HtmlTableCell action = new HtmlTableCell();
                 HtmlAnchor open = new HtmlAnchor
                 {
-                    HRef = "ReportsAndEvaluation.aspx?evaluation=" + HttpUtility.UrlEncode(item.Key),
+                    HRef = "reportsAndEvaluation.aspx?evaluation=" + HttpUtility.UrlEncode(item.Key),
                     InnerText = IsDraft(status) ? "Edit" : "View"
                 };
                 open.Attributes["class"] = "button small-button";
@@ -134,7 +133,7 @@ namespace internship_manegment
                 HtmlTableCell action = new HtmlTableCell();
                 HtmlAnchor open = new HtmlAnchor
                 {
-                    HRef = "ReportsAndEvaluation.aspx?report=" + HttpUtility.UrlEncode(item.Key),
+                    HRef = "reportsAndEvaluation.aspx?report=" + HttpUtility.UrlEncode(item.Key),
                     InnerText = "Review"
                 };
                 open.Attributes["class"] = "button small-button";
@@ -216,7 +215,25 @@ namespace internship_manegment
 
             string studentId = EvaluationStudent.SelectedValue;
             string studentName = EvaluationStudent.SelectedItem.Text;
+            var placement = await PortalRepository.PlacementForStudent(studentId);
+            if (placement == null || (string)placement["companyId"] != PSUTInternship.Shared.PortalRepository.CompanyId)
+            { ShowMessage("Select one of your confirmed trainees."); return; }
             JObject evaluation = new JObject();
+            evaluation["studentId"] = studentId;
+            evaluation["companyId"] = PSUTInternship.Shared.PortalRepository.CompanyId;
+            evaluation["academicSupervisorId"] = (string)placement["academicSupervisorId"];
+            evaluation["internshipId"] = DatabaseSchema.Id(placement);
+            evaluation["evaluationType"] = "final";
+            evaluation["evaluatorId"] = PSUTInternship.Shared.PortalRepository.UserId;
+            evaluation["evaluatorRole"] = "companySupervisor";
+            evaluation["status"] = IsSent(status) ? "submitted" : "draft";
+            evaluation["overallScore"] = totalScore;
+            evaluation["totalMaximum"] = totalMaximum;
+            evaluation["comments"] = OverallFeedback.Text.Trim();
+            evaluation["submittedAt"] = DateTime.UtcNow.ToString("o");
+            var savedEvaluation = await PortalRepository.EvaluationForPlacement(studentId, DatabaseSchema.Id(placement), "companySupervisor");
+            if (string.Equals((string)savedEvaluation?["status"], "submitted", StringComparison.OrdinalIgnoreCase)) { ShowMessage("This final evaluation has already been submitted."); return; }
+            EvaluationId.Value = savedEvaluation == null ? "company_" + DatabaseSchema.Id(placement) : DatabaseSchema.Id(savedEvaluation);
             evaluation["StudentId"] = studentId;
             evaluation["StudentName"] = studentName;
             evaluation["EvaluationPeriod"] = EvaluationPeriod.Text.Trim();
@@ -231,11 +248,11 @@ namespace internship_manegment
             if (IsSent(status)) evaluation["SentAtUtc"] = DateTime.UtcNow.ToString("o");
             else evaluation["DraftedAtUtc"] = DateTime.UtcNow.ToString("o");
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = PSUTInternship.Shared.FirebaseConfig.CreateClient())
             using (StringContent content = new StringContent(evaluation.ToString(Formatting.None), Encoding.UTF8, "application/json"))
             {
                 HttpResponseMessage response;
-                string url = DatabaseUrl + "FinalEvaluations";
+                string url = DatabaseUrl + "evaluations";
                 if (string.IsNullOrWhiteSpace(EvaluationId.Value))
                 {
                     response = await client.PostAsync(url + ".json", content);
@@ -263,9 +280,9 @@ namespace internship_manegment
 
         private async System.Threading.Tasks.Task OpenEvaluation(string id)
         {
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = PSUTInternship.Shared.FirebaseConfig.CreateClient())
             {
-                string json = await client.GetStringAsync(DatabaseUrl + "FinalEvaluations/" + HttpUtility.UrlEncode(id) + ".json");
+                string json = await client.GetStringAsync(DatabaseUrl + "evaluations/" + HttpUtility.UrlEncode(id) + ".json");
                 if (json == "null")
                 {
                     ShowMessage("Evaluation was not found.");
@@ -273,13 +290,15 @@ namespace internship_manegment
                 }
 
                 JObject evaluation = JObject.Parse(json);
+                var placement = await PortalRepository.PlacementForRecord(evaluation);
+                if ((string)placement["companyId"] != PortalRepository.CompanyId || (string)evaluation["evaluatorRole"] != "companySupervisor") throw new System.Web.HttpException(403, "Evaluation access denied.");
                 EvaluationId.Value = id;
                 EvaluationPeriod.Text = Read(evaluation, "EvaluationPeriod", "Period", "period");
                 AcademicSupervisor.Text = Read(evaluation, "AcademicSupervisor", "AcademicSupervisorName");
                 AcademicSupervisorEmail.Text = Read(evaluation, "AcademicSupervisorEmail");
                 OverallFeedback.Text = Read(evaluation, "OverallFeedback", "Comments", "comments");
 
-                string studentId = Read(evaluation, "StudentId");
+                string studentId = Read(evaluation, "studentId", "StudentId");
                 if (EvaluationStudent.Items.FindByValue(studentId) != null)
                     EvaluationStudent.SelectedValue = studentId;
                 else
@@ -313,15 +332,16 @@ namespace internship_manegment
 
         private async System.Threading.Tasks.Task OpenReport(string id)
         {
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = PSUTInternship.Shared.FirebaseConfig.CreateClient())
             {
-                string json = await client.GetStringAsync(DatabaseUrl + "Reports/" + HttpUtility.UrlEncode(id) + ".json");
+                string json = await client.GetStringAsync(DatabaseUrl + "reports/" + HttpUtility.UrlEncode(id) + ".json");
                 if (json == "null")
                 {
                     ShowMessage("Report was not found.");
                     return;
                 }
                 JObject report = JObject.Parse(json);
+                if ((string)report["companyId"] != PSUTInternship.Shared.PortalRepository.CompanyId) throw new System.Web.HttpException(403, "Report access denied.");
                 ReportId.Value = id;
                 ReportScore.Text = Read(report, "Score", "score");
                 ReportFeedback.Text = Read(report, "Feedback", "feedback");
@@ -340,14 +360,16 @@ namespace internship_manegment
                 return;
             }
 
+            var existingReport = await PSUTInternship.Shared.PortalRepository.Get<JObject>("reports/" + PSUTInternship.Shared.PortalRepository.Key(ReportId.Value));
+            if ((string)existingReport?["companyId"] != PSUTInternship.Shared.PortalRepository.CompanyId) throw new System.Web.HttpException(403, "Report access denied.");
             JObject update = new JObject();
             update["Score"] = ReportScore.Text.Trim();
             update["Feedback"] = ReportFeedback.Text.Trim();
             update["Status"] = "Reviewed";
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = PSUTInternship.Shared.FirebaseConfig.CreateClient())
             using (StringContent content = new StringContent(update.ToString(Formatting.None), Encoding.UTF8, "application/json"))
             {
-                HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), DatabaseUrl + "Reports/" + HttpUtility.UrlEncode(ReportId.Value) + ".json");
+                HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), DatabaseUrl + "reports/" + HttpUtility.UrlEncode(ReportId.Value) + ".json");
                 request.Content = content;
                 HttpResponseMessage response = await client.SendAsync(request);
                 if (!response.IsSuccessStatusCode)

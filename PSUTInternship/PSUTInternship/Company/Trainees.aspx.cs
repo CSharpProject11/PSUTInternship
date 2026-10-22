@@ -1,3 +1,4 @@
+using PSUTInternship.Shared;
 using System;
 namespace PSUTInternship.Company
 {

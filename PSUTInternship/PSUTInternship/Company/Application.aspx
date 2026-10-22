@@ -38,7 +38,7 @@
                     </span>
                 </p>
                 <% if(StudentApplication.Status=="Pending"){ %>
-                <form method="post">
+                <form method="post"><input type="hidden" name="csrfToken" value="<%= CsrfToken %>"/>
                     <button class="btn" name="action" value="accept" type="submit">Accept application</button>
                 </form>
                 <p>
@@ -49,10 +49,7 @@
                     <b>Reason:</b> <%= H(StudentApplication.RejectionReason) %>
                 </p>
                 <% } else if (StudentApplication.Status == "Accepted" && !StudentApplication.StudentConfirmed) { %>
-                <p class="muted">After the student confirms the offer to you, mark the placement confirmed here.</p>
-                <form method="post">
-                    <button class="btn" name="action" value="confirm" type="submit">Student confirmed — activate trainee</button>
-                </form>
+                <p>The student can confirm this offer in My Applications.</p>
                 <% } else if (StudentApplication.StudentConfirmed) { %>
                 <p class="badge ok">Placement confirmed; trainee is active.</p>
                 <% } %>

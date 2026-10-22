@@ -1,4 +1,5 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="ViewTask.aspx.cs" Inherits="internship_manegment.ViewTask" %>
+<%@ Register Src="~/Shared/CompanyLinks.ascx" TagPrefix="psut" TagName="CompanyLinks" %>
+<%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="ViewTask.aspx.cs" Inherits="PSUTInternship.Company.ViewTask" %>
 
 <!DOCTYPE html>
 
@@ -8,6 +9,7 @@
 </head>
 <body>
     <form id="form1" runat="server">
+<psut:CompanyLinks runat="server" />
         <div id="Describtion"  runat="server">
         </div>
         <div id="solution"  runat="server"></div>

@@ -4,3 +4,6 @@ obj/
 .user
 .suo
 .taste-skill/
+
+.verification/
+__pycache__/

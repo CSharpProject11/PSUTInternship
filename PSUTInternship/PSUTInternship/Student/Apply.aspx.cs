@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PSUTInternship.Shared;
 using PSUTInternship.Models;
@@ -17,13 +17,13 @@ using System.Net.Mail;
 
 namespace PSUTInternship.Student
 {
-    public partial class Apply : System.Web.UI.Page
+    public partial class Apply : PSUTInternship.Shared.PortalPage
     {
-        private const string FirebaseUrl =
-            "https://csharp-e078c-default-rtdb.firebaseio.com/";
+        private static readonly string FirebaseUrl =
+            PSUTInternship.Shared.FirebaseConfig.DatabaseUrl.TrimEnd('/') + "/";
 
         private static readonly HttpClient Client =
-            new HttpClient();
+            PSUTInternship.Shared.FirebaseConfig.CreateClient();
 
         protected override void OnInit(EventArgs e)
         {
@@ -149,6 +149,12 @@ namespace PSUTInternship.Student
                     || (website.Scheme != "https" && website.Scheme != "http")))
                     throw new ArgumentException("Enter a valid website URL starting with https:// or http://.");
 
+                var placement = await PortalRepository.PlacementForStudent(uid);
+                if (placement != null) throw new ArgumentException("You already have a confirmed internship.");
+                var existingApplications = await PortalRepository.Collection(PortalRepository.Query("applications", "studentId", uid));
+                if (existingApplications.Values.Any(x => (string)x["opportunityId"] == id)) throw new ArgumentException("You have already applied to this opportunity.");
+                var confirmation = await FirebaseRestClient.GetAsync<JObject>("internshipConfirmations/" + uid, token);
+                if (confirmation != null) throw new ArgumentException("You have already confirmed an internship.");
                 string auth = "?auth=" + Uri.EscapeDataString(token);
                 using (var response = await Client.GetAsync(FirebaseUrl + "opportunities/" + Uri.EscapeDataString(id) + ".json" + auth))
                 {
@@ -158,9 +164,12 @@ namespace PSUTInternship.Student
                         throw new ArgumentException("This opportunity is closed or its application deadline has passed.");
                 }
 
+                var savedOpportunity = await FirebaseRestClient.GetAsync<Opportunity>("opportunities/" + id, token);
+                var studentProfile = await FirebaseRestClient.GetAsync<JObject>("students/" + uid, token);
+                if (!OpportunityEligibility.Matches(savedOpportunity, studentProfile)) throw new ArgumentException("This opportunity does not match your college or major.");
                 var application = new PSUTInternship.Models.Application
                 {
-                    Id = id, StudentId = uid, OpportunityId = id, Reason = Field("applicationReason"),
+                    CvUrl = (string)studentProfile?["cvUrl"], Id = uid + "_" + id, CompanyId = savedOpportunity.CompanyId, AcademicSupervisorId = (string)studentProfile?["academicSupervisorId"], StudentId = uid, OpportunityId = id, Reason = Field("applicationReason"),
                     Details = new TrainingApplicationDetails
                     {
                         Faculty = Field("faculty"), Department = Field("department"), Program = Field("program"),
@@ -174,7 +183,7 @@ namespace PSUTInternship.Student
                     }
                 };
                 // One record per student/opportunity; conditional write prevents duplicate submissions and overwriting reviews.
-                string url = FirebaseUrl + "applications/" + Uri.EscapeDataString(uid) + "/" + Uri.EscapeDataString(id) + ".json" + auth;
+                string url = FirebaseUrl + "applications/" + Uri.EscapeDataString(uid + "_" + id) + ".json" + auth;
                 using (var request = new HttpRequestMessage(HttpMethod.Put, url))
                 {
                     request.Headers.TryAddWithoutValidation("if-match", "null_etag");

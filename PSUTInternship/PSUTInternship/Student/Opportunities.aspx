@@ -1,5 +1,5 @@
 <%@ Page Language="C#" Async="true" AutoEventWireup="true" CodeBehind="Opportunities.aspx.cs" Inherits="PSUTInternship.Student.Opportunities" %>
-<%@ Register Src="~/Student/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
+<%@ Register Src="~/Shared/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
 <!doctype html>
 <html lang="en">
 <head runat="server">

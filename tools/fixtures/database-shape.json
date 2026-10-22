@@ -1,0 +1,145 @@
+{
+  "opportunities": {
+    "opp1": {
+      "companyId": "company1",
+      "createdAt": "2026-10-20",
+      "deadline": "2026-11-30",
+      "description": "Develop interfaces",
+      "duration": "3 months",
+      "location": "Amman",
+      "requirements": "HTML, CSS",
+      "status": "active",
+      "title": "Frontend Intern",
+      "workMode": "On-site"
+    }
+  },
+  "students": {
+    "student1": {
+      "fullName": "Student One",
+      "groupId": "group1",
+      "requiredTrainingHours": 96
+    },
+    "conflicting-student": {
+      "fullName": "Another Student",
+      "groupId": "group1",
+      "academicSupervisorId": "another-supervisor"
+    }
+  },
+  "companies": {
+    "company1": {
+      "name": "Example Company",
+      "isActive": true
+    }
+  },
+  "companySupervisors": {
+    "superC1": {
+      "companyId": "company1",
+      "fullName": "Company Supervisor",
+      "isActive": true
+    }
+  },
+  "academicSupervisors": {
+    "superA1": {
+      "fullName": "Academic Supervisor",
+      "isActive": true
+    }
+  },
+  "applications": {
+    "app1": {
+      "appliedAt": "2026-10-20",
+      "companyId": "company1",
+      "coverLetter": "Application message",
+      "cvUrl": "https://example.test/cv.pdf",
+      "isOfferConfirmed": false,
+      "opportunityId": "opp1",
+      "status": "pending",
+      "studentId": "student1"
+    }
+  },
+  "internships": {
+    "internship1": {
+      "academicSupervisorId": "superA1",
+      "approvedHours": 0,
+      "companyId": "company1",
+      "companySupervisorId": "superC1",
+      "completionApproved": false,
+      "endDate": "2027-01-31",
+      "opportunityId": "opp1",
+      "requiredHours": 96,
+      "startDate": "2026-11-01",
+      "status": "active",
+      "studentId": "student1"
+    }
+  },
+  "tasks": {
+    "task1": {
+      "companySupervisorId": "superC1",
+      "createdAt": "2026-10-20",
+      "description": "Build a form",
+      "dueDate": "2026-11-05",
+      "internshipId": "internship1",
+      "status": "assigned",
+      "studentId": "student1",
+      "title": "Build a form"
+    }
+  },
+  "submissions": {
+    "submission1": {
+      "feedback": "",
+      "fileUrl": "",
+      "reviewedAt": "",
+      "status": "submitted",
+      "studentId": "student1",
+      "submissionLink": "https://example.test/solution",
+      "submittedAt": "2026-10-25",
+      "taskId": "task1"
+    }
+  },
+  "trainingHours": {
+    "hour1": {
+      "date": "2026-10-20",
+      "description": "Frontend development",
+      "hours": 6,
+      "internshipId": "internship1",
+      "reviewedAt": "",
+      "reviewedBy": "",
+      "status": "pending",
+      "studentId": "student1"
+    }
+  },
+  "evaluations": {
+    "evaluation1": {
+      "comments": "",
+      "evaluationType": "final",
+      "evaluatorId": "superC1",
+      "evaluatorRole": "companySupervisor",
+      "internshipId": "internship1",
+      "status": "draft",
+      "studentId": "student1",
+      "submittedAt": ""
+    }
+  },
+  "completionReports": {
+    "report1": {
+      "academicEvaluationId": "evaluation2",
+      "companyEvaluationId": "evaluation1",
+      "internshipId": "internship1",
+      "pdfUrl": "",
+      "reviewedAt": "",
+      "reviewedBy": "",
+      "status": "pending",
+      "studentId": "student1",
+      "totalApprovedHours": 0
+    }
+  },
+  "studentGroups": {
+    "group1": {
+      "academicSupervisorId": "superA1",
+      "name": "Group 1",
+      "studentIds": {
+        "student1": true,
+        "conflicting-student": true
+      }
+    }
+  }
+}

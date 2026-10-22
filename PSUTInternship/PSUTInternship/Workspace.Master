@@ -1,5 +1,6 @@
-﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Workspace.Master.cs" Inherits="PSUTInternship.WorkspaceLayout" %>
-<%@ Register Src="~/Student/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
+<%@ Import Namespace="PSUTInternship.Models" %>
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Workspace.Master.cs" Inherits="PSUTInternship.WorkspaceLayout" %>
+<%@ Register Src="~/Shared/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
 <!doctype html>
 <html lang="en">
 <head runat="server">
@@ -30,14 +31,16 @@
 <div class="wd-shell">
     <% if (Role == "student") { %><psut:StudentNav runat="server" /><% } else { %>
     <aside class="wd-sidebar" id="workspace-navigation" aria-label="Workspace navigation">
+
         <a class="wd-brand" href="<%= ResolveUrl("~/") %>" aria-label="PSUT homepage"><img src="<%= ResolveUrl("~/Assets/psut-logo.jpg") %>" alt="PSUT" /></a>
         <span class="wd-sidebar-label">Your portal</span>
-        <nav class="wd-side-nav">
-            <a href="#overview" class="is-active" data-view="overview" aria-current="page"><svg><use href="#i-grid"/></svg><span>Overview</span></a>
-            <a href="#workspace" data-view="workspace"><svg><use href="#i-bag"/></svg><span><%: WorkLabel %></span></a>
-            <a href="#activity" data-view="activity"><svg><use href="#i-clock"/></svg><span>Activity</span></a>
-            <a href="#reports" data-view="reports"><svg><use href="#i-chart"/></svg><span>Reports</span></a>
-        </nav>
+        <nav aria-label="Portal pages" class="wd-side-nav">
+<a href="#overview" data-view="overview">Overview</a>
+<% if (Role == "student") { %><a href="<%= ResolveUrl("~/Student/MyTasks.aspx") %>">My tasks</a><a href="<%= ResolveUrl("~/Student/StudentProgress.aspx") %>">Progress and report</a><a href="<%= ResolveUrl("~/TrainingHours.aspx") %>">Training hours</a>
+<% } else if (Role == "company") { %><a href="Opportunities.aspx">Opportunities</a><a href="Applications.aspx">Applications</a><a href="Trainees.aspx">Trainees</a><a href="Tasks.aspx">Tasks</a><a href="../TrainingHours.aspx">Training hours</a><a href="ReportsAndEvaluation.aspx">Final evaluations</a><a href="Account.aspx">My account</a>
+<% } else if (Role == "academic") { %><a href="StudentProgress.aspx">Student progress</a><a href="FinalEvaluation.aspx">Final evaluation</a><a href="../TrainingHours.aspx">Training hours</a><a href="Account.aspx">My account</a>
+<% } else { %><a href="ManageStudents.aspx">Students</a><a href="ManageCompanies.aspx">Companies</a><a href="ManageAcademic.aspx">Academic supervisors</a><a href="AssignSuper.aspx">Assign supervisors</a><a href="FinalCompletionReview.aspx">Completion review</a><a href="MonitorPlacements.aspx">Monitor placements</a><a href="CoordinatorAccount.aspx">My account</a><a href="../TrainingHours.aspx">Training hours</a><a href="ContactMessages.aspx">Contact messages</a><% } %>
+</nav>
         <div class="wd-sidebar-bottom">
             <div class="wd-help-box"><svg><use href="#i-help"/></svg><p>A little guidance<br>goes a long way.</p><a href="mailto:info@psut.edu.jo">Contact PSUT <svg><use href="#i-arrow"/></svg></a></div>
             <a class="wd-home-link" href="<%= ResolveUrl("~/") %>"><svg><use href="#i-home"/></svg>Back to homepage</a>

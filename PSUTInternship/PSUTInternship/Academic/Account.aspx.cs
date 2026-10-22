@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -7,20 +7,19 @@ using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.UI;
 
-namespace AcademicSupervisor
+namespace PSUTInternship.Academic
 {
-    public partial class Account : Page
+    public partial class Account : PSUTInternship.Shared.PortalPage
     {
-        private static readonly HttpClient Client = new HttpClient();
+        private static readonly HttpClient Client = PSUTInternship.Shared.FirebaseConfig.CreateClient();
         private readonly JavaScriptSerializer json = new JavaScriptSerializer();
 
         // Firebase project URL, without /.json at the end.
-        private const string DbUrl =
-            "https://project-d2551-default-rtdb.firebaseio.com";
+        private static readonly string DbUrl =
+            PSUTInternship.Shared.FirebaseConfig.DatabaseUrl.TrimEnd('/');
 
-        // Academic supervisor Sara Sawalmeh.
-        private const string SupervisorId =
-            "9A8jqXmuQthnfld1A9Lonba3QTI3";
+        // Profile identity comes from the authenticated session.
+        private string SupervisorId { get { return CurrentProfileId; } }
 
         private string ProfilePath
         {
@@ -29,6 +28,7 @@ namespace AcademicSupervisor
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            txtDepartment.ReadOnly = true;
             if (!IsPostBack)
             {
                 RegisterAsyncTask(new PageAsyncTask(LoadProfileAsync));
@@ -244,7 +244,6 @@ namespace AcademicSupervisor
                 await PatchFirebaseAsync(ProfilePath,
                     new Dictionary<string, object>
                     {
-                        { "department", department },
                         { "office", office },
                         { "officeHours", officeHours }
                     });

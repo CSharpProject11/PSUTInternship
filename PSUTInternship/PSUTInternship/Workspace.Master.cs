@@ -1,3 +1,4 @@
+﻿using PSUTInternship.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -49,7 +50,7 @@ namespace PSUTInternship
                 Context.ApplicationInstance.CompleteRequest();
                 return;
             }
-            if (!string.Equals(Convert.ToString(Session["userRole"]), Role, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(PortalRoles.Normalize(Convert.ToString(Session["userRole"])), Role, StringComparison.OrdinalIgnoreCase))
             {
                 Response.StatusCode = 403;
                 Response.TrySkipIisCustomErrors = true;
@@ -88,13 +89,7 @@ namespace PSUTInternship
 
         private async Task<JObject> Read(string path)
         {
-            string url = FirebaseConfig.DatabaseUrl.TrimEnd('/') + "/" + path + ".json?auth="
-                + Uri.EscapeDataString(Convert.ToString(Session["idToken"]));
-            using (var response = await FirebaseConfig.Client.GetAsync(url))
-            {
-                response.EnsureSuccessStatusCode();
-                return JsonConvert.DeserializeObject<JObject>(await response.Content.ReadAsStringAsync()) ?? new JObject();
-            }
+            return await PortalRepository.ReadObject(path) ?? new JObject();
         }
 
         private static string Value(JObject item, params string[] keys)
@@ -107,25 +102,17 @@ namespace PSUTInternship
             return "";
         }
 
-        private bool IsMine(string id)
-        {
-            return !string.IsNullOrEmpty(id) && (id == Convert.ToString(Session["userId"]) || id == Convert.ToString(Session["profileId"]));
-        }
-
-        private bool Assigned(JObject student)
-        {
-            return IsMine(Value(student, "academicSupervisorId", "collegeSupervisorId", "supervisorId"));
-        }
-
         private async Task LoadWorkspace()
         {
-            JObject people = null, opportunities = null, applications = null;
+            JObject people = null, opportunities = null, applications = null, currentProfile = null, accounts = null;
             var uid = Convert.ToString(Session["userId"]);
             var profileId = Convert.ToString(Session["profileId"]);
             if (string.IsNullOrWhiteSpace(profileId)) profileId = uid;
             try
             {
-                var profile = await Read("students/" + Uri.EscapeDataString(profileId));
+                string profileCollection = Role == "student" ? "students" : Role == "company" ? "companySupervisors" : Role == "academic" ? "academicSupervisors" : "users";
+                var profile = await Read(profileCollection + "/" + Uri.EscapeDataString(profileId));
+                currentProfile = profile;
                 string fullName = Value(profile, "fullName", "name");
                 if (!string.IsNullOrWhiteSpace(fullName)) Name = fullName;
             }
@@ -151,11 +138,16 @@ namespace PSUTInternship
 
             try
             {
-                applications = await Read(Role == "student" ? "applications/" + Uri.EscapeDataString(uid) : "applications");
+                applications = await Read("applications");
                 ApplicationsAvailable = true;
             }
             catch (Exception ex) when (IsDataError(ex)) { Notices.Add("Application activity is unavailable. Your session may have expired or your database role may not have read access."); }
 
+            if (Role == "admin")
+            {
+                try { accounts = await Read("users"); }
+                catch (Exception ex) when (IsDataError(ex)) { Notices.Add("Supervisor account totals could not be loaded."); }
+            }
             var ownedOpportunityIds = new HashSet<string>();
             int opportunityCount = 0;
             if (opportunities != null)
@@ -164,14 +156,14 @@ namespace PSUTInternship
                 {
                     var item = property.Value as JObject;
                     if (item == null) continue;
-                    bool owned = IsMine(Value(item, "companyId"));
+                    bool owned = Value(item, "companyId") == Convert.ToString(Session["companyId"]);
                     if (owned) ownedOpportunityIds.Add(property.Name);
                     if (Role == "company" && !owned) continue;
                     opportunityCount++;
-                    bool open = string.Equals(Value(item, "status"), "true", StringComparison.OrdinalIgnoreCase);
+                    bool open = DatabaseSchema.IsOpen(Value(item, "status"));
                     DateTime deadline;
                     if (DateTime.TryParse(Value(item, "deadline"), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out deadline) && deadline.Date < DateTime.UtcNow.Date) open = false;
-                    if (Role == "student" && !open) continue;
+                    if (Role == "student" && (!open || !OpportunityEligibility.Matches(item.ToObject<PSUTInternship.Models.Opportunity>(), currentProfile))) continue;
                     Openings.Add(new WorkspaceOpening {
                         Id = property.Name, Title = Value(item, "title"), Location = Value(item, "location"),
                         Mode = Value(item, "workMode"), Status = open ? "Open" : "Closed",
@@ -189,8 +181,8 @@ namespace PSUTInternship
                     var item = person.Value as JObject;
                     if (item == null) continue;
                     string role = Value(item, "role");
-                    if (role == "academic" || role == "company") supervisorCount++;
-                    if (role != "student" || (Role == "academic" && !Assigned(item))) continue;
+
+                    if (PortalRoles.Normalize(role) != "student") continue;
                     assignedStudentIds.Add(person.Name);
                     string studentUid = Value(item, "uid", "userId");
                     if (studentUid != "") assignedStudentIds.Add(studentUid);
@@ -198,22 +190,18 @@ namespace PSUTInternship
                     People.Add(new WorkspaceRow { Title = Value(item, "fullName", "name"), Person = Value(item, "major", "program", "email"), Status = Value(item, "isActive").Equals("true", StringComparison.OrdinalIgnoreCase) ? "Active" : "Inactive" });
                 }
             }
+            if (accounts != null) supervisorCount = accounts.Properties().Count(x => x.Value is JObject && new[] { "academic", "company" }.Contains(PortalRoles.Normalize(Value((JObject)x.Value, "role"))));
             var relevant = new List<JObject>();
             if (applications != null)
             {
-                if (Role == "student") relevant.AddRange(applications.Properties().Select(p => p.Value as JObject).Where(a => a != null && Value(a, "studentId") == uid));
-                else foreach (var group in applications.Properties())
+                foreach(var entry in applications.Properties())
                 {
-                    var collection = group.Value as JObject;
-                    if (collection == null) continue;
-                    foreach (var entry in collection.Properties())
-                    {
-                        var app = entry.Value as JObject;
-                        if (app == null) continue;
-                        if (Role == "company" && !ownedOpportunityIds.Contains(Value(app, "opportunityId"))) continue;
-                        if (Role == "academic" && !assignedStudentIds.Contains(Value(app, "studentId"))) continue;
-                        relevant.Add(app);
-                    }
+                    var app=entry.Value as JObject;
+                    if(app==null)continue;
+                    if(Role=="student"&&Value(app,"studentId")!=uid)continue;
+                    if(Role=="company"&&!ownedOpportunityIds.Contains(Value(app,"opportunityId")))continue;
+                    if(Role=="academic"&&!assignedStudentIds.Contains(Value(app,"studentId")))continue;
+                    relevant.Add(app);
                 }
             }
             foreach (var app in relevant)
@@ -255,11 +243,4 @@ namespace PSUTInternship
         private static bool IsDataError(Exception ex) { return ex is HttpRequestException || ex is JsonException || ex is TaskCanceledException; }
     }
 
-    public class WorkspaceMetric
-    {
-        public string Label, Value, Hint;
-        public WorkspaceMetric(string label, string value, string hint) { Label = label; Value = value; Hint = hint; }
-    }
-    public class WorkspaceRow { public string Title, Person, Status, Date, Url; public DateTime SortDate; }
-    public class WorkspaceOpening { public string Id, Title, Location, Mode, Status, Deadline, Url; }
 }

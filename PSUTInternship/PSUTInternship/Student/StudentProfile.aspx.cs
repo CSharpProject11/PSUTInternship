@@ -1,4 +1,5 @@
-﻿
+using PSUTInternship.Models;
+
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -8,12 +9,11 @@ using System.Threading.Tasks;
 using System.Web.UI;
 
 
-namespace Student
+namespace PSUTInternship.Student
 {
-    public partial class StudentProfile : System.Web.UI.Page
+    public partial class StudentProfile : PSUTInternship.Shared.PortalPage
     {
-        private readonly string url =
-            "https://teacher-124b2-default-rtdb.firebaseio.com/students/student1.json";
+        private string url { get { return PSUTInternship.Shared.FirebaseConfig.DatabaseUrl + "students/" + CurrentProfileId + ".json"; } }
 
 
         // Load student data
@@ -33,7 +33,7 @@ namespace Student
         {
             try
             {
-                using (HttpClient client = new HttpClient())
+                using (HttpClient client = PSUTInternship.Shared.FirebaseConfig.CreateClient())
                 {
                     string json = await client.GetStringAsync(url);
 
@@ -50,6 +50,7 @@ namespace Student
                         return;
 
                     // Personal Information
+                    assignedSupervisor.Text = Server.HtmlEncode(student.AcademicSupervisorName ?? "Ask the coordinator to assign a supervisor.");
                     txtFullName.Text = student.FullName;
                     txtDateOfBirth.Text = student.DateOfBirth;
                     txtEmail.Text = student.Email;
@@ -214,7 +215,7 @@ namespace Student
                     NullValueHandling = NullValueHandling.Ignore
                 });
 
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = PSUTInternship.Shared.FirebaseConfig.CreateClient())
             {
                 using (StringContent content =
                     new StringContent(

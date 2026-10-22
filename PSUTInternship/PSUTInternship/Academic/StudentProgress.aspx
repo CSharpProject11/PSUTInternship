@@ -1,7 +1,7 @@
-﻿
+
 <%@ Page Language="C#" AutoEventWireup="true"
     CodeBehind="StudentProgress.aspx.cs"
-    Inherits="AcademicSupervisor.StudentProgress" %>
+    Inherits="PSUTInternship.Academic.StudentProgress" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -823,7 +823,7 @@
 
         <div class="nav-title">General</div>
 
-        <a class="nav-link" href="Default.aspx">
+        <a class="nav-link" href="../Default.aspx">
             <i class="bi bi-arrow-return-left"></i>
             Back to Home
         </a>
@@ -1308,7 +1308,7 @@
 
                             <div class="feedback-box">
 
-                                <strong>Company Supervisor Feedback</strong>
+                                <p>Task grade: <%#: Eval("Score") %></p><strong>Company Supervisor Feedback</strong>
 
                                 <div style="margin-top:7px">
                                     <%#: Eval("Feedback") %>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PSUTInternship.Models;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -11,40 +12,18 @@ using System.Web.UI.WebControls;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AcademicSupervisor
+namespace PSUTInternship.Academic
 {
-    public partial class FinalEvaluation : Page
+    public partial class FinalEvaluation : PSUTInternship.Shared.PortalPage
     {
-        // Local demonstration identity only. No user login or Session required.
-        // Never publish this anonymous-access implementation with real student data.
-        private const string DatabaseUrl = "https://project-d2551-default-rtdb.firebaseio.com";
-        private const string SupervisorId = "9A8jqXmuQthnfld1A9Lonba3QTI3";
-        private static readonly HttpClient Http = new HttpClient { Timeout = TimeSpan.FromSeconds(25) };
+        // Final evaluations are scoped to the signed-in academic supervisor.
+        private static readonly string DatabaseUrl = PSUTInternship.Shared.FirebaseConfig.DatabaseUrl.TrimEnd('/');
+        private string SupervisorId { get { return CurrentProfileId; } }
+        private static readonly HttpClient Http = PSUTInternship.Shared.FirebaseConfig.CreateClient();
 
-        public sealed class TaskRow
-        {
-            public string Title { get; set; }
-            public string Status { get; set; }
-            public string Submission { get; set; }
-            public string Feedback { get; set; }
-        }
 
-        private sealed class ReportData
-        {
-            public string StudentId;
-            public string StudentName;
-            public string StudentNumber;
-            public string Company;
-            public string InternshipId;
-            public double ApprovedHours;
-            public double RequiredHours;
-            public List<TaskRow> Tasks = new List<TaskRow>();
-            public JToken CompanyEvaluation;
-            public JToken AcademicEvaluation;
-            public string CompanyFileUrl;
-            public string CompanyResult;
-            public string CompanyFeedback;
-        }
+
+
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -59,6 +38,8 @@ namespace AcademicSupervisor
                 var supervisor = await ReadAsync("academicSupervisors/" + SupervisorId);
                 var name = Val(supervisor, "fullName", "Academic Supervisor");
                 lblSupervisor.Text = H(name);
+                lblSupervisorPrint.Text = H(name);
+                txtScore.Attributes["max"] = PSUTInternship.Shared.EvaluationPolicy.AcademicMaximum.ToString(System.Globalization.CultureInfo.InvariantCulture);
                 lblInitials.Text = H(Initials(name));
                 var ids = await AssignedStudentIdsAsync(supervisor);
                 var students = Children(await ReadAsync("students"));
@@ -78,21 +59,7 @@ namespace AcademicSupervisor
 
         private async Task<HashSet<string>> AssignedStudentIdsAsync(JToken supervisor)
         {
-            var ids = new HashSet<string>(StringComparer.Ordinal);
-            // Actual Firebase structure: academicSupervisors/{id}/groups/{groupId}/assignedStudentIds.
-            foreach (var group in Children(supervisor == null ? null : supervisor["groups"]))
-            {
-                foreach (var student in Children(group.Value["assignedStudentIds"]))
-                    if (student.Value.Type == JTokenType.Boolean && student.Value.Value<bool>())
-                        ids.Add(student.Key);
-            }
-            // Also support student records explicitly assigned to this supervisor.
-            var students = Children(await ReadAsync("students"));
-            foreach (var student in students)
-                if (Val(student.Value, "academicSupervisorId") == SupervisorId &&
-                    !string.Equals(Val(student.Value, "isActive"), "false", StringComparison.OrdinalIgnoreCase))
-                    ids.Add(student.Key);
-            return ids;
+            return new HashSet<string>((await PSUTInternship.Shared.PortalRepository.Collection("students")).Keys, StringComparer.Ordinal);
         }
 
         protected void ddlStudent_SelectedIndexChanged(object sender, EventArgs e)
@@ -113,7 +80,7 @@ namespace AcademicSupervisor
             catch (Exception ex) { HandleFailure(ex); }
         }
 
-        private async Task<ReportData> BuildReportAsync(string studentId)
+        private async Task<AcademicReportData> BuildReportAsync(string studentId)
         {
             var supervisor = await ReadAsync("academicSupervisors/" + SupervisorId);
             var assigned = await AssignedStudentIdsAsync(supervisor);
@@ -128,14 +95,14 @@ namespace AcademicSupervisor
             var tasksTask = ReadAsync("tasks");
             var submissionsTask = ReadAsync("submissions");
             var evaluationsTask = ReadAsync("evaluations");
-            var reportsTask = ReadAsync("completionReports");
+            var reportsTask = Task.FromResult<JToken>(null);
             await Task.WhenAll(iTask, companyTask, tasksTask, submissionsTask, evaluationsTask, reportsTask);
 
             var internship = Children(iTask.Result)
                 .Where(x => Val(x.Value, "studentId") == studentId && Val(x.Value, "academicSupervisorId") == SupervisorId)
                 .OrderByDescending(x => Val(x.Value, "startDate"))
                 .FirstOrDefault();
-            var report = new ReportData
+            var report = new AcademicReportData
             {
                 StudentId = studentId,
                 StudentName = Val(student, "fullName", "Unknown"),
@@ -160,7 +127,7 @@ namespace AcademicSupervisor
                 {
                     var match = submissionRecords.Where(x => Val(x.Value, "taskId") == task.Key)
                         .OrderByDescending(x => Val(x.Value, "submittedAt")).FirstOrDefault();
-                    report.Tasks.Add(new TaskRow
+                    report.Tasks.Add(new EvaluationTaskRow
                     {
                         Title = Val(task.Value, "title", "Untitled task"),
                         Status = Val(task.Value, "status", "Unknown"),
@@ -188,7 +155,7 @@ namespace AcademicSupervisor
             return report;
         }
 
-        private void BindReport(ReportData report)
+        private void BindReport(AcademicReportData report)
         {
             pnlReport.Visible = true;
             lblStudent.Text = H(report.StudentName);
@@ -200,7 +167,7 @@ namespace AcademicSupervisor
             lblHours.Text = report.ApprovedHours.ToString("0.##", CultureInfo.InvariantCulture) + " / " + report.RequiredHours.ToString("0.##", CultureInfo.InvariantCulture);
             lblCompanyResult.Text = H(report.CompanyResult);
             lblCompanyStatus.Text = H(Val(report.CompanyEvaluation, "status", "Not submitted"));
-            lblCompanyScore.Text = H(Val(report.CompanyEvaluation, "overallScore", "Not recorded"));
+            lblCompanyScore.Text = H(Val(report.CompanyEvaluation, "overallScore", "Not recorded") + " / " + Val(report.CompanyEvaluation, "totalMaximum", "—"));
             lblCompanyFeedback.Text = H(report.CompanyFeedback);
             lblCompanyRecommendation.Text = H(Val(report.CompanyEvaluation, "recommendation", "Not recorded"));
             lblAcademicStatus.Text = H(Val(report.AcademicEvaluation, "status", "Not submitted"));
@@ -238,8 +205,8 @@ namespace AcademicSupervisor
             string recommendation = ddlRecommendation.SelectedValue;
             decimal score;
             if (string.IsNullOrEmpty(studentId)) { Message("Please select a student.", true); return; }
-            if (!decimal.TryParse(txtScore.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out score) || score < 0 || score > 100)
-            { Message("Academic score must be between 0 and 100.", true); return; }
+            if (!decimal.TryParse(txtScore.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out score) || score < 0 || score > PSUTInternship.Shared.EvaluationPolicy.AcademicMaximum)
+            { Message("Enter an academic score within the configured maximum.", true); return; }
             if (comments.Length < 10 || comments.Length > 3000) { Message("Academic feedback must contain 10 to 3000 characters.", true); return; }
             if (string.IsNullOrWhiteSpace(recommendation)) { Message("Select an academic recommendation.", true); return; }
             try
@@ -254,10 +221,15 @@ namespace AcademicSupervisor
                     throw new InvalidOperationException("Academic evaluation already submitted.");
 
                 // Unique, stable key per internship; company supervisor evaluation is never overwritten.
-                string academicId = "academic_" + report.InternshipId;
+                var savedEvaluation = await PSUTInternship.Shared.PortalRepository.EvaluationForPlacement(studentId, report.InternshipId, "academicSupervisor");
+                string academicId = savedEvaluation == null ? "academic_" + report.InternshipId : PSUTInternship.Shared.DatabaseSchema.Id(savedEvaluation);
+                var companyEvaluation = await PSUTInternship.Shared.PortalRepository.EvaluationForPlacement(studentId, report.InternshipId, "companySupervisor");
                 var fields = new JObject
                 {
+                    ["companyEvaluationId"] = PSUTInternship.Shared.DatabaseSchema.Id(companyEvaluation),
                     ["evaluationType"] = "final",
+                    ["academicSupervisorId"] = SupervisorId,
+                    ["companyId"] = (string)report.CompanyEvaluation?["companyId"],
                     ["evaluatorRole"] = "academicSupervisor",
                     ["evaluatorId"] = SupervisorId,
                     ["studentId"] = studentId,
@@ -307,7 +279,7 @@ namespace AcademicSupervisor
                     }
                 };
                 await PatchAsync("", changes);
-                Message("Evaluation saved in Firebase and added to the coordinator review queue. An administrator must use a page that reads coordinatorReviewQueue to see it.", false);
+                Message("Evaluation saved in Firebase and added to the coordinator review queue. The coordinator can review it in Final Completion Review.", false);
                 await LoadReportAfterSubmitAsync(studentId);
             }
             catch (Exception ex) { HandleFailure(ex); }
@@ -322,7 +294,7 @@ namespace AcademicSupervisor
         private static bool Completed(string status)
         {
             var s = (status ?? "").Trim().ToLowerInvariant();
-            return s == "completed" || s == "successful" || s == "approved" || s == "done";
+            return s == "reviewed" || s == "completed" || s == "successful" || s == "approved" || s == "done";
         }
         private static string H(string text) { return HttpUtility.HtmlEncode(text ?? ""); }
         private static string Initials(string name)
@@ -350,14 +322,7 @@ namespace AcademicSupervisor
         }
         private static async Task<JToken> ReadAsync(string path)
         {
-            string url = DatabaseUrl.TrimEnd('/') + "/" + path.Trim('/') + ".json";
-            using (var response = await Http.GetAsync(url))
-            {
-                var text = await response.Content.ReadAsStringAsync();
-                if (!response.IsSuccessStatusCode)
-                    throw new HttpRequestException("Firebase read failed (HTTP " + (int)response.StatusCode + ").");
-                return string.IsNullOrWhiteSpace(text) || text.Trim() == "null" ? null : JToken.Parse(text);
-            }
+            return await PSUTInternship.Shared.PortalRepository.ReadObject(path);
         }
         private static async Task PatchAsync(string path, JObject body)
         {

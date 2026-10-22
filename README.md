@@ -1,1 +1,96 @@
-# PSUTInternship
+# PSUT Internship Portal
+
+ASP.NET Web Forms on .NET Framework 4.7.2, Firebase Authentication and Firebase Realtime Database. Students, company supervisors, academic supervisors and the internship coordinator share one connected workflow.
+
+## Run locally
+
+1. Install Visual Studio with **ASP.NET and web development** and the **.NET Framework 4.7.2 targeting pack**.
+2. Open `PSUTInternship/PSUTInternship.slnx`, restore NuGet packages and select the web project as the startup project.
+3. Set `FirebaseDatabaseUrl` and `FirebaseWebApiKey` in `PSUTInternship/PSUTInternship/Web.config`. Both must belong to the **same Firebase project**. These are the only runtime database URL and API key settings. The configured database is `https://uims-database-32b4f-default-rtdb.firebaseio.com/`, with the supplied Firebase Auth web API key.
+4. Enable Email/Password sign-in in that Firebase project's Authentication settings. Review and deploy `PSUTInternship/PSUTInternship/Firebase/database.rules.example.json` to its Realtime Database. The source changes do not deploy rules or migrate any live database.
+5. Bootstrap the first coordinator manually in Firebase Authentication, then create `/users/{AUTH_UID}` with `role: "coordinator"`, `isActive: true`, `mustChangePassword: true`, `profileId: "AUTH_UID"`, `fullName` and `email`. Keep one coordinator account for the college.
+6. Start the project through IIS Express and open `Default.aspx`. After deploying the updated rules, sign in as coordinator once: the app fills missing reverse profile links for existing active internships and creates limited public previews for existing opportunities. Existing IDs and explicit supervisor assignments are preserved. All roles use `Login.aspx`; a temporary password must be changed before the workspace opens.
+7. The coordinator creates academic and company supervisors, then student accounts. A student needs an academic supervisor during account creation. Use **Assign supervisors** to organize or reassign groups.
+
+The web API key identifies the Firebase application; never put service-account credentials, database admin secrets or account passwords in source control.
+
+## Connected workflow
+
+1. A company supervisor publishes an opportunity. The public homepage shows its limited preview; students sign in for the description and application form.
+2. A student applies. The company's application review records approval or rejection with a reason.
+3. The student confirms one approved offer in **My applications**. An immutable confirmation and a retryable placement projection connect the student, company and academic supervisor. Company approval alone does not activate a trainee.
+4. The company assigns tasks to its confirmed trainees, sets each task's maximum score and evaluation criteria, and reviews submissions or requests revisions. Students submit descriptions and HTTPS file or work links. Submission and review histories are retained.
+5. Students log training hours. The company approves or rejects individual logs; approved totals are recalculated with conditional writes. Completing a task never approves hours automatically.
+6. The company submits its final evaluation. The assigned academic supervisor monitors the work, adds academic comments to the final assessment, and forwards the evaluation to the coordinator.
+7. The coordinator reviews both evaluations, approved hours and outstanding tasks. Approval publishes the student's final result and enables an authenticated PDF completion-report download. Confidential supervisor final evaluations are not exposed to students.
+
+Optional academic meeting invitations use the same authenticated session and database. The existing meeting screens use Jitsi meeting links; they are not an integration with the Zoom API.
+
+## Structure
+
+| Folder | Responsibility |
+| --- | --- |
+| `Shared` | Firebase settings and HTTP transport, authentication, role/session handling, account creation, application placement, tasks, hours, evaluation policy, completion/PDF services and reusable navigation |
+| `Models` | Domain records and page view models; no page or HTTP implementations |
+| `Student` | Student opportunities, applications, profile, tasks and progress |
+| `Company` | Company opportunities, application review, trainees, task review and company evaluations |
+| `Academic` | Assigned students, progress, academic evaluation and account |
+| `Admin` | Accounts, group assignment, contact messages and final completion review |
+| `Firebase` | The single database-rules template and setup notes |
+| `tools` | Offline workflow/policy checks and an anonymized database fixture |
+
+Task pages now use `Student/MyTasks.aspx`, `Company/Tasks.aspx` and `Company/CreateTask.aspx`. Old misspelled URLs redirect to these pages. The old company login and account URLs lead to the shared login/current account page. Company-side account creation is disabled; the coordinator owns provisioning.
+
+## Database contract
+
+Profile keys must be Firebase Authentication UIDs. `profileId` uses that same UID. A company supervisor's profile stores `companyId`; accounts created by the coordinator use the supervisor UID as the company ID. No company ID is hardcoded in the application.
+
+| Path | Record key and purpose |
+| --- | --- |
+| `users/{uid}` | Login role, active flag, initial password flag and profile identity |
+| `students/{uid}` | Academic/personal information, required hours and assigned academic supervisor. Missing reverse internship/company links are filled by coordinator sign-in. |
+| `academicSupervisors/{uid}` / `companySupervisors/{uid}` | Supervisor profile; academic groups can be in `studentGroups` or nested under the academic profile |
+| `companies/{companyId}` | Company name and supervisor directory entry |
+| `opportunities/{id}` | Private details; `duration` accepts text (e.g. `3 months`) or a number. `status` accepts active/open/closed/inactive text or legacy booleans. Seat counts and specialization may be absent. |
+| `publicOpportunities/{id}` | Only title, company name, specialization, seats, deadline and open status |
+| `applications/{applicationId}` | Existing flat records retain their IDs. `coverLetter`, `cvUrl`, `isOfferConfirmed` and optional full application `details` are supported. New applications use a stable student/opportunity key. |
+| `internshipConfirmations/{studentUid}` | One immutable selected application |
+| `internships/{internshipId}` | Placement found through `studentId`; its key does not have to equal the student UID. |
+| `tasks/{taskId}` | One student's assignment with student/company/academic IDs, deadline, criteria and maximum score |
+| `submissions/{submissionId}` / `taskFeedback/{taskId}` | Submissions join by `taskId` and retain their existing keys; `fileUrl`, `submissionLink` and older `attachmentUrl` are understood. |
+| `submissionHistory/{taskId}/{id}` / `reviewHistory/{taskId}/{id}` | Previous submissions and reviews |
+| `trainingHours/{id}` | Dated hour log, description and supervisor approval |
+| `evaluations/{evaluationId}` | Confidential final assessments found by `internshipId`, `studentId` and `evaluatorRole`; existing IDs and draft records are retained. |
+| `coordinatorReviewQueue/{academicEvaluationId}` | Forwarded assessments and review snapshot |
+| `completionReports/{reportId}` | Existing pending records are promoted to approved using their real IDs. PDF downloads require coordinator approval. |
+| `contactMessages/{id}` | Public contact form submissions and coordinator responses saved in the system |
+
+Coordinator contact responses are stored in the portal; no email delivery is implemented. File submissions use HTTPS links to externally hosted files; the app does not upload binaries to Firebase Storage. The completion PDF renders a high-resolution page to preserve Unicode names; it is printable but its text is not selectable.
+
+## Existing Firebase data
+
+The supplied export is supported directly; it does not need its record keys renamed or its text values converted. `Shared/DatabaseSchema.cs` handles format differences and joins tasks, submissions, hour logs, evaluations and reports to their actual internship IDs. Existing `requiredTrainingHours` is accepted alongside `requiredHours`. A missing task maximum must be entered by the company supervisor on the review page before grading; the app does not invent grades.
+
+The updated rules template uses scoped queries and relationship lookups for these records. Deploy it to the configured database before a live walkthrough. The template includes indexes for `studentId`, `internshipId`, `taskId` and supervisor queries. Signing in as coordinator fills only missing reverse links/previews; it does not overwrite explicit assignments or create fictitious accounts. Resolve conflicting assignments through the coordinator's assignment screen.
+
+Authentication accounts must exist in this same Firebase project and profile keys must match their Auth UIDs. A database export does not transfer passwords or Authentication accounts from another project.
+
+## Evaluation policy
+
+The default **proposed project policy** is 60% company evaluation, 40% academic evaluation, an academic maximum of 100 and a passing final grade of 50. These values are configurable in `Web.config`; they are **not a verified official PSUT grading scheme**. Company criteria and tasks each use their own maximum scores. Required training hours are set per student by the coordinator. Confirm the college's official policy before operational use.
+
+## Verification
+
+Build the web project, then run:
+
+```powershell
+.\tools\verify-workflows.ps1
+node tools/verify-firebase-rules.mjs
+node tools/verify-public.mjs
+# Optional: also deserialize every record in a supplied export (read-only).
+.\tools\verify-workflows.ps1 -ExportPath "C:\path\to\firebase-export.json"
+```
+
+The workflow suite runs the actual shared services against an in-memory adapter and creates a sample completion PDF under the ignored `.verification` directory. The policy checks evaluate local rule expressions; they are not the official Firebase Emulator Suite. Validate the rules in Firebase's emulator before production deployment.
+
+Full Web Forms markup compilation can also be checked with the .NET Framework `aspnet_compiler.exe`, using the web project directory as `-p` and a separate output directory. The local verification covered C# build, all ASP.NET page/control bindings, workflow assertions, local policy assertions, PDF rendering, public page rendering and unauthenticated redirects. A live signed-in walkthrough still requires the target project's deployed rules and valid accounts/data; no live Firebase writes were performed during the refactor.

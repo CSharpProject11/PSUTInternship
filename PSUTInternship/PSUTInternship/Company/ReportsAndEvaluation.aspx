@@ -1,4 +1,4 @@
-<%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="ReportsAndEvaluation.aspx.cs" Inherits="internship_manegment.ReportsAndEvaluation" %>
+<%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="ReportsAndEvaluation.aspx.cs" Inherits="PSUTInternship.Company.ReportsAndEvaluation" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">

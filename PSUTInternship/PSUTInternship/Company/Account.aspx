@@ -17,7 +17,7 @@
                     <%= H(SavedMessage) %>
                 </div>
                 <% } %>
-                <form method="post">
+                <form method="post"><input type="hidden" name="csrfToken" value="<%= CsrfToken %>"/>
                     <label>Full name / coordinator controlled</label>
                     <input name="name" required value="<%= H(CompanyProfile.Name) %>"/>
                     <label>Email address / read only</label>
