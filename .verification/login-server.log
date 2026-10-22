@@ -1,0 +1,13 @@
+Starting IIS Express ...
+Successfully registered URL "http://localhost:55681/" for site "Development Web Site" application "/"
+Registration completed
+IIS Express is running.
+Enter 'Q' to stop IIS Express
+Request started: "GET" http://localhost:55681/Login.aspx
+Response sent: http://localhost:55681/Login.aspx with HTTP status 200.0
+Request started: "POST" http://localhost:55681/Login.aspx
+Response sent: http://localhost:55681/Login.aspx with HTTP status 200.0
+Request started: "POST" http://localhost:55681/Login.aspx
+Response sent: http://localhost:55681/Login.aspx with HTTP status 302.0
+Request started: "GET" http://localhost:55681/Login.aspx?expired=1
+Response sent: http://localhost:55681/Login.aspx?expired=1 with HTTP status 200.0

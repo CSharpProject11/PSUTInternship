@@ -1,0 +1,2 @@
+<%@ Control Language="C#" %>
+<div class="psut-modal" id="detail"><div class="modalbox" id="detailContent"></div></div><div class="psut-modal" id="action"><div class="modalbox" id="actionContent"></div></div><div class="toast" id="toast" role="status" aria-live="polite"></div>

@@ -1,0 +1,73 @@
+/* Bootstrap utilities handle hero layout; custom rules keep only scroll motion. */
+.hero-scroll-stage{height:150svh;min-height:820px;background:var(--bg)}
+.hero-sticky{background:var(--bg)}
+.well-home{height:auto;min-height:0;max-height:none;overflow:visible;border-radius:0;background:var(--bg)}
+.hero-sticky .hero-film{clip-path:none;border-radius:0 0 clamp(36px,8vw,120px) clamp(36px,8vw,120px);background-image:url('../Assets/psut-rooftop.jpg');background-position:center;background-size:cover;transform:translate3d(0,var(--film-slide-y,0px),0);will-change:transform}
+.hero-sticky .hero-film video{transform:none;will-change:auto;opacity:0;transition:opacity .55s ease}
+.hero-sticky .hero-film.video-ready video{opacity:1}
+.well-header:not(.scrolled){background:linear-gradient(180deg,#041a2fb8 0%,#041a2f7a 55%,#041a2f00 100%)}
+.contact-feature{min-height:680px;display:flex;align-items:center;background:#071f32}
+.contact-feature-image{z-index:0;object-position:center 55%}
+.contact-feature-shade{z-index:0}
+.contact-feature>.container{z-index:1;width:100%}
+.contact-feature-card{max-width:560px;margin-inline:auto}
+.contact-feature-icon{width:48px;height:48px}
+.contact-feature-icon svg{width:22px;height:22px;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.contact-feature .btn-primary{--bs-btn-bg:var(--well-navy);--bs-btn-border-color:var(--well-navy);--bs-btn-hover-bg:var(--well-blue);--bs-btn-hover-border-color:var(--well-blue);--bs-btn-active-bg:var(--well-navy);--bs-btn-active-border-color:var(--well-navy)}
+.contact-feature-helper{z-index:150}
+.contact-feature-helper .btn{background:var(--well-navy);border:1px solid var(--well-navy);color:#fff;font-size:clamp(15px,1.3vw,18px);font-weight:750;min-height:56px;padding:.8rem 1.2rem}
+.contact-feature-helper .btn:hover{background:var(--well-blue);border-color:var(--well-blue)}
+.contact-status-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#27c983;box-shadow:0 0 0 5px #27c98326}
+.contact-feature-card a{overflow-wrap:anywhere}
+
+/* Keep the compact navigation accessible without a side drawer. */
+.mobile-nav-toggle{min-width:60px;border:1px solid currentColor!important;border-radius:999px;padding:8px 12px!important;line-height:1}
+.site-mobile-nav{position:absolute;top:100%;left:0;right:0;max-height:calc(100svh - 80px);overflow-y:auto;background:#fff;color:var(--well-navy);box-shadow:0 20px 35px #001d3540}
+.site-mobile-nav nav{display:flex;flex-direction:column;padding-inline:var(--gutter)}
+.site-mobile-nav a{display:block;padding:15px 0;border-bottom:1px solid #d7e3eb;color:inherit;font-size:17px;font-weight:700;text-decoration:none}
+.site-mobile-nav a:last-child{border-bottom:0}
+.site-mobile-nav a:hover,.site-mobile-nav a:focus-visible{color:var(--well-blue)}
+
+/* The image cards lift on pointer hover and keep the same affordance for keyboard focus. */
+.well-news #publicCards>.card{transition:transform .3s ease}
+.well-news #publicCards>.card .opportunity-thumbnail{transition:transform .3s ease,box-shadow .3s ease}
+@media(hover:hover){.well-news #publicCards>.card:hover{transform:translateY(-7px)}.well-news #publicCards>.card:hover .opportunity-thumbnail{box-shadow:0 18px 34px #003e7333}}
+.well-news #publicCards>.card:focus-within{transform:translateY(-7px)}
+.well-news #publicCards>.card:focus-within .opportunity-thumbnail{box-shadow:0 18px 34px #003e7333}
+
+
+.experience-facts{touch-action:auto;overscroll-behavior-x:contain}
+.experience-facts{display:flex;grid-auto-flow:unset;grid-auto-columns:unset;gap:24px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:calc((100% - min(400px,75vw))/2);padding:64px max(24px,calc((100% - min(400px,75vw))/2)) 30px;margin-top:24px;scrollbar-width:none;perspective:1200px}
+.experience-facts::-webkit-scrollbar{display:none}
+.experience-facts .mosaic-card{flex:0 0 min(400px,75vw);min-height:470px;scroll-snap-align:center;user-select:none;border:0;border-radius:24px;padding:38px 34px 30px;overflow:hidden;transform:perspective(1200px) rotateY(var(--card-angle,0deg)) translateY(var(--card-lift,0px)) scale(var(--card-scale,1));opacity:var(--card-opacity,1);transition:transform .22s ease,opacity .22s ease;box-shadow:0 24px 70px #001b3224;will-change:transform}
+.experience-facts .mosaic-card.sky{background:linear-gradient(145deg,#0a4f7c,#062842 78%);color:white}
+.experience-facts .mosaic-card.pale{background:linear-gradient(145deg,#eef6f8,#cfe3ed);color:#0a3452}
+.experience-facts .mosaic-card.navy{background:linear-gradient(145deg,#082b45,#031a2e);color:white}
+.experience-facts .mosaic-card.blue{background:linear-gradient(145deg,#167ab0,#075184);color:white}
+.experience-facts:not(.is-dragging) .mosaic-card:hover,.experience-facts .mosaic-card:focus-within{transform:perspective(1200px) rotateY(0deg) translateY(-12px) scale(1.035);opacity:1;box-shadow:0 32px 78px #001b323d}
+.experience-facts .mosaic-card strong{font-size:clamp(80px,10vw,128px);letter-spacing:-.07em;color:currentColor;line-height:.9}
+.experience-facts .mosaic-card .outline-number{-webkit-text-stroke:2px #0a3452;color:transparent}
+.experience-facts .mosaic-card p{font-size:clamp(20px,2vw,26px);line-height:1.35;max-width:16ch;margin:25px 0 28px;color:inherit}
+.experience-facts .mosaic-card .mosaic-quote{font-size:clamp(32px,3.4vw,44px);max-width:12ch;color:inherit}
+.experience-facts .mosaic-card .well-pill{margin-top:auto;background:#ffffff20;border:1px solid #ffffff66;color:inherit;backdrop-filter:blur(8px)}
+.experience-facts .mosaic-card.pale .well-pill{background:#0a34520d;border-color:#0a345244}
+.experience-facts.is-dragging .mosaic-card{transition:none}
+[data-drag-rail]{cursor:grab}
+[data-drag-rail] img{-webkit-user-drag:none;user-select:none}
+[data-drag-rail].is-dragging{cursor:grabbing!important;user-select:none!important;scroll-snap-type:none!important;scroll-behavior:auto!important}
+[data-drag-rail].is-dragging *{cursor:grabbing!important;user-select:none!important}
+.well-news #publicCards{display:flex;gap:28px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:2px;overscroll-behavior-x:contain;touch-action:auto;padding:4px 2px 24px;scrollbar-width:thin;scrollbar-color:#aac4d5 transparent}
+.well-news #publicCards>.card{flex:0 0 calc((100% - 56px)/2.65);min-width:280px;scroll-snap-align:start}
+.well-news #publicCards>.empty-results{width:100%;padding:30px}
+.photo-strip{overflow-x:auto;touch-action:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory}
+.photo-strip img{scroll-snap-align:start}
+.rail-hint{display:flex;justify-content:flex-end;align-items:center;gap:14px;margin:0 0 18px;font-size:11px;color:var(--muted)}
+.rail-hint button{display:grid;place-items:center;width:40px;height:40px;border:1px solid #b4c8d5;background:white;color:var(--well-navy);border-radius:50%}
+.rail-hint button:hover{color:white;background:var(--well-navy)}
+.rail-hint button svg{width:18px;height:18px}
+.rail-hint button:first-of-type svg{transform:rotate(180deg)}
+@media(max-width:760px){.well-news #publicCards{gap:20px;margin-right:-24px;padding-right:24px}.well-news #publicCards>.card{flex-basis:86%;min-width:260px}.rail-hint{justify-content:flex-start}.experience-facts{gap:16px;padding-block:38px 30px}.experience-facts .mosaic-card{flex-basis:78vw;min-height:390px;padding:30px 26px 26px;border-radius:20px}.experience-facts .mosaic-card strong{font-size:76px}.experience-facts .mosaic-card .mosaic-quote{font-size:28px;line-height:1.2;margin:4px 0 12px;max-width:100%}.experience-facts .mosaic-card p:not(.mosaic-quote){font-size:18px;line-height:1.35;max-width:none;margin:16px 0 8px}.experience-facts .mosaic-card .well-pill{margin-top:0}}
+@media(max-width:760px){.contact-feature-helper{padding-bottom:calc(1rem + env(safe-area-inset-bottom))!important}}
+@media(max-width:760px){.well-next .role-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;gap:6px;padding:6px;border-radius:20px;scroll-snap-type:none;box-shadow:none}.well-next .role-tabs button{width:100%;max-width:none;min-height:52px;padding:10px 8px;border-radius:15px;white-space:normal;line-height:1.25;scroll-snap-align:none}}
+@media(max-width:430px){.well-logo>span{display:none}.well-logo img{width:84px;height:44px}.well-actions{gap:8px}.well-actions .header-signin{padding:8px 10px}.mobile-nav-toggle{min-width:56px;padding:8px 10px!important}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero-scroll-stage{height:100svh;min-height:420px}.hero-sticky .hero-film{transform:none!important;will-change:auto}.well-news #publicCards>.card,.well-news #publicCards>.card .opportunity-thumbnail,.experience-facts .mosaic-card{transition:none}.experience-facts:not(.is-dragging) .mosaic-card:hover,.experience-facts .mosaic-card:focus-within{transform:none}}

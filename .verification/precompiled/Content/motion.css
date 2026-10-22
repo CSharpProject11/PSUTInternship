@@ -1,0 +1,7 @@
+/* Content is visible by default. Motion enhances a single photographic chapter. */
+@media(prefers-reduced-motion:no-preference){
+  .next-panel.role-enter{animation:roleEnter .5s cubic-bezier(.16,1,.3,1)}
+  @keyframes roleEnter{from{opacity:.5;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .story-expanded{animation:storyEnter .4s ease-out}
+  @keyframes storyEnter{from{opacity:.5}to{opacity:1}}
+}
