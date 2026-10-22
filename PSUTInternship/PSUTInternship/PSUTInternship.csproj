@@ -112,14 +112,21 @@
     <Content Include="Academic\ZoomMeetings.css" />
     <Content Include="Academic\ZoomMeetings.js" />
     <Content Include="Admin\Dashboard.aspx" />
+    <Content Include="Company\Create_task.aspx" />
     <Content Include="Company\Dashboard.aspx" />
+    <Content Include="Company\EditTask.aspx" />
     <Content Include="Company\Opportunities.aspx" />
     <Content Include="Company\OpportunityForm.aspx" />
     <Content Include="Company\Applications.aspx" />
     <Content Include="Company\Application.aspx" />
     <Content Include="Company\RejectApplication.aspx" />
+    <Content Include="Company\ReportsAndEvaluation.aspx" />
+    <Content Include="Company\SendAccounts.aspx" />
+    <Content Include="Company\SupervisorAccount.aspx" />
+    <Content Include="Company\task_manegment.aspx" />
     <Content Include="Company\Trainees.aspx" />
     <Content Include="Company\Account.aspx" />
+    <Content Include="Company\ViewTask.aspx" />
     <Content Include="Content\Company.css" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
@@ -255,6 +262,20 @@
     <Compile Include="Company\CompanyPageBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Company\Create_task.aspx.cs">
+      <DependentUpon>Create_task.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Company\Create_task.aspx.designer.cs">
+      <DependentUpon>Create_task.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Company\EditTask.aspx.cs">
+      <DependentUpon>EditTask.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Company\EditTask.aspx.designer.cs">
+      <DependentUpon>EditTask.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Company\Opportunities.aspx.cs">
       <DependentUpon>Opportunities.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -275,6 +296,34 @@
       <DependentUpon>RejectApplication.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Company\ReportsAndEvaluation.aspx.cs">
+      <DependentUpon>ReportsAndEvaluation.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Company\ReportsAndEvaluation.aspx.designer.cs">
+      <DependentUpon>ReportsAndEvaluation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Company\SendAccounts.aspx.cs">
+      <DependentUpon>SendAccounts.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Company\SendAccounts.aspx.designer.cs">
+      <DependentUpon>SendAccounts.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Company\SupervisorAccount.aspx.cs">
+      <DependentUpon>SupervisorAccount.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Company\SupervisorAccount.aspx.designer.cs">
+      <DependentUpon>SupervisorAccount.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Company\task_manegment.aspx.cs">
+      <DependentUpon>task_manegment.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Company\task_manegment.aspx.designer.cs">
+      <DependentUpon>task_manegment.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Company\Trainees.aspx.cs">
       <DependentUpon>Trainees.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -289,6 +338,13 @@
     </Compile>
     <Compile Include="Company\Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Company\ViewTask.aspx.cs">
+      <DependentUpon>ViewTask.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Company\ViewTask.aspx.designer.cs">
+      <DependentUpon>ViewTask.aspx</DependentUpon>
     </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
@@ -309,9 +365,13 @@
     </Compile>
     <Compile Include="Models\Opportunity.cs" />
     <Compile Include="Models\Application.cs" />
+
+    <Compile Include="Models\TaskModel.cs" />
+
     <Compile Include="Models\Studentinfo.cs" />
     <Compile Include="Models\StudentTask.cs" />
     <Compile Include="Models\TaskSubmission.cs" />
+
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shared\FirebaseConfig.cs" />
     <Compile Include="Site.Master.cs">
