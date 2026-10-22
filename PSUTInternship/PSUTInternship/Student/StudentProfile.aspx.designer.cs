@@ -69,15 +69,6 @@ namespace Student
         protected global::System.Web.UI.WebControls.DropDownList ddlGender;
 
         /// <summary>
-        /// txtAddress control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtAddress;
-
-        /// <summary>
         /// txtStudentId control.
         /// </summary>
         /// <remarks>
@@ -114,15 +105,6 @@ namespace Student
         protected global::System.Web.UI.WebControls.TextBox txtMajor;
 
         /// <summary>
-        /// txtAcademicYear control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtAcademicYear;
-
-        /// <summary>
         /// txtGPA control.
         /// </summary>
         /// <remarks>
@@ -130,6 +112,33 @@ namespace Student
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtGPA;
+
+        /// <summary>
+        /// txtSemester control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtSemester;
+
+        /// <summary>
+        /// txtCompletedHours control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtCompletedHours;
+
+        /// <summary>
+        /// txtApplicationDate control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtApplicationDate;
 
         /// <summary>
         /// txtGithub control.
@@ -141,6 +150,15 @@ namespace Student
         protected global::System.Web.UI.WebControls.TextBox txtGithub;
 
         /// <summary>
+        /// lnkGithub control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink lnkGithub;
+
+        /// <summary>
         /// txtLinkedin control.
         /// </summary>
         /// <remarks>
@@ -148,6 +166,15 @@ namespace Student
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtLinkedin;
+
+        /// <summary>
+        /// lnkLinkedin control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HyperLink lnkLinkedin;
 
         /// <summary>
         /// txtPortfolio control.
@@ -159,13 +186,22 @@ namespace Student
         protected global::System.Web.UI.WebControls.TextBox txtPortfolio;
 
         /// <summary>
-        /// fileCV control.
+        /// lnkPortfolio control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.FileUpload fileCV;
+        protected global::System.Web.UI.WebControls.HyperLink lnkPortfolio;
+
+        /// <summary>
+        /// txtCV control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtCV;
 
         /// <summary>
         /// lnkCV control.
@@ -177,12 +213,21 @@ namespace Student
         protected global::System.Web.UI.WebControls.HyperLink lnkCV;
 
         /// <summary>
-        /// btnSaveProfessional control.
+        /// lblMessage control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSaveProfessional;
+        protected global::System.Web.UI.WebControls.Label lblMessage;
+
+        /// <summary>
+        /// btnEditProfile control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnEditProfile;
     }
 }
