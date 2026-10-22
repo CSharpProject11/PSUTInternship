@@ -27,5 +27,6 @@ namespace Student
             // CV & Portfolio
             public string CVLink { get; set; }
             public string PortfolioLink { get; set; }
+
         }
     }

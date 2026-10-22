@@ -1,0 +1,32 @@
+Starting IIS Express ...
+Successfully registered URL "https://localhost:44389/" for site "PSUTInternship" application "/"
+Successfully registered URL "http://localhost:55571/" for site "PSUTInternship" application "/"
+Registration completed for site "PSUTInternship"
+IIS Express is running.
+Enter 'Q' to stop IIS Express
+Request started: "GET" http://localhost:55571/Student/Dashboard.aspx
+Response sent: http://localhost:55571/Student/Dashboard.aspx with HTTP status 301.0
+Request started: "GET" http://localhost:55571/Company/Dashboard.aspx
+Response sent: http://localhost:55571/Company/Dashboard.aspx with HTTP status 301.0
+Request started: "GET" http://localhost:55571/Academic/Dashboard.aspx
+Response sent: http://localhost:55571/Academic/Dashboard.aspx with HTTP status 301.0
+Request started: "GET" http://localhost:55571/Admin/Dashboard.aspx
+Response sent: http://localhost:55571/Admin/Dashboard.aspx with HTTP status 301.0
+Request started: "GET" http://localhost:55571/Student/Dashboard
+Response sent: http://localhost:55571/Student/Dashboard with HTTP status 302.0
+Request started: "GET" http://localhost:55571/Company/Dashboard
+Response sent: http://localhost:55571/Company/Dashboard with HTTP status 302.0
+Request started: "GET" http://localhost:55571/Academic/Dashboard
+Response sent: http://localhost:55571/Academic/Dashboard with HTTP status 302.0
+Request started: "GET" http://localhost:55571/Admin/Dashboard
+Response sent: http://localhost:55571/Admin/Dashboard with HTTP status 302.0
+Request started: "GET" http://localhost:55571/
+Response sent: http://localhost:55571/default.aspx with HTTP status 200.0
+Request started: "GET" http://localhost:55571/Content/homepage-interactions.css
+Request started: "GET" http://localhost:55571/Scripts/wellington.js
+Response sent: http://localhost:55571/Content/homepage-interactions.css with HTTP status 304.0
+Response sent: http://localhost:55571/Scripts/wellington.js with HTTP status 304.0
+Request started: "GET" http://localhost:55571/Scripts/interactions.js
+Response sent: http://localhost:55571/Scripts/interactions.js with HTTP status 304.0
+Request started: "GET" http://localhost:55571/Scripts/hero.js
+Response sent: http://localhost:55571/Scripts/hero.js with HTTP status 304.0

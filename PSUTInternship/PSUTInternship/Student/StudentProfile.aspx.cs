@@ -14,14 +14,32 @@ namespace Student
     {
         protected async void Page_Load(object sender, EventArgs e)
         {
-            HttpClient client = new HttpClient();
-
-            string url =
-    "https://teacher-124b2-default-rtdb.firebaseio.com/students/student1.json";
-
-            string json = await client.GetStringAsync(url);
-
-            JObject student = JObject.Parse(json);
+            if (Session["userId"] == null || Session["idToken"] == null || !string.Equals(Convert.ToString(Session["userRole"]), "student", StringComparison.OrdinalIgnoreCase))
+            {
+                Response.Redirect("~/Login.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
+            }
+            if (IsPostBack) return;
+            string profileId = Convert.ToString(Session["profileId"]);
+            if (string.IsNullOrWhiteSpace(profileId)) profileId = Convert.ToString(Session["userId"]);
+            string url = PSUTInternship.Shared.FirebaseConfig.DatabaseUrl.TrimEnd('/') + "/students/"
+                + Uri.EscapeDataString(profileId) + ".json?auth="
+                + Uri.EscapeDataString(Convert.ToString(Session["idToken"]));
+            JObject student;
+            try
+            {
+                string json = await PSUTInternship.Shared.FirebaseConfig.Client.GetStringAsync(url);
+                student = Newtonsoft.Json.JsonConvert.DeserializeObject<JObject>(json) ?? new JObject();
+            }
+            catch (Exception ex) when (ex is HttpRequestException || ex is Newtonsoft.Json.JsonException || ex is TaskCanceledException)
+            {
+                var notice = new System.Web.UI.HtmlControls.HtmlGenericControl("p");
+                notice.Attributes["role"] = "status";
+                notice.InnerText = "Your profile could not be loaded. Return to your dashboard or sign in again.";
+                form1.Controls.AddAt(0, notice);
+                return;
+            }
 
             txtFullName.Text = (string)student["fullName"];
 

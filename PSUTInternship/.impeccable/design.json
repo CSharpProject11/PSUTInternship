@@ -1,0 +1,324 @@
+{
+  "schemaVersion": 2,
+  "extensions": {
+    "motion": [
+      {
+        "name": "workspace-ease",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "Short workspace entrance and drawer transitions; disabled with reduced motion."
+      },
+      {
+        "name": "student-card-entry",
+        "value": "550ms cubic-bezier(.16,1,.3,1)",
+        "purpose": "Staggered student dashboard and page card reveal; disabled with reduced motion."
+      }
+    ],
+    "typographyMeta": {
+      "workspace-body": {
+        "displayName": "Workspace body",
+        "purpose": "Compact operational content, with contextual smaller labels."
+      }
+    },
+    "shadows": [
+      {
+        "name": "account-menu",
+        "value": "0 12px 40px #10283820",
+        "purpose": "Account menu overlap."
+      },
+      {
+        "name": "mobile-drawer",
+        "value": "12px 0 40px #10283815",
+        "purpose": "Mobile workspace navigation overlap."
+      }
+    ],
+    "breakpoints": [
+      {
+        "value": "1150px",
+        "name": "workspace-compact-sidebar"
+      },
+      {
+        "value": "900px",
+        "name": "workspace-tablet"
+      },
+      {
+        "value": "680px",
+        "name": "workspace-mobile"
+      },
+      {
+        "value": "760px",
+        "name": "editorial-mobile"
+      },
+      {
+        "value": "640px",
+        "name": "student-bottom-navigation"
+      }
+    ],
+    "colorMeta": {
+      "editorial-background": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.0011 197.14)",
+          "oklch(26% 0.0011 197.14)",
+          "oklch(38% 0.0011 197.14)",
+          "oklch(49% 0.0011 197.14)",
+          "oklch(61% 0.0011 197.14)",
+          "oklch(72% 0.0011 197.14)",
+          "oklch(84% 0.0011 197.14)",
+          "oklch(95% 0.0011 197.14)"
+        ],
+        "displayName": "editorial background"
+      },
+      "editorial-muted": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.0398 242.12)",
+          "oklch(26% 0.0398 242.12)",
+          "oklch(38% 0.0398 242.12)",
+          "oklch(49% 0.0398 242.12)",
+          "oklch(61% 0.0398 242.12)",
+          "oklch(72% 0.0398 242.12)",
+          "oklch(84% 0.0398 242.12)",
+          "oklch(95% 0.0398 242.12)"
+        ],
+        "displayName": "editorial muted"
+      },
+      "workspace-background": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.0042 236.50)",
+          "oklch(26% 0.0042 236.50)",
+          "oklch(38% 0.0042 236.50)",
+          "oklch(49% 0.0042 236.50)",
+          "oklch(61% 0.0042 236.50)",
+          "oklch(72% 0.0042 236.50)",
+          "oklch(84% 0.0042 236.50)",
+          "oklch(95% 0.0042 236.50)"
+        ],
+        "displayName": "workspace background"
+      },
+      "workspace-muted": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.0359 241.26)",
+          "oklch(26% 0.0359 241.26)",
+          "oklch(38% 0.0359 241.26)",
+          "oklch(49% 0.0359 241.26)",
+          "oklch(61% 0.0359 241.26)",
+          "oklch(72% 0.0359 241.26)",
+          "oklch(84% 0.0359 241.26)",
+          "oklch(95% 0.0359 241.26)"
+        ],
+        "displayName": "workspace muted"
+      },
+      "sky": {
+        "role": "secondary",
+        "tonalRamp": [
+          "oklch(15% 0.0950 228.19)",
+          "oklch(26% 0.0950 228.19)",
+          "oklch(38% 0.0950 228.19)",
+          "oklch(49% 0.0950 228.19)",
+          "oklch(61% 0.0950 228.19)",
+          "oklch(72% 0.0950 228.19)",
+          "oklch(84% 0.0950 228.19)",
+          "oklch(95% 0.0950 228.19)"
+        ],
+        "displayName": "sky"
+      },
+      "ink": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.0424 240.17)",
+          "oklch(26% 0.0424 240.17)",
+          "oklch(38% 0.0424 240.17)",
+          "oklch(49% 0.0424 240.17)",
+          "oklch(61% 0.0424 240.17)",
+          "oklch(72% 0.0424 240.17)",
+          "oklch(84% 0.0424 240.17)",
+          "oklch(95% 0.0424 240.17)"
+        ],
+        "displayName": "ink"
+      },
+      "night": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.0474 245.64)",
+          "oklch(26% 0.0474 245.64)",
+          "oklch(38% 0.0474 245.64)",
+          "oklch(49% 0.0474 245.64)",
+          "oklch(61% 0.0474 245.64)",
+          "oklch(72% 0.0474 245.64)",
+          "oklch(84% 0.0474 245.64)",
+          "oklch(95% 0.0474 245.64)"
+        ],
+        "displayName": "night"
+      },
+      "editorial-pale": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.0261 227.91)",
+          "oklch(26% 0.0261 227.91)",
+          "oklch(38% 0.0261 227.91)",
+          "oklch(49% 0.0261 227.91)",
+          "oklch(61% 0.0261 227.91)",
+          "oklch(72% 0.0261 227.91)",
+          "oklch(84% 0.0261 227.91)",
+          "oklch(95% 0.0261 227.91)"
+        ],
+        "displayName": "editorial pale"
+      },
+      "workspace-line": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.0084 236.57)",
+          "oklch(26% 0.0084 236.57)",
+          "oklch(38% 0.0084 236.57)",
+          "oklch(49% 0.0084 236.57)",
+          "oklch(61% 0.0084 236.57)",
+          "oklch(72% 0.0084 236.57)",
+          "oklch(84% 0.0084 236.57)",
+          "oklch(95% 0.0084 236.57)"
+        ],
+        "displayName": "workspace line"
+      },
+      "blue": {
+        "role": "secondary",
+        "tonalRamp": [
+          "oklch(15% 0.1293 241.66)",
+          "oklch(26% 0.1293 241.66)",
+          "oklch(38% 0.1293 241.66)",
+          "oklch(49% 0.1293 241.66)",
+          "oklch(61% 0.1293 241.66)",
+          "oklch(72% 0.1293 241.66)",
+          "oklch(84% 0.1293 241.66)",
+          "oklch(95% 0.1293 241.66)"
+        ],
+        "displayName": "blue"
+      },
+      "primary": {
+        "role": "primary",
+        "tonalRamp": [
+          "oklch(15% 0.1069 251.63)",
+          "oklch(26% 0.1069 251.63)",
+          "oklch(38% 0.1069 251.63)",
+          "oklch(49% 0.1069 251.63)",
+          "oklch(61% 0.1069 251.63)",
+          "oklch(72% 0.1069 251.63)",
+          "oklch(84% 0.1069 251.63)",
+          "oklch(95% 0.1069 251.63)"
+        ],
+        "displayName": "primary"
+      },
+      "workspace-pale": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.0142 231.21)",
+          "oklch(26% 0.0142 231.21)",
+          "oklch(38% 0.0142 231.21)",
+          "oklch(49% 0.0142 231.21)",
+          "oklch(61% 0.0142 231.21)",
+          "oklch(72% 0.0142 231.21)",
+          "oklch(84% 0.0142 231.21)",
+          "oklch(95% 0.0142 231.21)"
+        ],
+        "displayName": "workspace pale"
+      },
+      "paper": {
+        "role": "neutral",
+        "tonalRamp": [
+          "oklch(15% 0.0000 89.88)",
+          "oklch(26% 0.0000 89.88)",
+          "oklch(38% 0.0000 89.88)",
+          "oklch(49% 0.0000 89.88)",
+          "oklch(61% 0.0000 89.88)",
+          "oklch(72% 0.0000 89.88)",
+          "oklch(84% 0.0000 89.88)",
+          "oklch(95% 0.0000 89.88)"
+        ],
+        "displayName": "paper"
+      }
+    }
+  },
+  "components": [
+    {
+      "kind": "button",
+      "description": "Workspace principal action.",
+      "css": ".ds-primary{font:750 11px Manrope,Arial,sans-serif;display:inline-flex;align-items:center;min-height:44px;background:#003e73;color:white;border:0;border-radius:40px;padding:11px 18px;cursor:pointer;transition:background .18s}.ds-primary:hover{background:#0078b5}.ds-primary:focus-visible{outline:3px solid #0078b5;outline-offset:4px}",
+      "name": "Primary button",
+      "refersTo": "button-primary",
+      "html": "<button class=\"ds-primary\">View applications →</button>"
+    },
+    {
+      "kind": "button",
+      "description": "Action on dark photographic surfaces.",
+      "css": ".ds-light{font:750 11px Manrope,Arial,sans-serif;min-height:44px;border:0;border-radius:40px;padding:11px 18px;background:white;color:#003e73;cursor:pointer;transition:background .18s}.ds-light:hover{background:#76c8ec}.ds-light:focus-visible{outline:3px solid #0078b5;outline-offset:4px}",
+      "name": "Light button",
+      "refersTo": "button-light",
+      "html": "<button class=\"ds-light\">Explore opportunities →</button>"
+    },
+    {
+      "name": "Activity search",
+      "description": "Compact, named table search.",
+      "kind": "input",
+      "html": "<label class=\"ds-search\"><span>Search activity</span><input aria-label=\"Search activity\" placeholder=\"Search activity\" type=\"search\"></label>",
+      "css": ".ds-search{font:12px Manrope,Arial,sans-serif;color:#526777;display:grid;gap:8px}.ds-search input{font:10px Manrope,Arial,sans-serif;min-height:38px;width:180px;padding:8px 12px;border:1px solid #e3e9ed;border-radius:30px;background:white;color:#102838}.ds-search input:hover{border-color:#526777}.ds-search input:focus-visible{outline:3px solid #0078b5;outline-offset:4px}"
+    },
+    {
+      "name": "Side navigation",
+      "description": "Role workspace navigation, with a clear active item.",
+      "kind": "nav",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Workspace\"><a href=\"#overview\" aria-current=\"page\">Overview</a><a href=\"#activity\">Activity</a></nav>",
+      "css": ".ds-nav{display:grid;gap:7px;max-width:200px;font:650 13px Manrope,Arial,sans-serif}.ds-nav a{display:flex;align-items:center;min-height:48px;padding:0 15px;border-radius:12px;color:#526777;text-decoration:none;transition:background .18s,color .18s}.ds-nav a:hover{background:#e7f2f8;color:#003e73}.ds-nav a[aria-current]{background:#003e73;color:white}.ds-nav a:focus-visible{outline:3px solid #0078b5;outline-offset:4px}"
+    },
+    {
+      "name": "Status badge",
+      "description": "Written status supplements semantic color; informational, not interactive.",
+      "kind": "chip",
+      "html": "<span class=\"ds-badge\">Pending</span>",
+      "css": ".ds-badge{display:inline-flex;border-radius:20px;padding:4px 10px;background:#fff3d8;color:#71510e;font:650 9px Manrope,Arial,sans-serif;white-space:nowrap}"
+    },
+    {
+      "kind": "card",
+      "description": "Flat white surface for operational summaries.",
+      "css": ".ds-panel{background:white;color:#102838;border-radius:16px;padding:24px;font-family:Manrope,Arial,sans-serif;max-width:320px}.ds-panel h2{font-size:14px;font-weight:750;margin:0}.ds-panel p{font-size:10px;line-height:1.6;color:#526777;margin:7px 0 20px}.ds-panel span{font-size:12px;color:#526777}",
+      "name": "Decision panel",
+      "refersTo": "workspace-panel",
+      "html": "<article class=\"ds-panel\"><h2>Placement overview</h2><p>Application decisions at a glance</p><span>Application data unavailable</span></article>"
+    }
+  ],
+  "generatedAt": "2026-10-21T19:09:28.7090318Z",
+  "title": "Design System: PSUT Internship Portal",
+  "narrative": {
+    "northStar": "Campus in motion, purposeful workspaces",
+    "keyCharacteristics": [
+      "Authentic PSUT photography and institutional blue.",
+      "Generous curved media with pill actions.",
+      "Compact, shared role workspaces with clear data hierarchy.",
+      "Motion that supports exploration and respects reduced motion."
+    ],
+    "overview": "Extend the supplied PSUT identity into student, company, academic and coordinator workspaces. Authentic campus photography, institutional blue and self-hosted Manrope connect a generous editorial homepage to compact operational screens. The homepage expresses movement through film framing and draggable editorial rails; authenticated workspaces bring the same identity to decisions and records.\n\nThe visual authority is the supplied PSUT homepage and its existing design document. Armenia Travel informs scroll choreography and editorial rails; Dashboard V14 informs compact navigation and information density. Neither reference replaces PSUT branding.",
+    "rules": [
+      {
+        "name": "The PSUT Identity Rule",
+        "body": "Keep the institutional palette and authentic university imagery across roles; role differences come from content and permissions.",
+        "section": "colors"
+      },
+      {
+        "name": "The Truthful Workspace Rule",
+        "body": "Render authenticated records, real zero states and explicit unavailable states. A dash indicating unavailable access is not a zero. Label isolated preview data as illustrative; do not borrow its figures for production.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do preserve authentic PSUT campus photography and supplied logo assets.",
+      "Do retain a clear hierarchy from role-specific heading to current decisions and activity.",
+      "Do provide visible keyboard focus, accessible names and reduced-motion behavior.",
+      "Do distinguish unavailable data, genuine empty data and illustrative previews."
+    ],
+    "donts": [
+      "Don't invent statistics to fill a dashboard.",
+      "Don't introduce a separate brand or palette for each role.",
+      "Don't require dragging or animation to reach essential content.",
+      "Don't hide keyboard-focusable controls with opacity alone."
+    ]
+  }
+}

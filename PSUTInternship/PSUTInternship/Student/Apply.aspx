@@ -1,7 +1,8 @@
-<%@ Page Language="C#" Async="true"
+﻿<%@ Page Language="C#" Async="true"
     AutoEventWireup="true"
     CodeBehind="Apply.aspx.cs"
     Inherits="PSUTInternship.Student.Apply" %>
+<%@ Register Src="~/Student/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -9,11 +10,15 @@
     <title>Apply for an opportunity</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="../Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="../Content/student-workspace.css" rel="stylesheet" />
 </head>
-<body class="bg-light">
+<body class="student-page">
     <form id="form1" runat="server">
-        <main class="container py-4">
-        <a class="btn btn-outline-primary mb-4" href="Opportunities.aspx">Back to opportunities</a>
+    <div class="student-shell">
+        <psut:StudentNav runat="server" />
+        <main id="student-main" class="student-main sd-apply-main" tabindex="-1">
+        <a class="sd-back" href="Opportunities.aspx">← Back to opportunities</a>
+        <div class="student-heading"><div><h1>Opportunity details.</h1><p>Review the placement, then submit your application.</p></div></div>
 
         <asp:Label ID="MessageLabel" runat="server" CssClass="text-danger" role="status" />
 
@@ -23,7 +28,7 @@
             <asp:FormView ID="OpportunityDetails"
                 runat="server" CssClass="w-100">
                 <ItemTemplate>
-                    <article class="card overflow-hidden">
+                    <article class="card sd-card sd-apply-card">
                     <asp:Image runat="server"
                         CssClass="img-fluid w-100"
                         ImageUrl='<%# Eval("ImageUrl") %>'
@@ -58,6 +63,7 @@
 
         </asp:Panel>
         </main>
+    </div>
         <div class="modal fade" id="applicationModal" tabindex="-1" aria-labelledby="applicationModalLabel" aria-describedby="applicationNotice" aria-hidden="true">
             <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
@@ -66,7 +72,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p class="text-muted">Enter your academic, student, and training organization details. All fields are required unless marked optional.</p>
+                        <p class="text-muted">Your saved student information is filled in automatically. Review it and complete any missing academic and training organization details. All fields are required unless marked optional.</p>
                         <fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">General Information</legend><div class="row g-3">
 <div class="col-12 col-md-6"><label class="form-label" for="faculty">Faculty</label><input class="form-control" id="faculty" name="faculty" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="department">Department</label><input class="form-control" id="department" name="department" type="text" required="required" /></div>
@@ -107,9 +113,9 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <p class="text-muted small w-100 mb-1" id="applicationNotice">Submission is not available yet. This form is not connected to application storage.</p>
+                        <p class="text-muted small w-100 mb-1" id="applicationNotice">Your application will be submitted for review with a Pending status.</p>
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" disabled="disabled">Submit Application</button>
+                        <button type="submit" runat="server" onserverclick="SubmitApplication_Click" class="btn btn-primary">Submit Application</button>
                     </div>
                 </div>
             </div>
@@ -118,5 +124,6 @@
     <script src="../Scripts/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
 
 

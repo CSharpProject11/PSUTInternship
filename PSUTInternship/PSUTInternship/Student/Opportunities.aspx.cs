@@ -19,6 +19,12 @@ namespace PSUTInternship.Student
         private static readonly HttpClient Client = new HttpClient();
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["userId"] == null || Session["idToken"] == null || !string.Equals(Convert.ToString(Session["userRole"]), "student", StringComparison.OrdinalIgnoreCase))
+            {
+                Response.Redirect("~/Login.aspx", false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
+            }
             if (!IsPostBack)
             {
                 RegisterAsyncTask(new PageAsyncTask(loadOpportunities));

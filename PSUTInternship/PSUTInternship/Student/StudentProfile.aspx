@@ -1,6 +1,7 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="StudentProfile.aspx.cs"  Async="true" Inherits="Student.StudentProfile" %>
 
 
+<%@ Register Src="~/Student/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
@@ -285,11 +286,14 @@
     }
 }
     </style>
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/student-workspace.css") %>" />
 </head>
 
-<body>
+<body class="student-page">
     <form id="form1" runat="server">
-        <main class="page">
+    <div class="student-shell">
+        <psut:StudentNav runat="server" />
+        <main id="student-main" class="student-main sd-profile" tabindex="-1">
 
             <header class="header">
                 <h1>Student Profile</h1>
@@ -298,7 +302,7 @@
 
             <section class="card">
                 <div class="section-title">
-                    <span>👤</span>
+                    <span><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg></span>
                     <h2>Personal Information</h2>
                 </div>
 
@@ -347,7 +351,7 @@
 
             <section class="card">
                 <div class="section-title">
-                    <span>🎓</span>
+                    <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m2 9 10-5 10 5-10 5L2 9zm4 3v5c4 3 8 3 12 0v-5M22 9v7"/></svg></span>
                     <h2>Academic Information</h2>
                 </div>
 
@@ -391,12 +395,10 @@
             </section>
 
            
-            </div>
-            <section class="card">
-   <section class="card professional-card">
+            <section class="card professional-card">
 
     <div class="professional-heading">
-        <div class="professional-icon">💼</div>
+        <div class="professional-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18"/></svg></div>
         <div>
             <h2>Professional Information</h2>
             <p>
@@ -438,7 +440,7 @@
     </div>
 
     <div class="cv-upload">
-        <div class="upload-icon">☁️</div>
+        <div class="upload-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18H6a4 4 0 0 1-.6-8 7 7 0 0 1 13.2 1A3.5 3.5 0 0 1 18 18h-1M12 21V12m-3 3 3-3 3 3"/></svg></div>
         <h3>Upload your CV</h3>
         <p>PDF file · Maximum 5 MB</p>
 
@@ -461,9 +463,10 @@
         OnClick="btnSaveProfessional_Click" />
 
 </section>
-</section>
 
+        <nav class="sd-profile-links" aria-label="Account links"><a href="<%= ResolveUrl("~/") %>">PSUT homepage</a><a href="<%= ResolveUrl("~/Logout.aspx") %>">Sign out</a></nav>
         </main>
+    </div>
     </form>
 </body>
 </html>
