@@ -16,11 +16,19 @@ namespace Student
 {
     public partial class MyTasks : Page
     {
+
         private readonly string databaseUrl =
             "https://teacher-124b2-default-rtdb.firebaseio.com";
 
         // For testing only
         private readonly string studentId = "student1";
+
+        private string OpenTaskId
+        {
+            get { return ViewState["OpenTaskId"] as string; }
+            set { ViewState["OpenTaskId"] = value; }
+        }
+
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -100,6 +108,7 @@ namespace Student
                     {
                         rptTasks.DataSource = myTasks;
                         rptTasks.DataBind();
+
                         return;
                     }
 
@@ -114,6 +123,13 @@ namespace Student
                         submissions =
                             JObject.Parse(submissionsJson);
                     }
+                    string feedbackUrl =databaseUrl + "/taskFeedback.json";
+                    string feedbackJson =
+                        await client.GetStringAsync(feedbackUrl);
+
+                    JObject feedback = feedbackJson == "null"
+                        ? new JObject()
+                        : JObject.Parse(feedbackJson);
 
                     foreach (var item in tasks.Properties())
                     {
@@ -153,15 +169,20 @@ namespace Student
                                 task.StudentPdfUrl)
                             && IsValidPdfUrl(task.StudentPdfUrl);
 
-                        bool deadlinePassed =
-                            IsDeadlinePassed(task.DueDate);
+                        bool deadlinePassed =IsDeadlinePassed(task.DueDate);
 
-                        task.CanSubmit = !deadlinePassed;
+                        bool isFinal =
+                            string.Equals(task.Status, "Accepted",
+                                StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(task.Status, "Rejected",
+                                StringComparison.OrdinalIgnoreCase);
 
-                        if (deadlinePassed)
+                        task.CanSubmit = !deadlinePassed && !isFinal;
+                       
+
+                        if (deadlinePassed || isFinal)
                         {
-                            task.ButtonText = "Submission Closed";
-
+                            task.ButtonText = isFinal? "Task Closed": "Submission Closed";
                             // Mark only unsubmitted tasks as overdue
                             if (!hasSubmission &&
                                 string.Equals(
@@ -185,10 +206,34 @@ namespace Student
                         }
 
                         myTasks.Add(task);
+                        JToken taskFeedback = feedback[task.TaskId];
+
+                        if (taskFeedback != null &&
+                            (string)taskFeedback["studentId"] == studentId &&
+                            string.Equals(task.Status, "Reassigned",
+                                StringComparison.OrdinalIgnoreCase))
+                        {
+                            task.SupervisorFeedback =
+                                (string)taskFeedback["comments"];
+                        }
                     }
 
                     rptTasks.DataSource = myTasks;
                     rptTasks.DataBind();
+                    foreach (RepeaterItem item in rptTasks.Items)
+                    {
+                        HiddenField hiddenTaskId =
+                            (HiddenField)item.FindControl("hfTaskId");
+
+                        Panel panel =
+                            (Panel)item.FindControl("pnlTaskDetails");
+
+                        if (hiddenTaskId != null && panel != null)
+                        {
+                            panel.Visible =
+                                hiddenTaskId.Value == OpenTaskId;
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -264,6 +309,16 @@ namespace Student
                 {
                     throw new Exception(
                         "Task not assigned to this student.");
+                }
+                string status = currentTask.Status;
+
+                if (string.Equals(status, "Accepted",
+                        StringComparison.OrdinalIgnoreCase) ||
+                    string.Equals(status, "Rejected",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new Exception(
+                        "This task has been reviewed and cannot be edited.");
                 }
 
                 // Deadline validation
@@ -374,10 +429,56 @@ namespace Student
             object source,
             RepeaterCommandEventArgs e)
         {
+            string taskId = Convert.ToString(e.CommandArgument);
+
+            if (e.CommandName == "ViewTask")
+            {
+                RegisterAsyncTask(new PageAsyncTask(async () =>
+                {
+                    try
+                    {
+                        OpenTaskId = taskId;
+
+                        using (HttpClient client = new HttpClient())
+                        {
+                            string url = databaseUrl + "/tasks/"
+                                + Uri.EscapeDataString(taskId) + ".json";
+
+                            string json = await client.GetStringAsync(url);
+
+                            if (json == "null")
+                                throw new Exception("Task not found.");
+
+                            StudentTask task =
+                                JsonConvert.DeserializeObject<StudentTask>(json);
+
+                            if (task == null || task.StudentId != studentId)
+                                throw new Exception("Access denied.");
+
+                            if (string.Equals(task.Status, "Pending",
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                await UpdateTaskStatus(
+                                    client, taskId, "In Progress");
+                            }
+                        }
+
+                        await LoadTasks();
+                    }
+                    catch (Exception ex)
+                    {
+                        OpenTaskId = null;
+                        lblMessage.Text = Server.HtmlEncode(ex.Message);
+                    }
+                }));
+
+                return;
+            }
+
             if (e.CommandName != "SubmitTask")
                 return;
 
-            string taskId = Convert.ToString(e.CommandArgument);
+           
 
             TextBox txtAnswer =
                 (TextBox)e.Item.FindControl("txtAnswer");

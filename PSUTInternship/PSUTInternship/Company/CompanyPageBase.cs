@@ -24,6 +24,7 @@ namespace PSUTInternship.Company
         protected string CompanyId { get { return ConfigurationManager.AppSettings["FirebaseCompanyId"] ?? "ofuqTechnology"; } }
 
         protected override void OnInit(EventArgs e)
+
         {
             base.OnInit(e);
             if (Session["FirebaseIdToken"] == null)

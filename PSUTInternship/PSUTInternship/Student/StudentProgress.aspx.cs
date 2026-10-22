@@ -99,13 +99,10 @@ namespace WebApplication1
 
             HttpClient client = new HttpClient();
 
-            string tasksUrl =
-                "https://teacher-124b2-default-rtdb.firebaseio.com/tasks.json";
+            string tasksUrl = "https://teacher-124b2-default-rtdb.firebaseio.com/tasks.json";
 
-            string submissionsUrl =
-                "https://teacher-124b2-default-rtdb.firebaseio.com/taskSubmissions.json";
-            string feedbackUrl =
-    "https://teacher-124b2-default-rtdb.firebaseio.com/taskFeedback.json";
+            string submissionsUrl = "https://teacher-124b2-default-rtdb.firebaseio.com/taskSubmissions.json";
+            string feedbackUrl = "https://teacher-124b2-default-rtdb.firebaseio.com/taskFeedback.json";
 
             string tasksJson = await client.GetStringAsync(tasksUrl);
             string submissionsJson = await client.GetStringAsync(submissionsUrl);
@@ -119,13 +116,9 @@ namespace WebApplication1
 
             JObject tasks = JObject.Parse(tasksJson);
 
-            JObject submissions = submissionsJson == "null"
-                ? new JObject()
-                : JObject.Parse(submissionsJson);
+            JObject submissions = submissionsJson == "null" ? new JObject(): JObject.Parse(submissionsJson);
 
-            JObject feedback = feedbackJson == "null"
-    ? new JObject()
-    : JObject.Parse(feedbackJson);
+            JObject feedback = feedbackJson == "null"? new JObject(): JObject.Parse(feedbackJson);
 
             var taskList = new List<object>();
 
@@ -146,15 +139,12 @@ namespace WebApplication1
                     (string)submission["studentId"] == studentId;
                 JToken taskFeedback = feedback[taskId];
 
-                string status = isSubmitted ? "Submitted" : "Pending";
+                string status = (string)task.Value["status"];
 
-                if (taskFeedback != null &&
-                    (string)taskFeedback["studentId"] == studentId &&
-                    (string)taskFeedback["status"] == "Revision Requested")
+                if (string.IsNullOrWhiteSpace(status))
                 {
-                    status = "Revision Requested";
+                    status = isSubmitted ? "Submitted" : "Pending";
                 }
-
                 taskList.Add(new
                 {
                     Title = (string)task.Value["title"] ?? "Untitled Task",
@@ -230,8 +220,7 @@ namespace WebApplication1
 
             HttpClient client = new HttpClient();
 
-            string url = "https://teacher-124b2-default-rtdb.firebaseio.com/trainingProgress/"
-                         + studentId + ".json";
+            string url = "https://teacher-124b2-default-rtdb.firebaseio.com/trainingProgress/"  + studentId + ".json";
 
             string json = await client.GetStringAsync(url);
 
@@ -249,8 +238,7 @@ namespace WebApplication1
 
             lblApprovedHours.Text = approvedHours.ToString();
 
-            lblHoursProgress.Text =
-                approvedHours + " / " + requiredHours + " hours";
+            lblHoursProgress.Text = approvedHours + " / " + requiredHours + " hours";
 
             double percentage = 0;
 
@@ -315,8 +303,7 @@ namespace WebApplication1
 
             HttpClient client = new HttpClient();
 
-            string url =
-                "https://teacher-124b2-default-rtdb.firebaseio.com/evaluations.json";
+            string url = "https://teacher-124b2-default-rtdb.firebaseio.com/evaluations.json";
 
             string json = await client.GetStringAsync(url);
 

@@ -166,8 +166,25 @@
                 ID="rptTasks"
                 runat="server"
                 OnItemCommand="rptTasks_ItemCommand">
-
                 <ItemTemplate>
+                    <asp:HiddenField
+    ID="hfTaskId"
+    runat="server"
+    Value='<%# Eval("TaskId") %>' />
+                    <asp:Panel
+    ID="pnlFeedback"
+    runat="server"
+    Visible='<%# !string.IsNullOrWhiteSpace(Eval("SupervisorFeedback") as string) %>'
+    CssClass="supervisor-feedback">
+
+    <h4>Supervisor Feedback</h4>
+
+    <asp:Label
+        ID="lblSupervisorFeedback"
+        runat="server"
+        Text='<%# Eval("SupervisorFeedback") %>' />
+
+</asp:Panel>
 
                     <div class="task-card">
 
@@ -195,6 +212,17 @@
                                 <%#: Eval("Status") %>
                             </span>
                         </div>
+                        <asp:Button
+    ID="btnView"
+    runat="server"
+    Text="View Task"
+    CssClass="submit-btn"
+    CommandName="ViewTask"
+    CommandArgument='<%# Eval("TaskId") %>' />
+                        <asp:Panel
+    ID="pnlTaskDetails"
+    runat="server"
+    Visible="false">
 
                         <label class="section-label">
                             Your Answer
@@ -246,6 +274,7 @@
                             Submissions and edits are allowed until
                             the end of the due date (Jordan time).
                         </p>
+                            </asp:Panel>
 
                     </div>
 

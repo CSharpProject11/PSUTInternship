@@ -54,5 +54,7 @@ namespace WebApplication1
 
         [JsonIgnore]
         public bool HasPdfLink { get; set; }
+        [JsonIgnore]
+        public string SupervisorFeedback { get; set; }
     }
 }
