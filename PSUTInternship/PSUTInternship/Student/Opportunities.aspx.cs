@@ -36,11 +36,8 @@ namespace PSUTInternship.Student
 
         public async Task loadOpportunities()
         {
-            string json = await Client.GetStringAsync(
-                FirebaseUrl + "opportunities.json");
-
-            var records = JsonConvert.DeserializeObject<Dictionary<string, Opportunity>>(json)
-                ?? new Dictionary<string, Opportunity>();
+            var records = (await PortalRepository.Collection("opportunities"))
+                .ToDictionary(x => x.Key, x => x.Value.ToObject<Opportunity>());
 
             foreach (var record in records)
             {

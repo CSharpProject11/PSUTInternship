@@ -98,7 +98,11 @@ public static class WorkflowTests
         var studentOpportunity = JsonConvert.DeserializeObject<Opportunity>(JsonConvert.SerializeObject(opportunity));
         Assert(studentOpportunity.Status && studentOpportunity.DeadLine.Year == 2026, "company opportunities deserialize in student pages");
         Assert(OpportunityEligibility.Matches(studentOpportunity, JObject.FromObject(new { major = "Software Engineering" })), "matching major is eligible");
-        Assert(!OpportunityEligibility.Matches(studentOpportunity, JObject.FromObject(new { major = "Accounting" })), "unrelated majors are excluded");
+        Assert(OpportunityEligibility.Matches(studentOpportunity, JObject.FromObject(new { major = "Accounting" })), "role specialization does not hide opportunities from other majors");
+        var backend = JsonConvert.DeserializeObject<Opportunity>("{\"title\":\"backend\",\"specialization\":\"developer\",\"status\":\"active\",\"deadline\":\"2026-10-24\"}");
+        Assert(backend.Status && OpportunityEligibility.Matches(backend, JObject.FromObject(new { major = "Software Engineering" })), "backend with developer specialization remains visible and eligible");
+        backend.College = "Engineering";
+        Assert(!OpportunityEligibility.Matches(backend, JObject.FromObject(new { college = "Business" })), "explicit college restrictions remain enforced");
         Assert(EvaluationPolicy.FinalGrade(16, 20, 90) == 84, "weighted results normalize different grading scales");
         await Reject(() => Task.Run(() => EvaluationPolicy.FinalGrade(21, 20, 90)), "scores above a criterion maximum are rejected");
 
@@ -210,7 +214,7 @@ public static class WorkflowTests
         Identity("coordinator", "coordinator");
         await DatabaseSchema.SynchronizeLinks();
         Assert((string)FirebaseRestClient.Data["students"]["student1"]["internshipId"] == "internship1" && (string)FirebaseRestClient.Data["students"]["student1"]["companyId"] == "company1", "coordinator backfills missing reverse profile links from existing placements");
-        Assert(FirebaseRestClient.Data["publicOpportunities"]["opp1"]["description"] == null && (bool)FirebaseRestClient.Data["publicOpportunities"]["opp1"]["status"], "coordinator creates limited public previews for existing active openings");
+        Assert(FirebaseRestClient.Data["publicOpportunities"] == null, "schema preparation does not create duplicate opportunity previews");
         Assert((string)FirebaseRestClient.Data["students"]["conflicting-student"]["academicSupervisorId"] == "another-supervisor", "relationship synchronization preserves existing supervisor assignments");
         Set("students/student1/requiredTrainingHours", 6);
         foreach (var row in ((JObject)FirebaseRestClient.Data["tasks"]).Properties()) Set("tasks/"+row.Name+"/status", "reviewed");

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json.Linq;
 using PSUTInternship.Shared;
 namespace PSUTInternship.Company
@@ -11,7 +11,7 @@ namespace PSUTInternship.Company
             {
                 string id = Request.QueryString["id"];
                 var task = await PortalRepository.CompanyTask(id);
-                Describtion.InnerHtml = "<h1>" + H((string)task["title"]) + "</h1><p>" + H((string)task["description"]) + "</p><p>Due: " + H((string)task["dueDate"]) + " | " + H((string)task["status"]) + "</p><p>" + H((string)task["feedback"]) + "</p>";
+                Describtion.InnerHtml = "<h2>" + H((string)task["title"]) + "</h2><p>" + H((string)task["description"]) + "</p><p>Due: " + H((string)task["dueDate"]) + " | " + H((string)task["status"]) + "</p><p>" + H((string)task["feedback"]) + "</p>";
                 var submission = await PortalRepository.SubmissionForTask(id, (string)task["studentId"]);
                 solution.InnerHtml = submission == null ? "<p>No work submitted yet.</p>" : "<h2>Submitted work</h2><p>" + H((string)submission["answer"]) + "</p>";
                 Uri url;

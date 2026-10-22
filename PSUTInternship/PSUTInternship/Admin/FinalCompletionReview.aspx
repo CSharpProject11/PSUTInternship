@@ -1,43 +1,17 @@
-
-<%@ Page Language="C#" Async="true" AutoEventWireup="true"
+<%@ Page Title="Final Completion Review | UIMS" MasterPageFile="~/Portal.Master" Language="C#" Async="true" AutoEventWireup="true"
     CodeBehind="FinalCompletionReview.aspx.cs"
     Inherits="FinalCompletionReview" %>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Final Completion Review | UIMS</title>
-    <link href="Coordinator.css?v=10" rel="stylesheet" />
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<link href="Coordinator.css?v=10" rel="stylesheet" />
     <link href="FinalCompletionReview.css?v=10" rel="stylesheet" />
-</head>
-<body>
-<form id="form1" runat="server">
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
 <input type="hidden" name="csrfToken" value="<%= H(CsrfToken) %>" />
 
 <div class="layout">
 
     <!-- Shared Sidebar -->
-    <aside class="sidebar">
-        <div class="brand">
-            UIMS <span>Coordinator</span>
-        </div>
 
-        <nav>
-            <a class="nav-link" href="Dashboard.aspx">Dashboard</a>
-            <a class="nav-link" href="ManageStudents.aspx">Manage Students</a>
-            <a class="nav-link" href="ManageCompanies.aspx">Manage Companies</a>
-            <a class="nav-link" href="ManageAcademic.aspx">Manage Academic Supervisors</a>
-            <a class="nav-link" href="AssignSuper.aspx">Assign Academic Supervisors</a>
-            <a class="nav-link" href="MonitorPlacements.aspx">Monitor Placements &amp; Progress</a>
-            <a class="nav-link active" href="FinalCompletionReview.aspx">Final Completion Review</a>
-            <a class="nav-link" href="ContactMessages.aspx">Contact Messages</a>
-            <a class="nav-link" href="CoordinatorAccount.aspx">Coordinator Account</a>
-        </nav>
-
-        <div class="sidefoot">University Internship System</div>
-    </aside>
 
     <div class="workspace">
         <header class="topbar">
@@ -608,7 +582,4 @@
 </div>
 
 <% } %>
-
-</form>
-</body>
-</html>
+</asp:Content>

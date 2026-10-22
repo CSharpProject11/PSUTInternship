@@ -1,13 +1,6 @@
-<%@ Page Title="Manage Students" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="ManageStudents.aspx.cs" Inherits="PSUTInternship.Admin.ManageStudents" %>
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head runat="server">
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Manage Students - UIMS</title>
-    <style>
+<%@ Page MasterPageFile="~/Portal.Master" Title="Manage Students" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="ManageStudents.aspx.cs" Inherits="PSUTInternship.Admin.ManageStudents" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<style>
         * {
             box-sizing: border-box;
         }
@@ -228,18 +221,9 @@
             }
         }
     </style>
-</head>
-<body>
-    <form id="form1" runat="server">
-        <nav class="sidebar">
-            <h2>UIMS</h2>
-            <a href="Dashboard.aspx">Dashboard</a>
-            <a href="ManageStudents.aspx" class="active">Students</a>
-            <a href="ManageAcademic.aspx">Academic Supervisors</a>
-            <a href="ManageCompanies.aspx">Company Supervisors</a>
-            <a href="AssignSuper.aspx">Assign Academic</a>
-            <a href="../Login.aspx">Logout</a>
-        </nav>
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+
 
         <main class="main">
             <header class="top">
@@ -264,7 +248,7 @@
                             <h2>Student list</h2>
                             <p class="muted">View, edit, or change account status.</p>
                         </div>
-                        <asp:Button ID="addStudentButton" runat="server" Text="Add student" CssClass="btn" CausesValidation="false" OnClick="addStudentButton_Click" /></div>
+                        <asp:Button ID="addStudentButton" runat="server" Text="+ Add student" CssClass="btn" CausesValidation="false" OnClick="addStudentButton_Click" /></div>
                     <div class="search">
                         <asp:TextBox ID="searchTextBox" runat="server" placeholder="Search name, email, or student number" /><asp:Button ID="searchButton" runat="server" Text="Search" CssClass="btn" OnClick="searchButton_Click" /><a class="btn light" href="ManageStudents.aspx">Reset</a></div>
                     <div class="tableWrap">
@@ -326,6 +310,4 @@
                 </section>
             </asp:Panel>
         </main>
-    </form>
-</body>
-</html>
+</asp:Content>

@@ -1,24 +1,8 @@
-
-<%@ Page Language="C#" AutoEventWireup="true"
+<%@ Page Title="Student Progress Monitor | UIMS" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true"
     CodeBehind="StudentProgress.aspx.cs"
     Inherits="PSUTInternship.Academic.StudentProgress" %>
-
-<!DOCTYPE html>
-<html lang="en">
-<head runat="server">
-    <meta charset="utf-8" />
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1" />
-
-    <title>Student Progress Monitor | UIMS</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet" />
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-          rel="stylesheet" />
-
-    <style>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<style>
         :root {
             --navy: #102544;
             --blue: #2563eb;
@@ -776,59 +760,12 @@
             }
         }
     </style>
-</head>
-
-<body>
-
-<form id="form1" runat="server">
-
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
 <div class="layout">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
 
-        <div class="brand">
-            UIMS
-            <small>INTERNSHIP MANAGEMENT</small>
-        </div>
-
-        <div class="nav-title">Academic Supervisor</div>
-
-        <a class="nav-link" href="Dashboard.aspx">
-            <i class="bi bi-grid-1x2"></i>
-            Dashboard
-        </a>
-
-        <a class="nav-link active" href="StudentProgress.aspx">
-            <i class="bi bi-pie-chart"></i>
-            Student Progress
-        </a>
-
-        <a class="nav-link" href="FinalEvaluation.aspx">
-            <i class="bi bi-check2-circle"></i>
-            Final Evaluation
-        </a>
-
-        <a class="nav-link" href="ZommMeetings.html">
-            <i class="bi bi-camera-video"></i>
-            Zoom Meetings
-        </a>
-
-        <a class="nav-link" href="Account.aspx">
-            <i class="bi bi-person"></i>
-            My Account
-        </a>
-
-        <div class="sidebar-divider"></div>
-
-        <div class="nav-title">General</div>
-
-        <a class="nav-link" href="../Default.aspx">
-            <i class="bi bi-arrow-return-left"></i>
-            Back to Home
-        </a>
-
-    </aside>
 
     <!-- MAIN -->
     <main class="main">
@@ -1484,8 +1421,4 @@
     </div>
 
 </asp:Panel>
-
-</form>
-
-</body>
-</html>
+</asp:Content>

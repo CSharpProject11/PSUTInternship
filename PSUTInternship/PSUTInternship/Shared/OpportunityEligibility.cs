@@ -9,9 +9,8 @@ namespace PSUTInternship.Shared
         {
             if (opportunity == null || student == null) return false;
             bool college = string.IsNullOrWhiteSpace(opportunity.College) || string.Equals(opportunity.College, (string)student["college"], StringComparison.OrdinalIgnoreCase);
-            bool major = string.IsNullOrWhiteSpace(opportunity.Specialization) || opportunity.Specialization.Equals("All", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(opportunity.Specialization.Trim(), ((string)student["major"] ?? "").Trim(), StringComparison.OrdinalIgnoreCase);
-            return college && major;
+            // Specialization describes the role; it is not a student degree identifier.
+            return college;
         }
     }
 }

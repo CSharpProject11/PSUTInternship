@@ -35,7 +35,10 @@ function allowed(mode,path,uid,{value,query={}}={}){
  const leaf=ancestors.at(-1);return validate(leaf.node,leaf.path,leaf.vars);
 }
 function expect(actual,expected,label){assert.equal(actual,expected,label);count++;console.log('PASS '+label);}
-expect(allowed('read','publicOpportunities',null),true,'anonymous visitors can read limited previews');
+const simplifiedApplication={studentId:'student',opportunityId:'opening',companyId:'company',status:'Pending',isOfferConfirmed:false,details:{studentName:'Student',studentEmail:'student@example.com'}};
+expect(allowed('write','applications/student_opening','student',{value:simplifiedApplication}),true,'students can create applications without organization or training details');
+expect(allowed('write','applications/offer','student',{value:simplifiedApplication}),false,'create-only application rules prevent overwriting an existing review');
+expect(allowed('read','opportunities',null),false,'anonymous visitors cannot read opportunity records');
 expect(allowed('read','opportunities',null),false,'anonymous visitors cannot read full opportunity records');
 expect(allowed('read','users',null),false,'anonymous visitors cannot read profiles');
 expect(allowed('read','tasks','student'),false,'unfiltered student task reads are denied');

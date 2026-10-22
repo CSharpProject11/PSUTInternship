@@ -1,98 +1,14 @@
-<%@ Register Src="~/Shared/CompanyLinks.ascx" TagPrefix="psut" TagName="CompanyLinks" %>
-<%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="CreateTask.aspx.cs" Inherits="PSUTInternship.Company.CreateTask" %>
-
-<!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <title></title>
-    <style>
-        #boxDeadline_assingTo{
-            display:flex;
-        }
-        #ErorrDeadline,#ErrorTitel,#ErorrAssign,#ErorrDescreption,#ErorrEvaluation,#Errorscor{
-            color:red;
-        }
-    </style>
-</head>
-<body>
-    <form id="form1" runat="server">
-<psut:CompanyLinks runat="server" />
-        <div>
-            <asp:Label ID="Subject" runat="server" Text="Create New Task"></asp:Label>
-        </div>
-        <p>
-            <asp:Label ID="statment" runat="server" Text="Assign a new task to one of your trainees"></asp:Label>
-        </p>
-        <p>
-            <asp:Label ID="TitleTask" runat="server" Text="Task Title "></asp:Label>
-        </p>
-        <p>
-            <input id="Titelinput" type="text" runat="server" runat="server"/>
-        <div id="boxDeadline_assingTo">
-            <asp:Label ID="ErrorTitel" runat="server"></asp:Label>
-        </p>
-
-            <asp:Label ID="AssignTo" runat="server" Text="Assign To"></asp:Label>
-            <details>
-            <summary>Select trainees</summary><asp:CheckBoxList ID="cblStudents"  runat="server"> </asp:CheckBoxList>
-
-            <summary>
-            </summary>&nbsp;<br />
-            <asp:Label ID="ErorrAssign" runat="server"></asp:Label>
-
-           </details>
-        <p>
-            <asp:Label ID="Deadline" runat="server" Text="Deadline"></asp:Label>
-        </p>
-        <p>
-            <asp:TextBox ID="Deadlineinput" runat="server" TextMode="DateTime"></asp:TextBox>
-        </p>
-            <p>
-                <asp:Label ID="ErorrDeadline" runat="server"></asp:Label>
-        </p>
-        </div>
-        <p>
-            <asp:Label ID="Description" runat="server" Text="Description"></asp:Label>
-        </p>
-        <p>
-            <textarea id="Descriptioniput" cols="20" name="S1" rows="2" runat="server"></textarea></p>
-        <p>
-            <asp:Label ID="ErorrDescreption" runat="server"></asp:Label>
-        </p>
-        <p>
-            <asp:Label ID="EvaluationCriteria" runat="server" Text="Evaluation Criteria"></asp:Label>
-        </p>
-        <p>
-            <textarea id="EvaluationCriteriainput" cols="20" name="S2" rows="2" runat="server"></textarea></p>
-        <p>
-            <asp:Label ID="ErorrEvaluation" runat="server"></asp:Label>
-        </p>
-        <p>
-            <asp:Label ID="Score" runat="server" Text="Maximum score for this task"></asp:Label>
-        </p>
-        <p>
-            <input id="Scoreinput" type="text" runat="server"/></p>
-        <p>
-            <asp:Label ID="Errorscor" runat="server"></asp:Label>
-        </p>
-        <p>
-            <asp:Label ID="Prorirty" runat="server" Text="Prorirty"></asp:Label>
-        </p>
-        <p>
-            <asp:DropDownList ID="prorityinput" runat="server">
-                <asp:ListItem>Low</asp:ListItem>
-                <asp:ListItem>Higth</asp:ListItem>
-                <asp:ListItem>Meudim</asp:ListItem>
-            </asp:DropDownList>
-        </p>
-        <p>
-            &nbsp;</p>
-      
-        <p>
-            <asp:Button ID="Cancel" runat="server" OnClick="Cancel_Click" Text="Cancel" />
-            <asp:Button ID="CreateTaskButton" runat="server" OnClick="CreateTask_Click" Text="Create Task" />
-        </p>
-    </form>
-</body>
-</html>
+<%@ Page Title="Create task" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="CreateTask.aspx.cs" Inherits="PSUTInternship.Company.CreateTask" %>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<a class="sd-back" href="Tasks.aspx">← Back to tasks</a><h1>Create task</h1><p class="subtitle">Set clear expectations for your confirmed trainees.</p>
+<section class="panel portal-form-panel"><h2>Task details</h2><asp:Label ID="ErorrAssign" runat="server" CssClass="message" role="status" />
+<div class="fields">
+<div class="field wide"><label for="<%= Titelinput.ClientID %>">Task title</label><input id="Titelinput" type="text" runat="server" /><asp:Label ID="ErrorTitel" runat="server" CssClass="field-error" /></div>
+<div class="field"><label>Assign trainees</label><details class="portal-trainee-picker"><summary>Select trainees</summary><asp:CheckBoxList ID="cblStudents" runat="server" /></details></div>
+<div class="field"><asp:Label runat="server" AssociatedControlID="Deadlineinput" Text="Deadline" /><asp:TextBox ID="Deadlineinput" runat="server" TextMode="DateTimeLocal" /><asp:Label ID="ErorrDeadline" runat="server" CssClass="field-error" /></div>
+<div class="field wide"><label for="<%= Descriptioniput.ClientID %>">Description</label><textarea id="Descriptioniput" rows="5" runat="server"></textarea><asp:Label ID="ErorrDescreption" runat="server" CssClass="field-error" /></div>
+<div class="field wide"><label for="<%= EvaluationCriteriainput.ClientID %>">Evaluation criteria</label><textarea id="EvaluationCriteriainput" rows="3" runat="server"></textarea><asp:Label ID="ErorrEvaluation" runat="server" CssClass="field-error" /></div>
+<div class="field"><label for="<%= Scoreinput.ClientID %>">Maximum score</label><input id="Scoreinput" type="text" inputmode="decimal" runat="server" /><asp:Label ID="Errorscor" runat="server" CssClass="field-error" /></div>
+<div class="field"><asp:Label runat="server" AssociatedControlID="prorityinput" Text="Priority" /><asp:DropDownList ID="prorityinput" runat="server"><asp:ListItem>Low</asp:ListItem><asp:ListItem>Medium</asp:ListItem><asp:ListItem>High</asp:ListItem></asp:DropDownList></div>
+</div><div class="portal-form-actions"><asp:Button ID="Cancel" runat="server" OnClick="Cancel_Click" Text="Cancel" CssClass="btn light" CausesValidation="false" /><asp:Button ID="CreateTaskButton" runat="server" OnClick="CreateTask_Click" Text="Create task" CssClass="btn" /></div></section>
+</asp:Content>

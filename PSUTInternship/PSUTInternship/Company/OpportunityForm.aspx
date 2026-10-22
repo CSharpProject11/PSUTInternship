@@ -1,18 +1,13 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="OpportunityForm.aspx.cs" Inherits="PSUTInternship.Company.OpportunityForm" %>
-<!DOCTYPE html>
-<html>
-    <head runat="server">
-        <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <title><%= IsEdit ? "Edit" : "Create" %> opportunity</title>
-        <link href="../Content/Company.css" rel="stylesheet" />
-    </head>
-    <body>
-        <%= PageHeader("opportunities", IsEdit ? "Edit internship opportunity" : "Create internship opportunity", "Opportunities are shown to students with eligible majors.") %>
+<%@ Page Title="<%= IsEdit ? &quot;Edit&quot; : &quot;Create&quot; %> opportunity" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" CodeBehind="OpportunityForm.aspx.cs" Inherits="PSUTInternship.Company.OpportunityForm" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<link href="../Content/Company.css" rel="stylesheet" />
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<%= PageHeader("opportunities", IsEdit ? "Edit internship opportunity" : "Create internship opportunity", "Publish an opportunity for students to explore.") %>
         <div class="form-layout">
             <section class="form-card">
                 <h2>Details</h2>
-                <form method="post"><input type="hidden" name="csrfToken" value="<%= CsrfToken %>"/>
+                <input type="hidden" name="csrfToken" value="<%= CsrfToken %>"/>
                     <label>Opportunity title</label>
                     <input name="title" required value="<%= Opportunity == null ? "" : H(Opportunity.Title) %>"/>
                     <label>Specialization</label>
@@ -30,7 +25,7 @@
                             <%= IsEdit ? "Save changes" : "Publish opportunity" %>
                         </button>
                     </p>
-                </form>
+
             </section>
             <aside class="side-note">
                 <h2>Before you save</h2>
@@ -39,6 +34,4 @@
             </aside>
         </div>
         <%= PageFooter() %>
-    </body>
-</html>
-
+</asp:Content>

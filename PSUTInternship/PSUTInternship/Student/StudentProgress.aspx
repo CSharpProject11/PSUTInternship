@@ -1,14 +1,7 @@
 <%@ Register Src="~/Shared/StudentLinks.ascx" TagPrefix="psut" TagName="StudentLinks" %>
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="StudentProgress.aspx.cs"  Async="true" Inherits="PSUTInternship.Student.StudentProgress" %>
-
-
-
-<!DOCTYPE html>
-<html>
-<head runat="server">
-    <title>My Progress & Evaluation</title>
-
-    <style>
+<%@ Page Title="My Progress & Evaluation" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" CodeBehind="StudentProgress.aspx.cs"  Async="true" Inherits="PSUTInternship.Student.StudentProgress" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<style>
         * {
             box-sizing: border-box;
         }
@@ -236,13 +229,9 @@
             }
         }
     </style>
-</head>
-
-<body>
-<form id="form1" runat="server">
-<psut:StudentLinks runat="server" />
-
-    <div class="container">
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<div class="container">
 
         <div class="page-header">
             <h1>My Progress & Evaluation</h1>
@@ -313,7 +302,7 @@
 
         </div>
 
-       
+
 <!-- Task Progress -->
 <div class="section">
 
@@ -437,8 +426,4 @@
         </div>
 
     </div>
-
-</form>
-</body>
-</html>
-
+</asp:Content>

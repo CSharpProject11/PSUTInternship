@@ -1,15 +1,10 @@
 <%@ Import Namespace="System.Linq" %>
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Applications.aspx.cs" Inherits="PSUTInternship.Company.Applications" %>
-<!DOCTYPE html>
-<html>
-    <head runat="server">
-        <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <title>Review applications</title>
-        <link href="../Content/Company.css" rel="stylesheet" />
-    </head>
-    <body>
-        <%= PageHeader("applications", "Review applications", "Review each student's application and record a clear decision.") %>
+<%@ Page Title="Review applications" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" CodeBehind="Applications.aspx.cs" Inherits="PSUTInternship.Company.Applications" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<link href="../Content/Company.css" rel="stylesheet" />
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<%= PageHeader("applications", "Review applications", "Review each student's application and record a clear decision.") %>
         <p>
             <input id="filter" placeholder="Search by name or keyword" oninput="filterRows()"/> &nbsp; <select id="status" onchange="filterRows()">
                 <option value="">All statuses</option>
@@ -58,6 +53,4 @@
         </section>
         <%= PageFooter() %>
         <script>function filterRows(){var q=document.getElementById('filter').value.toLowerCase(),s=document.getElementById('status').value;document.querySelectorAll('#applications tr[data-status]').forEach(function(r){r.style.display=(r.innerText.toLowerCase().indexOf(q)>=0&&(!s||r.dataset.status===s))?'':'none';});}</script>
-    </body>
-</html>
-
+</asp:Content>

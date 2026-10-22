@@ -1,4 +1,4 @@
-﻿using PSUTInternship.Models;
+using PSUTInternship.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -65,24 +65,24 @@ namespace PSUTInternship
             switch (Role)
             {
                 case "company":
-                    RoleName = "Company supervisor"; Heading = "Make room for potential.";
+                    RoleName = "Company supervisor"; Heading = "Company dashboard";
                     Description = "Your opportunities, candidates and the next generation of talent.";
-                    FocusTitle = "Great experience starts with great guidance.";
+                    FocusTitle = "Keep your placements moving";
                     FocusText = "Keep your placements in view and help students take their next step."; WorkLabel = "My opportunities"; break;
                 case "academic":
-                    RoleName = "Academic supervisor"; Heading = "Guide their next chapter.";
+                    RoleName = "Academic supervisor"; Heading = "Academic dashboard";
                     Description = "A clear view of your students and their placement journey.";
-                    FocusTitle = "A little guidance. A lasting difference.";
+                    FocusTitle = "Follow your students’ progress";
                     FocusText = "Follow your assigned students, their applications and their progress toward a placement."; WorkLabel = "My students"; break;
                 case "admin":
-                    RoleName = "Internship coordinator"; Heading = "Bring every journey together.";
+                    RoleName = "Internship coordinator"; Heading = "Coordinator dashboard";
                     Description = "Students, supervisors and placements. One connected overview.";
-                    FocusTitle = "One community. Every opportunity.";
+                    FocusTitle = "People, placements and progress";
                     FocusText = "See the people and placements that connect learning with real experience."; WorkLabel = "People & placements"; break;
                 default:
-                    RoleName = "Student"; Heading = "Your potential. In progress.";
+                    RoleName = "Student"; Heading = "Student dashboard";
                     Description = "A little closer to the experience that shapes what comes next.";
-                    FocusTitle = "Your next chapter is out there.";
+                    FocusTitle = "Your next placement starts here";
                     FocusText = "Discover an opportunity, make your application and find the right place to grow."; WorkLabel = "My applications"; break;
             }
         }
@@ -120,10 +120,7 @@ namespace PSUTInternship
 
             if (Role == "student")
             {
-                int hour = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Jordan Standard Time").Hour;
-                string greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-                string firstName = Name.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "student";
-                Heading = greeting + ", " + firstName + ".";
+                Heading = "Student dashboard";
                 Description = "Stay on top of your applications, discover opportunities, and take your next step.";
             }
 

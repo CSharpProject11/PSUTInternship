@@ -1,16 +1,11 @@
 <%@ Register Src="~/Shared/CompanyLinks.ascx" TagPrefix="psut" TagName="CompanyLinks" %>
-<%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="Tasks.aspx.cs" Inherits="PSUTInternship.Company.Tasks" %>
-
-<!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <title></title>
-    <style>        
+<%@ Page MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="Tasks.aspx.cs" Inherits="PSUTInternship.Company.Tasks" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<style>
         .cards {
             display:flex;
             gap:10px;
-            
+
         }
         #Box1Total{
             flex:1;
@@ -37,11 +32,9 @@
              padding:40px;
         }
     </style>
-</head>
-<body>
-    <form id="form1" runat="server">
-<psut:CompanyLinks runat="server" />
-        <asp:Label ID="Manage" runat="server" Text="Manage &amp; Review Tasks"></asp:Label>
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<h1>Tasks &amp; submissions</h1>
         <p>
             <a href="ReportsAndEvaluation.aspx">Reports &amp; Final Evaluation</a> |
             <a href="SupervisorAccount.aspx">Supervisor Account</a>
@@ -50,12 +43,8 @@
         </div>
         <p>
             <asp:Label ID="descrebtion" runat="server" Text="Create assignments, review submissions and guide your trainees."></asp:Label>
-            <asp:Button ID="Create" runat="server" Text="Create New Task" OnClick="Create_Click" />
         </p>
-        <p>
-            &nbsp;
-        </p>
-        <div class="cards">
+        <div class="stats portal-task-stats">
             <div id="Box1Total" runat="server">
                 <p>Total Tasks</p>
                 <p>
@@ -64,7 +53,7 @@
                 <p>Across your trainees</p>
 
             </div>
-          
+
             <div id="Box2Pending" runat="server">
                 <p>Pending Review</p>
                 <p>
@@ -72,7 +61,7 @@
                 </p>
                 <p>Awaiting your feedback</p>
             </div>
-          
+
             <div id="Box3Progress" runat="server">
                 <p>In Progress</p>
                 <p>
@@ -80,7 +69,7 @@
                 </p>
                 <p>Currently being worked on</p>
             </div>
-            
+
             <div id="Box4Reviewed" runat="server">
                 <p>Reviewed</p>
                 <p>
@@ -90,7 +79,11 @@
             </div>
         </div>
 
-        <hr />
+        <section class="panel">
+            <div class="panel-heading">
+                <h2>Tasks and submissions</h2>
+                <asp:Button ID="Create" runat="server" Text="+ Create New Task" OnClick="Create_Click" />
+            </div>
         <p>
             <asp:TextBox ID="search" runat="server" placeholder="Search task or student" AutoPostBack="true" OnTextChanged="search_TextChanged"></asp:TextBox>
             <asp:DropDownList AutoPostBack="true" ID="DropDownList1" runat="server" OnSelectedIndexChanged="DropDownList1_SelectedIndexChanged">
@@ -116,6 +109,5 @@
             </thead>
             <tbody id="TaskTablebody" runat="server"></tbody>
         </table>
-    </form>
-</body>
-</html>
+        </section>
+</asp:Content>

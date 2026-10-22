@@ -8,12 +8,13 @@ function render() {
     $('studentChip').textContent = '● ' + ($('studentAccount').selectedOptions[0]?.textContent || 'Student');
     $('studentTotal').textContent = list.length;
     for (const [id, status] of [['studentPending', 'Pending'], ['studentAccepted', 'Accepted']]) $(id).textContent = list.filter(m => m.status === status).length;
-    $('studentInvitations').innerHTML = list.filter(m => m.status === 'Pending').map(m => F.card(m, `<div class="card-actions"><button class="accept-button" data-reply="Accepted" data-id="${F.safe(m.id)}"><i class="bi bi-check-circle"></i> Accept</button></div>`)).join('') || F.empty;
+    $('studentInvitations').innerHTML = list.filter(m => m.status === 'Pending').map(m => F.card(m, `<div class="card-actions"><button type="button" class="accept-button" data-reply="Accepted" data-id="${F.safe(m.id)}"><i class="bi bi-check-circle"></i> Accept</button></div>`)).join('') || F.empty;
     $('studentUpcoming').innerHTML = list.filter(m => m.status === 'Accepted').map(m => F.card(m, `<a class="join-button" href="${F.roomLink(m)}" target="_blank" rel="noopener noreferrer"><i class="bi bi-camera-video"></i> Join Meeting</a>`)).join('') || F.empty;
 }
 async function refresh() { try { meetings = await F.meetings(); render(); } catch (e) { note(e.message); } }
 document.addEventListener('click', async e => {
     const b = e.target.closest('[data-reply]'); if (!b) return;
+    e.preventDefault();
     const m = meetings.find(x => x.id === b.dataset.id && x.studentId === chosen() && x.status === 'Pending'); if (!m) return;
     b.disabled = true; try { await F.setStatus(m.id, 'Pending', b.dataset.reply); await refresh(); note('Response saved to Firebase.', true); } catch (err) { note(err.message); } finally { b.disabled = false; }
 });

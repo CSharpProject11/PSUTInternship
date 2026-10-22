@@ -172,7 +172,7 @@ namespace PSUTInternship.Admin
                     table.Append("<a class='btn light' href='ManageCompanies.aspx?view=").Append(id).Append("'>View</a> ");
                     table.Append("<a class='btn light' href='ManageCompanies.aspx?edit=").Append(id).Append("'>Edit</a> ");
                     table.Append("<a class='btn danger' href='ManageCompanies.aspx?toggle=").Append(id);
-                    table.Append("' onclick=\"return confirm('Change this account status?');\">");
+                    table.Append("' onclick=\"return portalConfirmAction(this, 'Change this account status?');\">");
                     table.Append(isActive ? "Deactivate</a></td></tr>" : "Activate</a></td></tr>");
                 }
 

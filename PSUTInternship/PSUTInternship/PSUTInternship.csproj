@@ -532,6 +532,7 @@
     <Content Include="Assets\psut-entrance.jpg" />
     <Content Include="Assets\psut-graduation.jpg" />
     <Content Include="Assets\psut-logo.jpg" />
+    <Content Include="Assets\psut-footer-pattern.webp" />
     <Content Include="Assets\PSUT-MEDIA-SOURCES.json" />
     <Content Include="Assets\psut-rooftop.jpg" />
     <Content Include="Assets\psut-students.jpeg" />
@@ -737,7 +738,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Admin\CompletionReview.aspx.designer.cs" />
-    <Content Include="Company\TrainingHours.aspx" />
     <Content Include="CompletionReport.aspx" />
     <Compile Include="CompletionReport.aspx.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -756,11 +756,6 @@
     <Compile Include="Shared\DatabaseSchema.cs" />
     <Compile Include="Shared\TaskWorkflow.cs" />
     <Compile Include="Shared\TrainingHoursWorkflow.cs" />
-    <Content Include="TrainingHours.aspx" />
-    <Compile Include="TrainingHours.aspx.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="TrainingHours.aspx.designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="MeetingApi.aspx" />
@@ -788,18 +783,27 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Shared\CoordinatorData.cs" />
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
   </ItemGroup>
   <ItemGroup><Content Include="Admin\Coordinator.css" /><Content Include="Admin\FinalCompletionReview.css" /></ItemGroup>
+  <ItemGroup>
+    <Content Include="Portal.Master" />
+    <Content Include="Assets\psut-emblem.png" />
+    <Content Include="Shared\PortalNavigation.ascx" />
+    <Content Include="Content\portal-workspace.css" />
+    <Content Include="Scripts\portal-ui.js" />
+    <Content Include="Academic\Meetings.aspx" />
+    <Content Include="Student\Meetings.aspx" />
+  </ItemGroup>
 </Project>

@@ -41,6 +41,10 @@ Optional academic meeting invitations use the same authenticated session and dat
 
 Task pages now use `Student/MyTasks.aspx`, `Company/Tasks.aspx` and `Company/CreateTask.aspx`. Old misspelled URLs redirect to these pages. The old company login and account URLs lead to the shared login/current account page. Company-side account creation is disabled; the coordinator owns provisioning.
 
+## Workspace interface
+
+All four roles use the shared PSUT navy and blue workspace in `Portal.Master`, with a collapsible curved sidebar, responsive role navigation and in-app popup messages/confirmations. See [workspace design and verification](docs/workspace-design.md) for page coverage, shared UI files and local validation results.
+
 ## Database contract
 
 Profile keys must be Firebase Authentication UIDs. `profileId` uses that same UID. A company supervisor's profile stores `companyId`; accounts created by the coordinator use the supervisor UID as the company ID. No company ID is hardcoded in the application.
@@ -52,7 +56,7 @@ Profile keys must be Firebase Authentication UIDs. `profileId` uses that same UI
 | `academicSupervisors/{uid}` / `companySupervisors/{uid}` | Supervisor profile; academic groups can be in `studentGroups` or nested under the academic profile |
 | `companies/{companyId}` | Company name and supervisor directory entry |
 | `opportunities/{id}` | Private details; `duration` accepts text (e.g. `3 months`) or a number. `status` accepts active/open/closed/inactive text or legacy booleans. Seat counts and specialization may be absent. |
-| `publicOpportunities/{id}` | Only title, company name, specialization, seats, deadline and open status |
+| `opportunities/{id}` | Single source for company editing, student browsing/applications, and signed-in homepage previews |
 | `applications/{applicationId}` | Existing flat records retain their IDs. `coverLetter`, `cvUrl`, `isOfferConfirmed` and optional full application `details` are supported. New applications use a stable student/opportunity key. |
 | `internshipConfirmations/{studentUid}` | One immutable selected application |
 | `internships/{internshipId}` | Placement found through `studentId`; its key does not have to equal the student UID. |
@@ -94,3 +98,9 @@ node tools/verify-public.mjs
 The workflow suite runs the actual shared services against an in-memory adapter and creates a sample completion PDF under the ignored `.verification` directory. The policy checks evaluate local rule expressions; they are not the official Firebase Emulator Suite. Validate the rules in Firebase's emulator before production deployment.
 
 Full Web Forms markup compilation can also be checked with the .NET Framework `aspnet_compiler.exe`, using the web project directory as `-p` and a separate output directory. The local verification covered C# build, all ASP.NET page/control bindings, workflow assertions, local policy assertions, PDF rendering, public page rendering and unauthenticated redirects. A live signed-in walkthrough still requires the target project's deployed rules and valid accounts/data; no live Firebase writes were performed during the refactor.
+
+### Opportunity collection cleanup
+
+`opportunities` is the only opportunity collection used by the application. The old `publicOpportunities` collection is no longer read, written or generated. After deploying the application and `Firebase/database.rules.example.json`, the obsolete `publicOpportunities` node can be deleted from Firebase Console; retain `opportunities` and its IDs so existing applications remain linked. No live records are deleted by this code update.
+
+Anonymous homepage requests return no opportunity previews; authenticated requests project preview fields from `opportunities`. Full opportunity records remain protected by the active-user Firebase read rule. Specialization is descriptive text, not an exact student-major restriction. Explicit college restrictions, active status and deadlines still apply.

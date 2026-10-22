@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -98,11 +98,6 @@ namespace PSUTInternship.Shared
         }
 
 
-        private object Preview(CompanyOpportunity opportunity)
-        {
-            return new { title=opportunity.Title, companyName=CompanyProfile.CompanyName, specialization=opportunity.Specialization,
-                availableSeats=opportunity.Seats, deadline=opportunity.Deadline, status=opportunity.IsOpen };
-        }
         protected string CreateOpportunity(CompanyOpportunity opportunity)
         {
             opportunity.Id=Guid.NewGuid().ToString("N"); opportunity.CompanyId=CompanyId;
@@ -113,7 +108,6 @@ namespace PSUTInternship.Shared
             opportunity.CompanyId=CompanyId;
             var fields = JObject.FromObject(opportunity); fields.Remove("Id");
             var changes = fields.Properties().ToDictionary(x => "opportunities/"+opportunity.Id+"/"+x.Name, x => (object)x.Value);
-            changes["publicOpportunities/"+opportunity.Id] = Preview(opportunity);
             FirebaseRestClient.PatchAsync("",changes,IdToken).GetAwaiter().GetResult();
         }
         protected void UpdateOpportunityStatus(string id,bool isOpen)
@@ -155,29 +149,13 @@ namespace PSUTInternship.Shared
 
         protected string H(string value) { return HttpUtility.HtmlEncode(value ?? ""); }
 
+        // Navigation and form chrome are owned by Portal.Master for all company screens.
         protected string PageHeader(string activePage, string title, string subtitle)
         {
-            string[] names = { "Dashboard", "Opportunities", "Applications", "My Trainees" };
-            string[] links = { "Dashboard.aspx", "Opportunities.aspx", "Applications.aspx", "Trainees.aspx" };
-            string[] keys = { "dashboard", "opportunities", "applications", "internships" };
-            string menu = "";
-            for (int i = 0; i < names.Length; i++)
-            {
-                string active = keys[i] == activePage ? "active" : "";
-                menu += "<a class='nav-link " + active + "' href='" + links[i] + "'>" + names[i] + "</a>";
-            }
-            menu += "<a class='nav-link' href='Tasks.aspx'>Tasks &amp; Submissions</a>";
-            menu += "<a class='nav-link' href='TrainingHours.aspx'>Training hours</a>";
-            menu += "<a class='nav-link' href='ReportsAndEvaluation.aspx'>Final evaluation</a>";
-            string error = string.IsNullOrEmpty(FirebaseError) ? "" : "<div class='notice'>" + H(FirebaseError) + "</div>";
-            return "<aside class='sidebar'><div class='brand'><span class='logo'>PSUT</span><span>Internship Portal</span></div>" +
-                "<div class='role'>COMPANY SUPERVISOR</div>" + menu +
-                "<div class='side-bottom'><a href='Account.aspx'>♙ &nbsp; Account settings</a><a href='Logout.aspx'>⇥ &nbsp; Logout</a></div></aside>" +
-                "<main class='main'><header class='topbar'><input class='search-top' placeholder='⌕  Search your workspace' />" +
-                "<span class='user'>◉ &nbsp; " + H(CompanyProfile.Name) + "<small>Company Supervisor</small></span></header>" +
-                "<div class='content'><div class='crumb'>Workspace / " + H(title) + "</div><h1>" + H(title) + "</h1><p class='subtitle'>" + H(subtitle) + "</p>" + error;
+            string error = string.IsNullOrEmpty(FirebaseError) ? "" : "<div class='notice error' data-popup-message>" + H(FirebaseError) + "</div>";
+            return "<div class='content'><h1>" + H(title) + "</h1><p class='subtitle'>" + H(subtitle) + "</p>" + error;
         }
-        protected string PageFooter() { return "<footer>Firebase data • Academic rules and evaluation scales require university verification.</footer></div></main>"; }
+        protected string PageFooter() { return "</div>"; }
         protected void GoTo(string page) { Response.Redirect(page, false); Context.ApplicationInstance.CompleteRequest(); }
         protected string PostedValue(string key) { return Request.Form[key] ?? ""; }
         protected int PostedNumber(string key) { int number; return int.TryParse(PostedValue(key), out number) ? number : 0; }

@@ -23,7 +23,7 @@
     }
     document.body.classList.remove('wd-nav-open');
     document.querySelector('.wd-menu-toggle')?.setAttribute('aria-expanded', 'false');
-    if (moveFocus) { document.getElementById('workspace-main').focus({ preventScroll: true }); window.scrollTo({ top: 0, behavior: 'instant' }); }
+    if (moveFocus) { document.getElementById('portal-main').focus({ preventScroll: true }); window.scrollTo({ top: 0, behavior: 'instant' }); }
   }
   document.querySelectorAll('[data-view]').forEach(link => link.addEventListener('click', e => {
     e.preventDefault(); history.replaceState(null, '', '#' + link.dataset.view); setView(link.dataset.view, true);
@@ -51,6 +51,6 @@
     const data = [head, ...visible.map(row => [...row.cells].slice(0, 4).map(cell => escape(cell.textContent.trim())))].map(row => row.join(',')).join('\r\n');
     const url = URL.createObjectURL(new Blob(['\uFEFF' + data], { type: 'text/csv;charset=utf-8;' }));
     const link = document.createElement('a'); link.href = url; link.download = 'psut-' + document.body.dataset.role + '-applications.csv'; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-    const toast = document.querySelector('.wd-toast'); toast.textContent = 'Application report downloaded.'; toast.hidden = false; setTimeout(() => { toast.hidden = true; }, 3000);
+    PortalUI.message('Application report downloaded.', { title: 'Report ready' });
   });
 })();

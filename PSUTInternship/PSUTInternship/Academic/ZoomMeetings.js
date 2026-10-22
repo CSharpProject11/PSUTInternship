@@ -10,13 +10,13 @@ function render() {
     const filter = $('statusFilter').value;
     // Keep accepted meetings in Upcoming only to avoid duplicate cards.
     const invitations = all.filter(m => filter === 'all' ? m.status === 'Pending' : m.status === filter && m.status !== 'Accepted');
-    $('invitationsList').innerHTML = invitations.map(m => F.card(m, (m.status === 'Pending' ? '<p class="waiting-note">Waiting for student response</p>' : '') + (m.status === 'Pending' ? `<button class="cancel-button" data-cancel="${F.safe(m.id)}">Cancel Invitation</button>` : ''))).join('') || F.empty;
-    $('upcomingList').innerHTML = all.filter(m => m.status === 'Accepted').map(m => F.card(m, `<a class="join-button" target="_blank" rel="noopener noreferrer" href="${F.roomLink(m)}"><i class="bi bi-camera-video"></i> Join Meeting</a><button class="cancel-button" data-cancel="${F.safe(m.id)}">Cancel Invitation</button>`)).join('') || F.empty;
+    $('invitationsList').innerHTML = invitations.map(m => F.card(m, (m.status === 'Pending' ? '<p class="waiting-note">Waiting for student response</p>' : '') + (m.status === 'Pending' ? `<button type="button" class="cancel-button" data-cancel="${F.safe(m.id)}">Cancel Invitation</button>` : ''))).join('') || F.empty;
+    $('upcomingList').innerHTML = all.filter(m => m.status === 'Accepted').map(m => F.card(m, `<a class="join-button" target="_blank" rel="noopener noreferrer" href="${F.roomLink(m)}"><i class="bi bi-camera-video"></i> Join Meeting</a><button type="button" class="cancel-button" data-cancel="${F.safe(m.id)}">Cancel Invitation</button>`)).join('') || F.empty;
     $('activityList').innerHTML = all.slice(0, 5).map(m => `<div class="activity-item"><strong>${F.safe(m.studentName)} · ${F.safe(m.status)}</strong><small>${F.safe(m.createdAt || '')}</small></div>`).join('') || F.empty;
 }
 async function refresh() { try { all = await F.meetings(); render(); } catch (e) { message(e.message); } }
-$('meetingForm').addEventListener('submit', async event => {
-    event.preventDefault(); const btn = event.submitter || $('meetingForm').querySelector('button[type="submit"]');
+$('portalForm').addEventListener('submit', async event => {
+    event.preventDefault(); const btn = event.submitter || $('portalForm').querySelector('button[type="submit"]');
     const student = roster.find(x => x.id === $('studentSelect').value);
     const title = $('meetingTitle').value.trim(), purpose = $('meetingPurpose').value.trim();
     const date = $('meetingDate').value, time = $('meetingTime').value;
@@ -28,10 +28,10 @@ $('meetingForm').addEventListener('submit', async event => {
     btn.disabled = true;
     try {
         await F.create({ studentId: student.id, studentName: student.name, supervisorId: F.supervisorId, supervisorName: F.supervisorName, title, purpose, date, time, duration, notes, status: 'Pending', roomName, createdAt: new Date().toISOString() });
-        $('meetingForm').reset(); await refresh(); message('Meeting invitation saved to Firebase.', true);
+        $('portalForm').reset(); await refresh(); message('Meeting invitation saved to Firebase.', true);
     } catch (e) { message(e.message); } finally { btn.disabled = false; }
 });
-document.addEventListener('click', async e => { const b = e.target.closest('[data-cancel]'); if (!b) return; const m = all.find(x => x.id === b.dataset.cancel); if (!m || !confirm('Cancel invitation?')) return; b.disabled = true; try { await F.setStatus(m.id, m.status, 'Cancelled'); await refresh(); } catch (err) { message(err.message); } finally { b.disabled = false; } });
+document.addEventListener('click', async e => { const b = e.target.closest('[data-cancel]'); if (!b) return; e.preventDefault(); const m = all.find(x => x.id === b.dataset.cancel); if (!m || !await PortalUI.confirm('Cancel this meeting invitation?', { acceptLabel: 'Cancel invitation' })) return; b.disabled = true; try { await F.setStatus(m.id, m.status, 'Cancelled'); await refresh(); } catch (err) { message(err.message); } finally { b.disabled = false; } });
 $('statusFilter').addEventListener('change', render);
 (async () => { try { await F.ready; $('supervisorChip').textContent = '● ' + F.supervisorName; await loadStudents(); await refresh(); } catch (e) { message('Firebase loading error: ' + e.message); $('studentSelect').innerHTML = '<option value="">Unable to load students</option>'; } })();
 window.addEventListener('focus', refresh);

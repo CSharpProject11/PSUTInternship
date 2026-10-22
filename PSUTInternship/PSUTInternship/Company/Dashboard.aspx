@@ -1,17 +1,10 @@
-
 <%@ Import Namespace="System.Linq" %>
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Dashboard.aspx.cs" Inherits="PSUTInternship.Company.Dashboard" %>
-<!DOCTYPE html>
-<html>
-    <head runat="server">
-        <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <title>Company dashboard</title>
-        <link href="../Content/Company.css" rel="stylesheet" />
-    </head>
-    <body>
-        <form id="form1" runat="server">
-            <%= PageHeader("dashboard", "Company dashboard", "Your internship workspace, with the next action always in view.") %>
+<%@ Page Title="Company dashboard" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" CodeBehind="Dashboard.aspx.cs" Inherits="PSUTInternship.Company.Dashboard" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<link href="../Content/Company.css" rel="stylesheet" />
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<%= PageHeader("dashboard", "Company dashboard", "Your internship workspace, with the next action always in view.") %>
             <div class="cards">
                 <div class="card">Active trainees<div class="metric">
                         <%= ActiveTrainees %>
@@ -24,15 +17,15 @@
                     <span class="muted">Awaiting your decision</span>
                 </div>
                 <div class="card">Submissions to review<div class="metric"><%= PendingSubmissions %></div>
-                    <span class="muted">Due this week</span>
+                    <span class="muted">Awaiting your feedback</span>
                 </div>
                 <div class="card">Open opportunities<div class="metric">
                         <%= OpenOpportunities %>
                     </div>
-                    <span class="muted">With seats available</span>
+                    <span class="muted">Currently accepting applicants</span>
                 </div>
             </div>
-            <div class="grid">
+            <div class="grid portal-company-overview">
                 <section class="panel">
                     <h2>Your review queue</h2>
                     <table>
@@ -67,25 +60,21 @@
                 </section>
                 <section class="panel">
                     <h2>Workspace context</h2>
-                    <p class="detail-title">Ofuq Technology</p>
+                    <p class="detail-title"><%: CompanyProfile.CompanyName %></p>
                     <p class="muted">Tasks, applications and hours<br/>Review each decision thoughtfully.</p>
-                    <span class="badge ok">Role access enabled</span>
+                    <p><a href="Tasks.aspx">Review submitted work</a></p>
                 </section>
                 <section class="panel">
                     <h2>Important follow-ups</h2>
-                    <p class="muted">Training hours need review. Task completion does not approve hours. Final company evaluation is sent to the academic supervisor.</p>
+                    <p class="muted">Review submitted work and send final company evaluations to the academic supervisor.</p>
                 </section>
                 <section class="panel">
                     <h2>Quick actions</h2>
                     <p>
-                        <a class="btn" href="OpportunityForm.aspx">Create opportunity</a>
+                        <a class="btn" href="OpportunityForm.aspx">+ Create opportunity</a>
                     </p>
-                    <a href="Trainees.aspx">Open training hours</a>
+
                 </section>
             </div>
             <%= PageFooter() %>
-        </form>
-    </body>
-</html>
-
-
+</asp:Content>

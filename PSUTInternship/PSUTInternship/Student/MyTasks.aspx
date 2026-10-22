@@ -1,17 +1,10 @@
 <%@ Register Src="~/Shared/StudentLinks.ascx" TagPrefix="psut" TagName="StudentLinks" %>
-
-
-<%@ Page Language="C#" AutoEventWireup="true"
+<%@ Page Title="My Tasks | UIMS" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true"
     Async="true"
     CodeBehind="MyTasks.aspx.cs"
     Inherits="PSUTInternship.Student.MyTasks" %>
-
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <title>My Tasks | UIMS</title>
-
-    <style>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<style>
         * {
             box-sizing: border-box;
         }
@@ -145,13 +138,9 @@
             font-size: 13px;
         }
     </style>
-</head>
-
-<body>
-    <form id="form1" runat="server">
-<psut:StudentLinks runat="server" />
-
-        <div class="container">
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<div class="container">
 
             <h1 class="page-title">My Tasks</h1>
 
@@ -256,7 +245,4 @@
             </asp:Repeater>
 
         </div>
-
-    </form>
-</body>
-</html>
+</asp:Content>

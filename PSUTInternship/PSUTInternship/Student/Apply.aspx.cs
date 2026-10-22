@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PSUTInternship.Shared;
 using PSUTInternship.Models;
@@ -85,7 +85,7 @@ namespace PSUTInternship.Student
                         { "faculty", new[] { "college", "faculty" } },
                         { "department", new[] { "department" } },
                         { "program", new[] { "program", "major" } },
-                        { "semester", new[] { "semester" } },
+                        { "semester", new[] { "academicSemester", "semester" } },
                         { "academicYear", new[] { "academicYear" } },
                         { "completedCreditHours", new[] { "completedCreditHours" } }
                     };
@@ -122,33 +122,25 @@ namespace PSUTInternship.Student
 
                 string[] required = { "faculty", "department", "program", "semester", "academicYear",
                     "applicationDate", "studentName", "universityId", "completedCreditHours", "studentPhone",
-                    "studentEmail", "organizationName", "organizationPhone", "mailingAddress", "organizationEmail",
-                    "trainingAddress", "trainingStartDate", "trainingEndDate", "trainingField", "applicationReason" };
+                    "studentEmail",
+                    "applicationReason" };
                 foreach (string name in required)
                     if (string.IsNullOrWhiteSpace(Field(name)) || Field(name).Length > 10000)
                         throw new ArgumentException("Complete all required fields. Each response must be under 10,000 characters.");
 
-                DateTime applicationDate, start, end;
-                if (!DateTime.TryParseExact(Field("applicationDate"), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out applicationDate)
-                    || !DateTime.TryParseExact(Field("trainingStartDate"), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out start)
-                    || !DateTime.TryParseExact(Field("trainingEndDate"), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out end)
-                    || end < start)
-                    throw new ArgumentException("Enter valid dates. Training end date must be on or after its start date.");
+                DateTime applicationDate;
+                if (!DateTime.TryParseExact(Field("applicationDate"), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out applicationDate))
+                    throw new ArgumentException("Enter a valid application date.");
                 int credits;
                 if (!int.TryParse(Field("completedCreditHours"), out credits) || credits < 0)
                     throw new ArgumentException("Completed credit hours must be a non-negative whole number.");
-                foreach (string name in new[] { "studentEmail", "organizationEmail" })
+                foreach (string name in new[] { "studentEmail" })
                 {
                     MailAddress email;
                     try { email = new MailAddress(Field(name)); }
-                    catch (FormatException) { throw new ArgumentException("Enter valid student and organization email addresses."); }
+                    catch (FormatException) { throw new ArgumentException("Enter a valid student email address."); }
                     if (email.Address != Field(name)) throw new ArgumentException("Enter valid email addresses without display names.");
                 }
-                Uri website;
-                if (Field("organizationWebsite") != "" && (!Uri.TryCreate(Field("organizationWebsite"), UriKind.Absolute, out website)
-                    || (website.Scheme != "https" && website.Scheme != "http")))
-                    throw new ArgumentException("Enter a valid website URL starting with https:// or http://.");
-
                 var placement = await PortalRepository.PlacementForStudent(uid);
                 if (placement != null) throw new ArgumentException("You already have a confirmed internship.");
                 var existingApplications = await PortalRepository.Collection(PortalRepository.Query("applications", "studentId", uid));
@@ -165,7 +157,7 @@ namespace PSUTInternship.Student
                 }
 
                 var savedOpportunity = await FirebaseRestClient.GetAsync<Opportunity>("opportunities/" + id, token);
-                var studentProfile = await FirebaseRestClient.GetAsync<JObject>("students/" + uid, token);
+                var studentProfile = await FirebaseRestClient.GetAsync<JObject>("students/" + PortalRepository.Key(PortalRepository.ProfileId), token);
                 if (!OpportunityEligibility.Matches(savedOpportunity, studentProfile)) throw new ArgumentException("This opportunity does not match your college or major.");
                 var application = new PSUTInternship.Models.Application
                 {
@@ -175,19 +167,22 @@ namespace PSUTInternship.Student
                         Faculty = Field("faculty"), Department = Field("department"), Program = Field("program"),
                         Semester = Field("semester"), AcademicYear = Field("academicYear"), ApplicationDate = applicationDate,
                         StudentName = Field("studentName"), UniversityId = Field("universityId"), CompletedCreditHours = credits,
-                        StudentPhone = Field("studentPhone"), StudentEmail = Field("studentEmail"), AlternativePhone = Field("alternativePhone"),
-                        OrganizationName = Field("organizationName"), OrganizationPhone = Field("organizationPhone"),
-                        MailingAddress = Field("mailingAddress"), OrganizationEmail = Field("organizationEmail"),
-                        OrganizationWebsite = Field("organizationWebsite"), TrainingAddress = Field("trainingAddress"),
-                        TrainingStartDate = start, TrainingEndDate = end, TrainingField = Field("trainingField")
+                        StudentPhone = Field("studentPhone"), StudentEmail = Field("studentEmail"), AlternativePhone = Field("alternativePhone")
                     }
                 };
-                // One record per student/opportunity; conditional write prevents duplicate submissions and overwriting reviews.
+                // One record per student/opportunity. Database create-only rules prevent overwriting reviews.
                 string url = FirebaseUrl + "applications/" + Uri.EscapeDataString(uid + "_" + id) + ".json" + auth;
                 using (var request = new HttpRequestMessage(HttpMethod.Put, url))
                 {
-                    request.Headers.TryAddWithoutValidation("if-match", "null_etag");
-                    request.Content = new StringContent(JsonConvert.SerializeObject(application), Encoding.UTF8, "application/json");
+                    // Ownership rules cannot authorize a conditional read of a missing record.
+                    // Preserve legacy readers while omitting obsolete fields from new records.
+                    var payload = JObject.FromObject(application);
+                    var details = (JObject)payload["details"];
+                    foreach (string obsolete in new[] { "organizationName", "organizationPhone", "mailingAddress",
+                        "organizationEmail", "organizationWebsite", "trainingAddress", "trainingStartDate",
+                        "trainingEndDate", "trainingField" })
+                        details.Remove(obsolete);
+                    request.Content = new StringContent(payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
                     using (var response = await Client.SendAsync(request))
                     {
                         if (response.StatusCode == HttpStatusCode.PreconditionFailed)

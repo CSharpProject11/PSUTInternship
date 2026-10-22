@@ -1,12 +1,7 @@
-<%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="FinalEvaluation.aspx.cs" Inherits="PSUTInternship.Academic.FinalEvaluation" %>
-<!DOCTYPE html>
-<html lang="en">
-<head runat="server">
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Final Academic Evaluation | UIMS</title>
-<link href="PSUTInternship.Academic.css" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<%@ Page Title="Final Academic Evaluation | UIMS" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="FinalEvaluation.aspx.cs" Inherits="PSUTInternship.Academic.FinalEvaluation" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+
+
 <style>
         :root {
             --primary: #2563eb;
@@ -614,7 +609,7 @@
                 padding: 17px 12px;
             }
         }
-    
+
 
 .summary-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}
 .summary-tile{background:#f6f9ff;border:1px solid #e0eaf8;border-radius:12px;padding:17px}
@@ -650,17 +645,11 @@
  .panel-heading{break-after:avoid}
  .no-print{display:none!important}
 }
-</style></head>
-<body><form id="form1" runat="server"><div class="layout">
-<aside class="sidebar"><div class="brand">UIMS<small>INTERNSHIP MANAGEMENT</small></div>
-<div class="nav-title">Academic Supervisor</div>
-<a class="nav-link" href="Dashboard.aspx"><span class="nav-icon"><i class="bi bi-grid"></i></span>Dashboard</a>
-<a class="nav-link" href="StudentProgress.aspx"><span class="nav-icon"><i class="bi bi-pie-chart"></i></span>Student Progress</a>
-<a class="nav-link active" href="FinalEvaluation.aspx"><span class="nav-icon"><i class="bi bi-clipboard-check"></i></span>Final Evaluation</a>
-<a class="nav-link" href="ZommMeetings.html"><span class="nav-icon"><i class="bi bi-camera-video"></i></span>Zoom Meetings</a>
-<a class="nav-link" href="Account.aspx"><span class="nav-icon"><i class="bi bi-person-circle"></i></span>My Account</a>
-<div class="sidebar-divider"></div><div class="nav-title">General</div><a class="nav-link" href="../Default.aspx"><span class="nav-icon"><i class="bi bi-arrow-left"></i></span>Back to Home</a>
-</aside>
+</style>
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<div class="layout">
+
 <main class="main"><header class="topbar"><strong>Academic Supervisor Portal</strong><div class="user-chip"><span class="user-avatar"><asp:Label ID="lblInitials" runat="server" Text="AS"/></span><asp:Label ID="lblSupervisor" runat="server" Text="Academic Supervisor"/></div></header>
 <section class="content">
 <div class="eyebrow">Academic Assessment</div><h1>Final Academic Evaluation</h1>
@@ -720,4 +709,4 @@
     window.addEventListener('beforeprint', window.prepareCombinedReport);
 }());
 </script>
-</form></body></html>
+</asp:Content>

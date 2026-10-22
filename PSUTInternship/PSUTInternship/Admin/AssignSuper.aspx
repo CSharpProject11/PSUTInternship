@@ -1,13 +1,6 @@
-<%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="AssignSuper.aspx.cs" Inherits="PSUTInternship.Admin.AssignSuper" %>
-
-
-<!DOCTYPE html>
-<html lang="en">
-<head runat="server">
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Manage Student Groups - UIMS</title>
-    <style>
+<%@ Page Title="Manage Student Groups - UIMS" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="AssignSuper.aspx.cs" Inherits="PSUTInternship.Admin.AssignSuper" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<style>
         * {
             box-sizing: border-box;
         }
@@ -199,18 +192,9 @@
             }
         }
     </style>
-</head>
-<body>
-    <form id="form1" runat="server">
-        <nav class="sidebar">
-            <h2>UIMS</h2>
-            <a href="Dashboard.aspx">Dashboard</a>
-            <a href="ManageStudents.aspx">Students</a>
-            <a href="ManageAcademic.aspx">Academic Supervisors</a>
-            <a href="ManageCompanies.aspx">Company Supervisors</a>
-            <a href="AssignSuper.aspx" class="active">Student Groups</a>
-            <a href="../Login.aspx">Logout</a>
-        </nav>
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+
         <main class="main">
             <header class="top">
                 <div>
@@ -227,7 +211,7 @@
                             <h2>Groups by department</h2>
                             <p class="muted">Search groups, supervisors, students, or student numbers.</p>
                         </div>
-                        <asp:Button ID="addGroupButton" runat="server" Text="Add group" CssClass="btn" CausesValidation="false" OnClick="addGroupButton_Click" /></div>
+                        <asp:Button ID="addGroupButton" runat="server" Text="+ Add group" CssClass="btn" CausesValidation="false" OnClick="addGroupButton_Click" /></div>
                     <div class="search">
                         <asp:TextBox ID="searchTextBox" runat="server" placeholder="Type a search then press Search" /><asp:Button ID="searchButton" runat="server" Text="Search" CssClass="btn" CausesValidation="false" OnClick="searchButton_Click" /><a class="btn light" href="AssignSuper.aspx">Reset</a></div>
                     <asp:Literal ID="groupsTables" runat="server" />
@@ -276,6 +260,4 @@
                 </section>
             </asp:Panel>
         </main>
-    </form>
-</body>
-</html>
+</asp:Content>

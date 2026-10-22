@@ -1,16 +1,10 @@
-﻿<%@ Register Src="~/Shared/CompanyLinks.ascx" TagPrefix="psut" TagName="CompanyLinks" %>
-<%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="EditTask.aspx.cs" Inherits="PSUTInternship.Company.EditTask" %>
+<%@ Register Src="~/Shared/CompanyLinks.ascx" TagPrefix="psut" TagName="CompanyLinks" %>
+<%@ Page MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="EditTask.aspx.cs" Inherits="PSUTInternship.Company.EditTask" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
 
-<!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <title></title>
-</head>
-<body>
-    <form id="form1" runat="server">
-<psut:CompanyLinks runat="server" />
-         <asp:Label ID="subject" runat="server" Text="Review Task Submission"></asp:Label>
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server"><h1>Edit task</h1>
+<asp:Label ID="subject" runat="server" CssClass="message" role="status"></asp:Label>
          <br />
         <div id="describtion" runat="server">
             <asp:Literal ID="TaskDetails" runat="server"></asp:Literal>
@@ -33,8 +27,5 @@
         <p><asp:Label runat="server" AssociatedControlID="maximumInput" Text="Task maximum score" /><asp:TextBox ID="maximumInput" runat="server" /></p>
         <p><label for="scoreInput">Awarded score</label><asp:TextBox ID="scoreInput" runat="server" /></p>
         <asp:Button ID="Save" runat="server" Text="Save" OnClick="Save_Click" />
-        <asp:Button ID="Cansale" runat="server" Text="Cansale" OnClick="Cansale_Click" CausesValidation="false"/>
-
-    </form>
-</body>
-</html>
+        <asp:Button ID="Cansale" runat="server" Text="Cancel" OnClick="Cansale_Click" CausesValidation="false"/>
+</asp:Content>

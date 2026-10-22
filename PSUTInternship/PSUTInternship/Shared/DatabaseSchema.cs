@@ -94,17 +94,6 @@ namespace PSUTInternship.Shared
                     if (string.IsNullOrWhiteSpace((string)student[field]) && !string.IsNullOrWhiteSpace((string)placement.Value[field]))
                         changes["students/" + Key(group.Key) + "/" + field] = (string)placement.Value[field];
             }
-            var openings = await Raw("opportunities").ConfigureAwait(false);
-            var publicOpenings = await Raw("publicOpportunities").ConfigureAwait(false);
-            var companies = await Raw("companies").ConfigureAwait(false);
-            foreach (var opening in openings.Where(x => !publicOpenings.ContainsKey(x.Key)))
-            {
-                JObject company; companies.TryGetValue((string)opening.Value["companyId"] ?? "", out company);
-                changes["publicOpportunities/" + Key(opening.Key)] = new {
-                    title=(string)opening.Value["title"] ?? "", companyName=(string)company?["name"] ?? "Company",
-                    specialization=(string)opening.Value["specialization"] ?? "", availableSeats=(int?)opening.Value["availableSeats"] ?? 0,
-                    deadline=(string)opening.Value["deadline"] ?? "", status=IsOpen((string)opening.Value["status"]) };
-            }
             if (changes.Count > 0) await PortalRepository.Patch("", changes).ConfigureAwait(false);
         }
         private static string Key(string value) { return PortalRepository.Key(value); }

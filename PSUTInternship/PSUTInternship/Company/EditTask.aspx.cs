@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using PSUTInternship.Shared;
 namespace PSUTInternship.Company
@@ -11,7 +11,7 @@ namespace PSUTInternship.Company
             try
             {
                 var task = await PortalRepository.CompanyTask(Request.QueryString["id"]);
-                TaskDetails.Text = "<h1>" + Server.HtmlEncode((string)task["title"]) + "</h1><p>Maximum score: " + Server.HtmlEncode((string)task["maximumScore"]) + "</p><p>" + Server.HtmlEncode((string)task["evaluationCriteria"]) + "</p>";
+                TaskDetails.Text = "<h2>" + Server.HtmlEncode((string)task["title"]) + "</h2><p>Maximum score: " + Server.HtmlEncode((string)task["maximumScore"]) + "</p><p>" + Server.HtmlEncode((string)task["evaluationCriteria"]) + "</p>";
                 maximumInput.Text = (string)task["maximumScore"] ?? "";
                 Feedbackinput.Value = (string)task["feedback"] ?? "";
                 scoreInput.Text = (string)task["score"] ?? "";

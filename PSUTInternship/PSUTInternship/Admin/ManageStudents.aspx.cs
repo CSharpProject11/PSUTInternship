@@ -208,7 +208,7 @@ namespace PSUTInternship.Admin
                     table.Append("<a class='btn light' href='ManageStudents.aspx?view=").Append(safeId).Append("'>View</a> ");
                     table.Append("<a class='btn light' href='ManageStudents.aspx?edit=").Append(safeId).Append("'>Edit</a> ");
                     table.Append("<a class='btn danger' href='ManageStudents.aspx?toggle=").Append(safeId);
-                    table.Append("' onclick=\"return confirm('Change this account status?');\">");
+                    table.Append("' onclick=\"return portalConfirmAction(this, 'Change this account status?');\">");
                     table.Append(isActive ? "Deactivate" : "Activate").Append("</a></td></tr>");
                 }
 

@@ -1,15 +1,6 @@
-
-<%@ Page Language="C#" Async="true" AutoEventWireup="true" CodeBehind="CoordinatorAccount.aspx.cs" Inherits="CoordinatorAccount" %>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>Account Settings | UIMS</title>
-
-    <link href="Coordinator.css" rel="stylesheet" />
+<%@ Page Title="Account Settings | UIMS" MasterPageFile="~/Portal.Master" Language="C#" Async="true" AutoEventWireup="true" CodeBehind="CoordinatorAccount.aspx.cs" Inherits="CoordinatorAccount" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<link href="Coordinator.css" rel="stylesheet" />
 
     <style>
         .account-container {
@@ -223,38 +214,14 @@
             }
         }
     </style>
-</head>
-
-<body>
-
-    <form id="form1" runat="server">
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
 <input type="hidden" name="csrfToken" value="<%= H(CsrfToken) %>" />
 
         <div class="layout">
 
             <!-- Sidebar -->
-            <aside class="sidebar">
-                <div class="brand">
-                    UIMS
-                    <span>Coordinator</span>
-                </div>
 
-                <nav>
-                    <a class="nav-link" href="Dashboard.aspx">Dashboard</a>
-                    <a class="nav-link" href="ManageStudents.aspx">Manage Students</a>
-                    <a class="nav-link" href="ManageCompanies.aspx">Manage Companies</a>
-                    <a class="nav-link" href="ManageAcademic.aspx">Manage Academic Supervisors</a>
-                    <a class="nav-link" href="AssignSuper.aspx">Assign Academic Supervisors</a>
-                    <a class="nav-link" href="MonitorPlacements.aspx">Monitor Placements & Progress</a>
-                    <a class="nav-link" href="FinalCompletionReview.aspx">Final Completion Review</a>
-                    <a class="nav-link" href="ContactMessages.aspx">Contact Messages</a>
-                    <a class="nav-link active" href="CoordinatorAccount.aspx">Coordinator Account</a>
-                </nav>
-
-                <div class="sidefoot">
-                    University Internship System
-                </div>
-            </aside>
 
             <!-- Workspace -->
             <div class="workspace">
@@ -498,7 +465,7 @@
             </div>
         </div>
 
-    </form>
+
 
     <script>
 function togglePassword(id, button) {
@@ -518,14 +485,14 @@ function validateContact() {
     const phone = document.getElementById("accountPhone");
 
     if (!email.value.trim() || !email.checkValidity()) {
-        alert("Please enter a valid email address.");
+        PortalUI.message("Please enter a valid email address.", { title: "Please check this", kind: "error" });
         email.focus();
         return false;
     }
 
     if (phone.value.trim() &&
         !/^[+0-9()\s-]{7,25}$/.test(phone.value.trim())) {
-        alert("Please enter a valid phone number.");
+        PortalUI.message("Please enter a valid phone number.", { title: "Please check this", kind: "error" });
         phone.focus();
         return false;
     }
@@ -539,25 +506,25 @@ function validatePassword() {
     const confirm = document.getElementById("confirmPassword");
 
     if (!current.value) {
-        alert("Please enter your current password.");
+        PortalUI.message("Please enter your current password.", { title: "Please check this", kind: "error" });
         current.focus();
         return false;
     }
 
     if (next.value.length < 8) {
-        alert("New password must contain at least 8 characters.");
+        PortalUI.message("New password must contain at least 8 characters.", { title: "Please check this", kind: "error" });
         next.focus();
         return false;
     }
 
     if (next.value !== confirm.value) {
-        alert("New passwords do not match.");
+        PortalUI.message("New passwords do not match.", { title: "Please check this", kind: "error" });
         confirm.focus();
         return false;
     }
 
     if (current.value === next.value) {
-        alert("New password must be different from the current password.");
+        PortalUI.message("New password must be different from the current password.", { title: "Please check this", kind: "error" });
         next.focus();
         return false;
     }
@@ -572,6 +539,4 @@ window.addEventListener("pageshow", function () {
     }
 });
     </script>
-
-</body>
-</html>
+</asp:Content>

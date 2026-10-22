@@ -1,5 +1,4 @@
 <%@ Master Language="C#" CodeBehind="Public.Master.cs" Inherits="PSUTInternship.PublicLayout" %>
-<%@ Register Src="~/Shared/Dialogs.ascx" TagPrefix="psut" TagName="Dialogs" %>
 <!doctype html>
 <html lang="en">
 <head runat="server">
@@ -7,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Discover your next chapter at Princess Sumaya University for Technology. Explore campus life, internship opportunities, and your PSUT workspace.">
 <title>PSUT · Your next chapter</title>
-<link rel="icon" href="<%= ResolveUrl("~/Assets/psut-logo.jpg") %>">
+<link rel="icon" type="image/png" href="<%= ResolveUrl("~/Assets/psut-emblem.png") %>">
 <link rel="preload" href="<%= ResolveUrl("~/Assets/manrope-variable.ttf") %>" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="<%= ResolveUrl("~/Content/vendor/bootstrap.min.css") %>">
 <link rel="stylesheet" href="<%= ResolveUrl("~/Content/portal.css") %>">
@@ -15,7 +14,7 @@
 </head>
 <body class="campus-home" data-role="" data-page="">
 <asp:ContentPlaceHolder ID="MainContent" runat="server" />
-<psut:Dialogs runat="server" ID="Dialogs" />
+<div class="psut-modal" id="detail"><div class="modalbox" id="detailContent"></div></div><div class="psut-modal" id="action"><div class="modalbox" id="actionContent"></div></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>window.PSUT={root:'<%= ResolveUrl("~/") %>',role:'student',page:'Overview'};</script>
 <script src="<%= ResolveUrl("~/Scripts/vendor/bootstrap.bundle.min.js") %>"></script>
 <script src="<%= ResolveUrl("~/Scripts/portal.js") %>"></script>

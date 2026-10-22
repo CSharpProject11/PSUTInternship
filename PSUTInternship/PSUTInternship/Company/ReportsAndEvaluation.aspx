@@ -1,12 +1,8 @@
-<%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="ReportsAndEvaluation.aspx.cs" Inherits="PSUTInternship.Company.ReportsAndEvaluation" %>
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <title>Reports &amp; Final Evaluation</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <style>
-        *{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0;padding:24px}
-        main{max-width:1120px;margin:auto}.breadcrumb{font-size:13px;margin-bottom:12px}
+<%@ Page Title="Reports &amp; Final Evaluation" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="ReportsAndEvaluation.aspx.cs" Inherits="PSUTInternship.Company.ReportsAndEvaluation" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<style>
+
+        .breadcrumb{font-size:13px;margin-bottom:12px}
         h1{font-size:28px;font-weight:500;margin:0 0 8px}.intro{margin:0 0 24px}
         .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
         .stat,.panel{border:1px solid;border-radius:12px}
@@ -34,7 +30,7 @@
         .total{display:flex;justify-content:space-between;gap:12px;border:1px solid;border-radius:8px;padding:12px;font-weight:bold;margin:12px 0}
         .notice{font-size:12px;line-height:1.5;border:1px solid;border-radius:8px;padding:12px;margin:14px 0}
         .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
-        @media(max-width:740px){body{padding:15px}.stats{grid-template-columns:repeat(2,1fr)}.panel{padding:15px}.criterion{grid-template-columns:1fr 75px 75px auto}.modal-body{padding:15px}}
+        @media(max-width:740px){.stats{grid-template-columns:repeat(2,1fr)}.panel{padding:15px}.criterion{grid-template-columns:1fr 75px 75px auto}.modal-body{padding:15px}}
         @media(max-width:420px){.criterion{grid-template-columns:1fr 1fr}.criterion .remove-criterion{grid-column:2}.stat{padding:12px}.stat-title{min-height:35px}}
     </style>
     <script>
@@ -62,9 +58,9 @@
             document.getElementById('totalScore').textContent = score + ' / ' + max;
         }
     </script>
-</head>
-<body>
-<form id="form1" runat="server"><main>
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<main>
     <div class="breadcrumb">Workspace / Company Supervisor / Evaluations</div>
     <h1>Reports &amp; Final Evaluation</h1>
     <p class="intro">Review internship reports and submit your final evaluation to the academic supervisor.</p>
@@ -118,6 +114,5 @@
             </div>
         </div>
     </asp:Panel>
-</main></form>
-</body>
-</html>
+</main>
+</asp:Content>

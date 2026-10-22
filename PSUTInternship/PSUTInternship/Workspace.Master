@@ -1,17 +1,8 @@
 <%@ Import Namespace="PSUTInternship.Models" %>
-<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Workspace.Master.cs" Inherits="PSUTInternship.WorkspaceLayout" %>
+<%@ Master Language="C#" MasterPageFile="~/Portal.Master" AutoEventWireup="true" CodeBehind="Workspace.Master.cs" Inherits="PSUTInternship.WorkspaceLayout" %>
 <%@ Register Src="~/Shared/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
-<!doctype html>
-<html lang="en">
-<head runat="server">
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>My workspace · PSUT Internship Portal</title>
-    <link rel="icon" href="<%= ResolveUrl("~/Assets/psut-logo.jpg") %>" />
-    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/workspace.css") %>" />
-    <% if (Role == "student") { %><link rel="stylesheet" href="<%= ResolveUrl("~/Content/student-workspace.css") %>" /><% } %>
-</head>
-<body class="workspace" data-role="<%: Role %>">
+<asp:Content ID="DashboardHead" ContentPlaceHolderID="PortalHead" runat="server"><link rel="stylesheet" href="<%= ResolveUrl("~/Content/workspace.css") %>" /></asp:Content>
+<asp:Content ID="DashboardBody" ContentPlaceHolderID="PortalContent" runat="server">
 <svg class="wd-symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
 <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
 <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
@@ -26,66 +17,29 @@
 <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3"/></symbol>
 <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
 </defs></svg>
-<a class="wd-skip" href="#workspace-main">Skip to workspace</a>
-<form runat="server" id="workspaceForm">
-<div class="wd-shell">
-    <% if (Role == "student") { %><psut:StudentNav runat="server" /><% } else { %>
-    <aside class="wd-sidebar" id="workspace-navigation" aria-label="Workspace navigation">
-
-        <a class="wd-brand" href="<%= ResolveUrl("~/") %>" aria-label="PSUT homepage"><img src="<%= ResolveUrl("~/Assets/psut-logo.jpg") %>" alt="PSUT" /></a>
-        <span class="wd-sidebar-label">Your portal</span>
-        <nav aria-label="Portal pages" class="wd-side-nav">
-<a href="#overview" data-view="overview">Overview</a>
-<% if (Role == "student") { %><a href="<%= ResolveUrl("~/Student/MyTasks.aspx") %>">My tasks</a><a href="<%= ResolveUrl("~/Student/StudentProgress.aspx") %>">Progress and report</a><a href="<%= ResolveUrl("~/TrainingHours.aspx") %>">Training hours</a>
-<% } else if (Role == "company") { %><a href="Opportunities.aspx">Opportunities</a><a href="Applications.aspx">Applications</a><a href="Trainees.aspx">Trainees</a><a href="Tasks.aspx">Tasks</a><a href="../TrainingHours.aspx">Training hours</a><a href="ReportsAndEvaluation.aspx">Final evaluations</a><a href="Account.aspx">My account</a>
-<% } else if (Role == "academic") { %><a href="StudentProgress.aspx">Student progress</a><a href="FinalEvaluation.aspx">Final evaluation</a><a href="../TrainingHours.aspx">Training hours</a><a href="Account.aspx">My account</a>
-<% } else { %><a href="ManageStudents.aspx">Students</a><a href="ManageCompanies.aspx">Companies</a><a href="ManageAcademic.aspx">Academic supervisors</a><a href="AssignSuper.aspx">Assign supervisors</a><a href="FinalCompletionReview.aspx">Completion review</a><a href="MonitorPlacements.aspx">Monitor placements</a><a href="CoordinatorAccount.aspx">My account</a><a href="../TrainingHours.aspx">Training hours</a><a href="ContactMessages.aspx">Contact messages</a><% } %>
-</nav>
-        <div class="wd-sidebar-bottom">
-            <div class="wd-help-box"><svg><use href="#i-help"/></svg><p>A little guidance<br>goes a long way.</p><a href="mailto:info@psut.edu.jo">Contact PSUT <svg><use href="#i-arrow"/></svg></a></div>
-            <a class="wd-home-link" href="<%= ResolveUrl("~/") %>"><svg><use href="#i-home"/></svg>Back to homepage</a>
-        </div>
-    </aside>
-    <% } %>
-    <div class="wd-page">
-        <% if (Role != "student") { %>
-        <header class="wd-topbar">
-            <button class="wd-icon-button wd-menu-toggle" type="button" aria-label="Toggle navigation" aria-controls="workspace-navigation" aria-expanded="false"><svg><use href="#i-menu"/></svg></button>
-            <nav class="wd-tabs" aria-label="Dashboard sections">
-                <a href="#overview" data-view="overview" class="is-active" aria-current="page">Overview</a>
-                <a href="#workspace" data-view="workspace"><%: WorkLabel %></a>
-                <a href="#activity" data-view="activity">Activity</a>
-                <a href="#reports" data-view="reports">Reports</a>
-            </nav>
-            <div class="wd-top-actions">
-                <button type="button" class="wd-icon-button" data-refresh aria-label="Refresh workspace"><svg><use href="#i-refresh"/></svg></button>
-                <details class="wd-account"><summary><span class="wd-avatar"><%: Initials %></span><span><strong><%: Name %></strong><small><%: RoleName %></small></span></summary><div class="wd-account-menu"><span>Signed in as <%: RoleName %></span><% if (Role == "student") { %><a href="<%= ResolveUrl("~/Student/StudentProfile.aspx") %>">Student profile</a><% } %><a href="<%= ResolveUrl("~/Logout.aspx") %>">Sign out</a></div></details>
-            </div>
-        </header>
-        <% } %>
-        <main id="workspace-main" class="wd-main" tabindex="-1">
             <div class="wd-heading"><div><h1><%: Heading %></h1><p><%: Description %></p></div><div class="sd-heading-tools"><span class="wd-date"><svg><use href="#i-clock"/></svg><%: DateLabel %></span><% if (Role == "student") { %><button type="button" class="sd-refresh" data-refresh><svg><use href="#i-refresh"/></svg><span>Refresh</span></button><% } %></div></div>
             <% foreach (string notice in Notices) { %><p class="wd-notice" role="status"><svg><use href="#i-help"/></svg><%: notice %></p><% } %>
             <section data-panel="overview" id="overview" aria-label="Workspace overview">
-                <div class="wd-overview-grid">
-                    <article class="wd-feature"><div class="wd-feature-copy"><h2><%: FocusTitle %></h2><p><%: FocusText %></p><a class="wd-button wd-button-light" href="<%: PrimaryUrl %>"><%: PrimaryLabel %><svg><use href="#i-arrow"/></svg></a></div><img src="<%= ResolveUrl("~/Assets/psut-rooftop.jpg") %>" alt="The PSUT campus and Amman skyline" /><span class="wd-feature-caption">Experience begins with you.</span></article>
+                <div class="wd-metrics"><% foreach (var metric in Metrics) { %><article><span><%: metric.Label %></span><strong><%: metric.Value %></strong><p><%: metric.Hint %></p></article><% } %></div>
+<div class="wd-overview-grid">
+                    <article class="wd-feature"><div class="wd-feature-copy"><h2><%: FocusTitle %></h2><p><%: FocusText %></p><a class="wd-button wd-button-light" href="<%: PrimaryUrl %>"><%: PrimaryLabel %><svg><use href="#i-arrow"/></svg></a></div></article>
                     <article class="wd-status-panel"><div class="wd-panel-heading"><h2>Placement overview</h2><svg><use href="#i-chart"/></svg></div><p>Application decisions at a glance</p><div class="wd-status-chart" role="img" aria-label="<%: ApplicationsAvailable ? PendingCount + " pending, " + ApprovedCount + " approved, " + RejectedCount + " rejected applications" : "Application data unavailable" %>">
                         <% var total = Math.Max(1, PendingCount + ApprovedCount + RejectedCount); %>
                         <div class="wd-chart-bar wd-chart-pending" style="flex-grow:<%= PendingCount %>"></div><div class="wd-chart-bar wd-chart-approved" style="flex-grow:<%= ApprovedCount %>"></div><div class="wd-chart-bar wd-chart-rejected" style="flex-grow:<%= RejectedCount %>"></div>
                         <% if (PendingCount + ApprovedCount + RejectedCount == 0) { %><div class="wd-chart-empty"></div><% } %>
                     </div><ul class="wd-legend"><li><i class="wd-dot pending"></i>Pending<strong><%: ApplicationsAvailable ? PendingCount.ToString() : "—" %></strong></li><li><i class="wd-dot approved"></i>Approved<strong><%: ApplicationsAvailable ? ApprovedCount.ToString() : "—" %></strong></li><li><i class="wd-dot rejected"></i>Rejected<strong><%: ApplicationsAvailable ? RejectedCount.ToString() : "—" %></strong></li></ul><span class="wd-data-caption"><%: ApplicationsAvailable ? "From your current application records" : "Waiting for application access" %></span></article>
                 </div>
-                <div class="wd-metrics"><% foreach (var metric in Metrics) { %><article><span><%: metric.Label %></span><strong><%: metric.Value %></strong><p><%: metric.Hint %></p></article><% } %></div>
-                <div class="wd-section-heading"><div><h2>Make your next move.</h2><p>A clear path from ambition to experience.</p></div><span class="wd-drag-label">Drag to explore <svg><use href="#i-arrow"/></svg></span></div>
+
+                <div class="wd-section-heading"><div><h2>Quick actions</h2><p>Continue your internship workflow.</p></div><span class="wd-drag-label">Explore workspace <svg><use href="#i-arrow"/></svg></span></div>
                 <div class="wd-action-rail" tabindex="0" role="region" aria-label="Workspace quick actions" data-drag-rail>
                     <% if (Role == "student") { %>
                     <a class="wd-action-tile" href="<%= ResolveUrl("~/Student/Opportunities.aspx") %>"><svg><use href="#i-bag"/></svg><h3>Find your placement.</h3><p>Explore open internships and find where your skills can grow.</p><span>Browse opportunities <svg><use href="#i-arrow"/></svg></span></a>
                     <a class="wd-action-tile" href="<%= ResolveUrl("~/Student/MyApplications.aspx") %>"><svg><use href="#i-clock"/></svg><h3>Keep things moving.</h3><p>Follow decisions, review offers and confirm your internship.</p><span>My applications <svg><use href="#i-arrow"/></svg></span></a>
-                    <a class="wd-action-tile wd-action-photo" href="<%= ResolveUrl("~/Student/StudentProfile.aspx") %>"><img src="<%= ResolveUrl("~/Assets/psut-walkway.jpg") %>" alt=""/><h3>Your story.<br>Your potential.</h3><span>View student profile <svg><use href="#i-arrow"/></svg></span></a>
+                    <a class="wd-action-tile wd-action-photo" href="<%= ResolveUrl("~/Student/StudentProfile.aspx") %>"><h3>Your story.<br>Your potential.</h3><span>View student profile <svg><use href="#i-arrow"/></svg></span></a>
                     <% } else { %>
                     <a class="wd-action-tile" href="#workspace" data-view="workspace"><svg><use href="#i-user"/></svg><h3><%: Role == "company" ? "Discover your talent." : "People come first." %></h3><p><%: Role == "company" ? "See the opportunities connected to your company." : "Keep the students connected to your workspace in view." %></p><span><%: WorkLabel %> <svg><use href="#i-arrow"/></svg></span></a>
                     <a class="wd-action-tile" href="#activity" data-view="activity"><svg><use href="#i-clock"/></svg><h3>Stay connected.</h3><p>Follow placement decisions and see what needs attention.</p><span>View activity <svg><use href="#i-arrow"/></svg></span></a>
-                    <a class="wd-action-tile wd-action-photo" href="#reports" data-view="reports"><img src="<%= ResolveUrl("~/Assets/psut-students.jpeg") %>" alt=""/><h3>See the<br>bigger picture.</h3><span>Workspace reports <svg><use href="#i-arrow"/></svg></span></a>
+                    <a class="wd-action-tile wd-action-photo" href="#reports" data-view="reports"><h3>See the<br>bigger picture.</h3><span>Workspace reports <svg><use href="#i-arrow"/></svg></span></a>
                     <% } %>
                 </div>
             </section>
@@ -93,21 +47,14 @@
                 <% if (Role == "company") { %><div class="wd-opening-grid"><% foreach (var opening in Openings) { %><article class="wd-opening"><span class="wd-badge"><%: opening.Status %></span><h3><%: opening.Title %></h3><p><%: opening.Location %> · <%: opening.Mode %></p><span>Deadline: <%: opening.Deadline %></span></article><% } %></div><% if (Openings.Count == 0) { %><div class="wd-empty"><svg><use href="#i-bag"/></svg><h3>No company opportunities to show</h3><p>Opportunities linked to your company account will appear here.</p></div><% } %><% } %>
                 <% if (Role == "academic" || Role == "admin") { %><div class="wd-people-grid"><% foreach (var person in People) { %><article class="wd-person"><span class="wd-avatar"><svg><use href="#i-user"/></svg></span><div><h3><%: person.Title %></h3><p><%: person.Person %></p></div><span class="wd-badge"><%: person.Status %></span></article><% } %></div><% if (People.Count == 0) { %><div class="wd-empty"><svg><use href="#i-user"/></svg><h3>No student records to show</h3><p><%: Role == "academic" ? "Students assigned to your academic supervisor account will appear here." : "Student accounts will appear here when they are available to your coordinator account." %></p></div><% } %><% } %>
             </section>
-            <section data-panel="reports" id="reports" hidden aria-labelledby="report-title"><div class="wd-section-heading"><div><h2 id="report-title">Your workspace, in perspective.</h2><p>Export the application records available to your account.</p></div><button class="wd-button" type="button" data-export <%= Rows.Count == 0 ? "disabled" : "" %>>Download CSV<svg><use href="#i-download"/></svg></button></div><div class="wd-report-note"><h3>Application summary</h3><p><%: ApplicationsAvailable ? "This report includes the application titles, students or organizations, decisions and submission dates shown below." : "Application records are unavailable under the current database permissions. An export will become available when records can be read." %></p><p>Exports reflect the records loaded when you opened this page. Refresh to include recent changes.</p></div></section>
+            <section data-panel="reports" id="reports" hidden aria-labelledby="report-title"><div class="wd-section-heading"><div><h2 id="report-title">Workspace reports</h2><p>Export the application records available to your account.</p></div><button class="wd-button" type="button" data-export <%= Rows.Count == 0 ? "disabled" : "" %>>Download CSV<svg><use href="#i-download"/></svg></button></div><div class="wd-report-note"><h3>Application summary</h3><p><%: ApplicationsAvailable ? "This report includes the application titles, students or organizations, decisions and submission dates shown below." : "Application records are unavailable under the current database permissions. An export will become available when records can be read." %></p><p>Exports reflect the records loaded when you opened this page. Refresh to include recent changes.</p></div></section>
             <section class="wd-activity-panel" id="activity" aria-labelledby="activity-title"><div class="wd-table-toolbar"><div><h2 id="activity-title"><%: ActivityLabel %></h2><p>Every application. A step forward.</p></div><div class="wd-table-actions"><label class="wd-search"><svg><use href="#i-search"/></svg><input type="search" id="activitySearch" placeholder="Search activity" aria-label="Search application activity" /></label><select id="activityStatus" aria-label="Filter by application status"><option value="all">All statuses</option><option>Pending</option><option>Approved</option><option>Rejected</option></select></div></div>
                 <div class="wd-table-scroll"><table id="activityTable"><thead><tr><th scope="col">Opportunity</th><th scope="col"><%: Role == "student" ? "Organization" : "Student" %></th><th scope="col">Status</th><th scope="col">Applied on</th><% if (Role == "student") { %><th scope="col"><span class="wd-sr-only">Actions</span></th><% } %></tr></thead><tbody><% foreach (var row in Rows) { %><tr data-status="<%: row.Status %>"><td><span class="wd-row-icon"><svg><use href="#i-bag"/></svg></span><strong><%: string.IsNullOrWhiteSpace(row.Title) ? "Internship application" : row.Title %></strong></td><td><%: string.IsNullOrWhiteSpace(row.Person) ? "Not provided" : row.Person %></td><td><span class="wd-badge <%: row.Status.ToLowerInvariant() %>"><%: row.Status %></span></td><td><%: row.Date %></td><% if (Role == "student") { %><td><a class="wd-row-link" href="<%: row.Url %>" aria-label="Review application for <%: row.Title %>"><svg><use href="#i-arrow"/></svg></a></td><% } %></tr><% } %></tbody></table></div>
                 <% if (Rows.Count == 0) { %><div class="wd-empty"><svg><use href="#i-bag"/></svg><h3><%: EmptyTitle %></h3><p><%: EmptyDescription %></p><% if (Role == "student") { %><a href="<%= ResolveUrl("~/Student/Opportunities.aspx") %>" class="wd-text-link">Explore opportunities <svg><use href="#i-arrow"/></svg></a><% } %></div><% } %>
                 <p class="wd-filter-empty" hidden>No applications match your search. Try another name or status.</p><p class="wd-table-count" role="status" aria-live="polite"><span id="visibleCount"><%: Rows.Count %></span> records in this workspace</p>
             </section>
-            <section class="wd-recommendations" data-student-openings <%= Role != "student" ? "hidden" : "" %>><div class="wd-section-heading"><div><h2>Room to grow.</h2><p>Open opportunities from the portal.</p></div><a class="wd-text-link" href="<%= ResolveUrl("~/Student/Opportunities.aspx") %>">View all <svg><use href="#i-arrow"/></svg></a></div><div class="wd-opening-grid"><% foreach (var opening in Openings.Take(3)) { %><a class="wd-opening" href="<%: opening.Url %>"><span class="wd-badge approved">Open</span><h3><%: opening.Title %></h3><p><%: opening.Location %> · <%: opening.Mode %></p><span><%: opening.Deadline %><svg><use href="#i-arrow"/></svg></span></a><% } %></div><% if (Role == "student" && Openings.Count == 0) { %><p class="wd-muted">No open opportunities are available right now. Check back for your next chapter.</p><% } %></section>
+            <section class="wd-recommendations" data-student-openings <%= Role != "student" ? "hidden" : "" %>><div class="wd-section-heading"><div><h2>Open opportunities</h2><p>Open opportunities from the portal.</p></div><a class="wd-text-link" href="<%= ResolveUrl("~/Student/Opportunities.aspx") %>">View all <svg><use href="#i-arrow"/></svg></a></div><div class="wd-opening-grid"><% foreach (var opening in Openings.Take(3)) { %><a class="wd-opening" href="<%: opening.Url %>"><span class="wd-badge approved">Open</span><h3><%: opening.Title %></h3><p><%: opening.Location %> · <%: opening.Mode %></p><span><%: opening.Deadline %><svg><use href="#i-arrow"/></svg></span></a><% } %></div><% if (Role == "student" && Openings.Count == 0) { %><p class="wd-muted">No open opportunities are available right now. Check back for your next chapter.</p><% } %></section>
             <asp:ContentPlaceHolder ID="WorkspaceContent" runat="server" />
-            <footer class="wd-footer"><span>PSUT <strong>Internship Portal</strong></span><span>Learning with purpose. Experience that matters.</span></footer>
-        </main>
-    </div>
-</div>
-</form>
-<div class="wd-toast" role="status" aria-live="polite" hidden></div>
-<script src="<%= ResolveUrl("~/Scripts/interactions.js") %>"></script>
-<script src="<%= ResolveUrl("~/Scripts/workspace.js?v=2") %>"></script>
-</body>
-</html>
+
+<script src="<%= ResolveUrl("~/Scripts/workspace.js?v=3") %>"></script>
+</asp:Content>

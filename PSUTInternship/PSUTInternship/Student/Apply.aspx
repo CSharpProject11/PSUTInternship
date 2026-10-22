@@ -1,21 +1,15 @@
-﻿<%@ Page Language="C#" Async="true"
+<%@ Page Title="Apply for an opportunity" MasterPageFile="~/Portal.Master" Language="C#" Async="true"
     AutoEventWireup="true"
     CodeBehind="Apply.aspx.cs"
     Inherits="PSUTInternship.Student.Apply" %>
 <%@ Register Src="~/Shared/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
-
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <title>Apply for an opportunity</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../Content/bootstrap.min.css" rel="stylesheet" />
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<link href="../Content/bootstrap.min.css" rel="stylesheet" />
     <link href="../Content/student-workspace.css" rel="stylesheet" />
-</head>
-<body class="student-page">
-    <form id="form1" runat="server">
-    <div class="student-shell">
-        <psut:StudentNav runat="server" />
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<div class="student-shell">
+
         <main id="student-main" class="student-main sd-apply-main" tabindex="-1">
         <a class="sd-back" href="Opportunities.aspx">← Back to opportunities</a>
         <div class="student-heading"><div><h1>Opportunity details.</h1><p>Review the placement, then submit your application.</p></div></div>
@@ -35,7 +29,7 @@
                         AlternateText='<%# Eval("Title") %>'
                         Visible='<%# !string.IsNullOrWhiteSpace(Convert.ToString(Eval("ImageUrl"))) %>' />
                     <div class="card-body p-3 p-md-4">
-                    <h1 class="h2 text-break mb-3"><%#: Eval("Title") %></h1>
+                    <h2 class="h2 text-break mb-3"><%#: Eval("Title") %></h2>
                     <span class="badge bg-secondary"><%#: Convert.ToBoolean(Eval("Status")) ? "Open" : "Closed" %></span>
 
                     <dl class="row g-3 border-bottom pb-4 my-3">
@@ -72,7 +66,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p class="text-muted">Your saved student information is filled in automatically. Review it and complete any missing academic and training organization details. All fields are required unless marked optional.</p>
+                        <p class="text-muted">Your saved student information is filled in automatically. Review it and complete any missing academic details. All fields are required unless marked optional.</p>
                         <fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">General Information</legend><div class="row g-3">
 <div class="col-12 col-md-6"><label class="form-label" for="faculty">Faculty</label><input class="form-control" id="faculty" name="faculty" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="department">Department</label><input class="form-control" id="department" name="department" type="text" required="required" /></div>
@@ -89,23 +83,6 @@
 <div class="col-12 col-md-6"><label class="form-label" for="studentEmail">Email Address</label><input class="form-control" id="studentEmail" name="studentEmail" type="email" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="alternativePhone">Alternative Phone Number (optional)</label><input class="form-control" id="alternativePhone" name="alternativePhone" type="tel" /></div>
 </div></fieldset>
-<fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">Training Organization Information</legend><div class="row g-3">
-<div class="col-12 col-md-6"><label class="form-label" for="organizationName">Organization Name</label><input class="form-control" id="organizationName" name="organizationName" type="text" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="organizationPhone">Phone Number</label><input class="form-control" id="organizationPhone" name="organizationPhone" type="tel" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="mailingAddress">Mailing Address</label><input class="form-control" id="mailingAddress" name="mailingAddress" type="text" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="organizationEmail">Email Address</label><input class="form-control" id="organizationEmail" name="organizationEmail" type="email" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="organizationWebsite">Website (optional)</label><input class="form-control" id="organizationWebsite" name="organizationWebsite" type="url" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="trainingAddress">Training Location Address</label><input class="form-control" id="trainingAddress" name="trainingAddress" type="text" required="required" /></div>
-</div></fieldset>
-<fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">Training Period</legend><div class="row g-3">
-<div class="col-12 col-md-6"><label class="form-label" for="trainingStartDate">Training Start Date</label><input class="form-control" id="trainingStartDate" name="trainingStartDate" type="date" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="trainingEndDate">Training End Date</label><input class="form-control" id="trainingEndDate" name="trainingEndDate" type="date" required="required" /></div>
-</div></fieldset>
-                        <fieldset class="mb-0">
-                            <legend class="h5 border-bottom pb-2 mb-3">Training Field</legend>
-                            <label class="form-label" for="trainingField">Field of Training</label>
-                            <textarea class="form-control" id="trainingField" name="trainingField" rows="4" required="required"></textarea>
-                        </fieldset>
                         <div class="mt-4">
                             <label class="form-label" for="applicationReason">Why do you want to apply to this company?</label>
                             <textarea class="form-control" id="applicationReason" name="applicationReason" rows="4" required="required" aria-describedby="applicationReasonHelp"></textarea>
@@ -120,10 +97,6 @@
                 </div>
             </div>
         </div>
-    </form>
+
     <script src="../Scripts/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-
-
-
+</asp:Content>

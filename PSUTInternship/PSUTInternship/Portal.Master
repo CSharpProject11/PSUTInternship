@@ -1,0 +1,33 @@
+<%@ Master Language="C#" %>
+<%@ Import Namespace="PSUTInternship.Shared" %>
+<%@ Register Src="~/Shared/PortalNavigation.ascx" TagPrefix="psut" TagName="Navigation" %>
+<!doctype html>
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PSUT Internship Portal</title>
+    <link rel="icon" type="image/png" href="<%= ResolveUrl("~/Assets/psut-emblem.png") %>" />
+    <script>try { if (localStorage.getItem('psut.sidebar.collapsed') === 'true') document.documentElement.classList.add('portal-rail-collapsed'); } catch (e) { }</script>
+    <asp:ContentPlaceHolder ID="PortalHead" runat="server" />
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/portal-workspace.css?v=14") %>" />
+    <script src="<%= ResolveUrl("~/Scripts/portal-ui.js?v=14") %>" defer></script>
+</head>
+<body class="portal-app" data-role="<%: PortalRoles.Normalize(Convert.ToString(Session["userRole"])) %>">
+<a class="portal-skip" href="#portal-main">Skip to content</a>
+<form id="portalForm" runat="server">
+    <div class="portal-shell">
+        <psut:Navigation runat="server" />
+        <div class="portal-page">
+            <header class="portal-topbar">
+                <button type="button" class="portal-menu portal-icon-button" aria-label="Open navigation" aria-controls="portal-navigation" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+                <div class="portal-breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong><%: PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "admin" ? "Coordinator" : PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "company" ? "Company supervisor" : PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "academic" ? "Academic supervisor" : "Student" %></strong></div>
+                <div class="portal-top-actions"><span class="portal-term">PSUT · Internship portal</span><button type="button" class="portal-icon-button" data-portal-refresh aria-label="Refresh page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7a8 8 0 1 0 0 10M20 3v5h-5"/></svg></button><a class="portal-account-link" href="<%= ResolveUrl(PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "admin" ? "~/Admin/CoordinatorAccount.aspx" : PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "company" ? "~/Company/Account.aspx" : PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "academic" ? "~/Academic/Account.aspx" : "~/Student/StudentProfile.aspx") %>" aria-label="My account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></a></div>
+            </header>
+            <main id="portal-main" class="portal-content" tabindex="-1"><asp:ContentPlaceHolder ID="PortalContent" runat="server" /></main>
+            <footer class="portal-footer"><span>PSUT Internship Portal</span><span>Learning. Experience. Progress.</span></footer>
+        </div>
+    </div>
+</form>
+</body>
+</html>

@@ -1,15 +1,7 @@
 <%@ Register Src="~/Shared/StudentLinks.ascx" TagPrefix="psut" TagName="StudentLinks" %>
-
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="StudentProfile.aspx.cs" Async="true" Inherits="PSUTInternship.Student.StudentProfile" %>
-
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Student Profile</title>
-
-    <style>
+<%@ Page Title="Student Profile" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" CodeBehind="StudentProfile.aspx.cs" Async="true" Inherits="PSUTInternship.Student.StudentProfile" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<style>
         * {
             box-sizing: border-box;
         }
@@ -304,24 +296,24 @@
 
         }
     </style>
-</head>
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<main class="page">
 
-<body>
-    <form id="form1" runat="server">
-<psut:StudentLinks runat="server" />
-
-        <main class="page">
-
-            <header class="header">
+            <header class="header"><div>
                 <h1>Student Profile</h1>
                 <p>Manage your personal and academic information.</p>
-            </header>
+            </div><asp:Button ID="btnEditProfile"
+                runat="server"
+                Text="Edit Profile"
+                CssClass="floating-edit-btn"
+                OnClick="btnEditProfile_Click" /></header>
 
             <p>Academic supervisor: <asp:Label ID="assignedSupervisor" runat="server" /></p>
             <!-- Personal Information -->
             <section class="card">
                 <div class="section-title">
-                    <span>👤</span>
+
                     <h2>Personal Information</h2>
                 </div>
 
@@ -368,7 +360,7 @@
             <!-- Academic Information -->
             <section class="card">
                 <div class="section-title">
-                    <span>🎓</span>
+
                     <h2>Academic Information</h2>
                 </div>
 
@@ -429,20 +421,20 @@
             <section class="card">
 
                 <div class="professional-heading">
-                    <div class="professional-icon">💼</div>
+
                     <div>
                         <h2>Professional Information</h2>
                         <p>Complete your professional profile to showcase your skills.</p>
                     </div>
                 </div>
 
-                
+
 <div class="professional-fields">
 
     <!-- GitHub -->
     <div class="cv-section">
         <div class="cv-heading">
-            <span>💻</span>
+
             <div>
                 <h3>GitHub Profile</h3>
                 <p>Showcase your coding projects.</p>
@@ -465,7 +457,7 @@
     <!-- LinkedIn -->
     <div class="cv-section">
         <div class="cv-heading">
-            <span>💼</span>
+
             <div>
                 <h3>LinkedIn Profile</h3>
                 <p>Share your professional experience.</p>
@@ -488,7 +480,7 @@
     <!-- Portfolio -->
     <div class="cv-section">
         <div class="cv-heading">
-            <span>🌐</span>
+
             <div>
                 <h3>Portfolio</h3>
                 <p>Present your work and achievements.</p>
@@ -511,11 +503,11 @@
 </div>
 
 <div class="professional-field">
-    
+
 <div class="cv-section">
 
     <div class="cv-heading">
-        <span>📄</span>
+
         <div>
             <h3>Curriculum Vitae (CV)</h3>
             <p>Add a link to your CV.</p>
@@ -547,14 +539,7 @@
                 CssClass="message" />
 
             <!-- Floating Edit / Save Button -->
-            <asp:Button ID="btnEditProfile"
-                runat="server"
-                Text="Edit Profile"
-                CssClass="floating-edit-btn"
-                OnClick="btnEditProfile_Click" />
+
 
         </main>
-
-    </form>
-</body>
-</html>
+</asp:Content>

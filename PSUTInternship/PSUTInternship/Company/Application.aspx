@@ -1,14 +1,9 @@
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Application.aspx.cs" Inherits="PSUTInternship.Company.Application" %>
-<!DOCTYPE html>
-<html>
-    <head runat="server">
-        <meta charset="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <title>Review application</title>
-        <link href="../Content/Company.css" rel="stylesheet" />
-    </head>
-    <body>
-        <%= PageHeader("applications", "Review application", "Review the student's information before deciding.") %>
+<%@ Page Title="Review application" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" CodeBehind="Application.aspx.cs" Inherits="PSUTInternship.Company.Application" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<link href="../Content/Company.css" rel="stylesheet" />
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<%= PageHeader("applications", "Review application", "Review the student's information before deciding.") %>
 <% if (StudentApplication == null) { %>
         <section class="panel"><h2>Application not found</h2><p class="muted">This application may have been removed or the link is missing its ID.</p><a href="Applications.aspx">Back to applications</a></section>
 <% } else { %>
@@ -38,9 +33,9 @@
                     </span>
                 </p>
                 <% if(StudentApplication.Status=="Pending"){ %>
-                <form method="post"><input type="hidden" name="csrfToken" value="<%= CsrfToken %>"/>
+                <input type="hidden" name="csrfToken" value="<%= CsrfToken %>"/>
                     <button class="btn" name="action" value="accept" type="submit">Accept application</button>
-                </form>
+
                 <p>
                     <a class="btn outline" href="RejectApplication.aspx?id=<%= H(StudentApplication.Id) %>">Reject with reason</a>
                 </p>
@@ -61,7 +56,4 @@
 
         <% } %>
         <%= PageFooter() %>
-    </body>
-</html>
-
-
+</asp:Content>

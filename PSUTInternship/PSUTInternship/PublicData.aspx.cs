@@ -23,9 +23,14 @@ namespace PSUTInternship
                 if(Request.HttpMethod=="GET")
                 {
                     if(Request.QueryString["action"]=="contactToken") { Response.Write(JsonConvert.SerializeObject(new {token=CsrfToken}));return; }
-                    string json=await FirebaseConfig.Client.GetStringAsync(FirebaseConfig.DatabaseUrl+"publicOpportunities.json");
-                    var records=JsonConvert.DeserializeObject<System.Collections.Generic.Dictionary<string,JObject>>(json)??new System.Collections.Generic.Dictionary<string,JObject>();
-                    Response.Write(JsonConvert.SerializeObject(records.Where(x=>IsOpen(x.Value)).Select(x=>new {id=x.Key,title=(string)x.Value["title"],company=(string)x.Value["companyName"],major=(string)x.Value["specialization"],seats=(int?)x.Value["availableSeats"]??0,deadline=(string)x.Value["deadline"]})));
+                    // Firebase keeps the single source private to active portal users.
+                    if (Session["idToken"] == null) { Response.Write("[]"); return; }
+                    var records = await PortalRepository.Collection("opportunities");
+                    var companies = await PortalRepository.Collection("companies");
+                    Response.Write(JsonConvert.SerializeObject(records.Where(x=>IsOpen(x.Value)).Select(x=> {
+                        JObject company; companies.TryGetValue((string)x.Value["companyId"] ?? "", out company);
+                        return new {id=x.Key,title=(string)x.Value["title"],company=(string)company?["name"] ?? "Company",major=(string)x.Value["specialization"],seats=(int?)x.Value["availableSeats"]??0,deadline=(string)x.Value["deadline"]};
+                    })));
                     return;
                 }
                 if(Request.HttpMethod!="POST"||Request.QueryString["action"]!="contact")throw new ArgumentException("Unsupported request.");
