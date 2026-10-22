@@ -84,6 +84,14 @@ components:
 
 # Design System: PSUT Internship Portal
 
+## Homepage implementation, 22 October 2026
+
+The public homepage now follows the user-selected Armenia Travel reference: a full-width campus film with deep lower curves, a low editorial title, dark photographic campus chapter, pill role tabs, white rounded photograph cards, sky opportunity chapter, a rotating draggable fact deck, campus cinema and an oversized PSUT footer. The existing role workspaces keep the system documented below.
+
+`Content/campus-home.css` is the public-page visual authority, loaded only by `Public.Master`. It keeps PSUT navy `#003e73`, blue `#0078b5`, sky `#76c8ec`, pale `#d7ecf6`, night `#071f32`, paper and Manrope. Its equal outer gutter is 22px on phones and 3.1vw on desktops. The user specifically requested repeated draggable cards; these are intentional exceptions to generic card-avoidance guidance. Neutral photographic scrims are used for legibility, with no decorative gradients, glass or resting shadows.
+
+The short enhanced campus loop is pausable; the full film loads in an accessible dialog on request. The film retains its panoramic aspect ratio, uses cover cropping and a high-resolution campus poster, and pauses when offscreen, in a hidden tab or behind a dialog. Reduced motion disables autoplay, reveals and decorative transforms while retaining all content and native scrolling. Photograph and fact rails support pointer dragging, native touch, arrows and keyboard movement. Full source attribution and video limitations are in `HOMEPAGE.md`.
+
 ## Overview
 
 **Creative North Star: "Campus in motion, purposeful workspaces"**

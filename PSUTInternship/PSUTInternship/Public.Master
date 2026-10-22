@@ -5,29 +5,22 @@
 <head runat="server">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PSUT · Internship Portal</title>
+<meta name="description" content="Discover your next chapter at Princess Sumaya University for Technology. Explore campus life, internship opportunities, and your PSUT workspace.">
+<title>PSUT · Your next chapter</title>
 <link rel="icon" href="<%= ResolveUrl("~/Assets/psut-logo.jpg") %>">
+<link rel="preload" href="<%= ResolveUrl("~/Assets/manrope-variable.ttf") %>" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="<%= ResolveUrl("~/Content/vendor/bootstrap.min.css") %>">
-<link rel="stylesheet" href="<%= ResolveUrl("~/Content/portal.css?v=20261021j") %>">
-<link rel="stylesheet" href="<%= ResolveUrl("~/Content/wellington.css") %>">
-<link rel="stylesheet" href="<%= ResolveUrl("~/Content/motion.css") %>">
-<link rel="stylesheet" href="<%= ResolveUrl("~/Content/homepage-interactions.css?v=20261021m") %>">
+<link rel="stylesheet" href="<%= ResolveUrl("~/Content/portal.css") %>">
+<link rel="stylesheet" href="<%= ResolveUrl("~/Content/campus-home.css?v=20261022") %>">
 </head>
-<body class="reference-homepage" data-role="" data-page="">
+<body class="campus-home" data-role="" data-page="">
 <asp:ContentPlaceHolder ID="MainContent" runat="server" />
 <psut:Dialogs runat="server" ID="Dialogs" />
-<script>window.PSUT={root:'<%= ResolveUrl("~/") %>',role:document.body.dataset.role||'student',page:document.body.dataset.page||'Overview'};</script>
-<script src="<%= ResolveUrl("~/Scripts/vendor/bootstrap.bundle.min.js") %>">
-</script>
-<script src="<%= ResolveUrl("~/Scripts/portal.js") %>">
-</script>
-
-
-<script src="<%= ResolveUrl("~/Scripts/wellington.js") %>">
-</script>
-<script src="<%= ResolveUrl("~/Scripts/motion.js?v=20261021c") %>">
-</script>
-<script src="<%= ResolveUrl("~/Scripts/interactions.js?v=20261021b") %>"></script>
-<script src="<%= ResolveUrl("~/Scripts/hero.js?v=20261021c") %>"></script>
+<script>window.PSUT={root:'<%= ResolveUrl("~/") %>',role:'student',page:'Overview'};</script>
+<script src="<%= ResolveUrl("~/Scripts/vendor/bootstrap.bundle.min.js") %>"></script>
+<script src="<%= ResolveUrl("~/Scripts/portal.js") %>"></script>
+<script src="<%= ResolveUrl("~/Scripts/wellington.js") %>"></script>
+<script src="<%= ResolveUrl("~/Scripts/interactions.js") %>"></script>
+<script src="<%= ResolveUrl("~/Scripts/campus-home.js?v=20261022") %>"></script>
 </body>
 </html>

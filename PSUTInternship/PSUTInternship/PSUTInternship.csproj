@@ -146,6 +146,11 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Default.aspx" />
+    <Content Include="Content\campus-home.css" />
+    <Content Include="Scripts\campus-home.js" />
+    <Content Include="Assets\psut-campus-enhanced.mp4" />
+    <Content Include="Assets\psut-campus-loop.mp4" />
+    <Content Include="index.html" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Login.aspx" />
@@ -363,6 +368,8 @@
     <Compile Include="Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
+
+    <Compile Include="Models\CompanyDemoData.cs" />
     <Compile Include="Models\Opportunity.cs" />
     <Compile Include="Models\Application.cs" />
 
@@ -550,6 +557,182 @@
     <Compile Include="Workspace.Master.cs">
       <DependentUpon>Workspace.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Student\Student.slnx" />
+    <None Include="..\..\.gitignore">
+      <Link>Repository\.gitignore</Link>
+    </None>
+    <None Include="..\.design-review\academic-desktop.png">
+      <Link>Repository\PSUTInternship\.design-review\academic-desktop.png</Link>
+    </None>
+    <None Include="..\.design-review\academic-mobile.png">
+      <Link>Repository\PSUTInternship\.design-review\academic-mobile.png</Link>
+    </None>
+    <None Include="..\.design-review\admin-desktop.png">
+      <Link>Repository\PSUTInternship\.design-review\admin-desktop.png</Link>
+    </None>
+    <None Include="..\.design-review\admin-mobile.png">
+      <Link>Repository\PSUTInternship\.design-review\admin-mobile.png</Link>
+    </None>
+    <None Include="..\.design-review\company-desktop.png">
+      <Link>Repository\PSUTInternship\.design-review\company-desktop.png</Link>
+    </None>
+    <None Include="..\.design-review\company-mobile.png">
+      <Link>Repository\PSUTInternship\.design-review\company-mobile.png</Link>
+    </None>
+    <None Include="..\.design-review\homepage-carousel-final.png">
+      <Link>Repository\PSUTInternship\.design-review\homepage-carousel-final.png</Link>
+    </None>
+    <None Include="..\.design-review\homepage-draggable-cards.png">
+      <Link>Repository\PSUTInternship\.design-review\homepage-draggable-cards.png</Link>
+    </None>
+    <None Include="..\.design-review\homepage-hero-final.png">
+      <Link>Repository\PSUTInternship\.design-review\homepage-hero-final.png</Link>
+    </None>
+    <None Include="..\.design-review\homepage-hero-transition.png">
+      <Link>Repository\PSUTInternship\.design-review\homepage-hero-transition.png</Link>
+    </None>
+    <None Include="..\.design-review\homepage-mobile.png">
+      <Link>Repository\PSUTInternship\.design-review\homepage-mobile.png</Link>
+    </None>
+    <None Include="..\.design-review\homepage-transition-final.png">
+      <Link>Repository\PSUTInternship\.design-review\homepage-transition-final.png</Link>
+    </None>
+    <None Include="..\.design-review\integrate.py">
+      <Link>Repository\PSUTInternship\.design-review\integrate.py</Link>
+    </None>
+    <None Include="..\.design-review\prepare-preview.py">
+      <Link>Repository\PSUTInternship\.design-review\prepare-preview.py</Link>
+    </None>
+    <None Include="..\.design-review\preview-app\Assets\manrope-variable.ttf">
+      <Link>Repository\PSUTInternship\.design-review\preview-app\Assets\manrope-variable.ttf</Link>
+    </None>
+    <None Include="..\.design-review\preview-app\Assets\psut-logo.jpg">
+      <Link>Repository\PSUTInternship\.design-review\preview-app\Assets\psut-logo.jpg</Link>
+    </None>
+    <None Include="..\.design-review\preview-app\Assets\psut-rooftop.jpg">
+      <Link>Repository\PSUTInternship\.design-review\preview-app\Assets\psut-rooftop.jpg</Link>
+    </None>
+    <None Include="..\.design-review\preview-app\Assets\psut-students.jpeg">
+      <Link>Repository\PSUTInternship\.design-review\preview-app\Assets\psut-students.jpeg</Link>
+    </None>
+    <None Include="..\.design-review\preview-app\Assets\psut-walkway.jpg">
+      <Link>Repository\PSUTInternship\.design-review\preview-app\Assets\psut-walkway.jpg</Link>
+    </None>
+    <None Include="..\.design-review\preview-app\Content\workspace.css">
+      <Link>Repository\PSUTInternship\.design-review\preview-app\Content\workspace.css</Link>
+    </None>
+    <None Include="..\.design-review\preview-app\Default.aspx">
+      <Link>Repository\PSUTInternship\.design-review\preview-app\Default.aspx</Link>
+    </None>
+    <None Include="..\.design-review\preview-app\Scripts\interactions.js">
+      <Link>Repository\PSUTInternship\.design-review\preview-app\Scripts\interactions.js</Link>
+    </None>
+    <None Include="..\.design-review\preview-app\Scripts\workspace.js">
+      <Link>Repository\PSUTInternship\.design-review\preview-app\Scripts\workspace.js</Link>
+    </None>
+    <None Include="..\.design-review\preview-app\TestLayout.cs">
+      <Link>Repository\PSUTInternship\.design-review\preview-app\TestLayout.cs</Link>
+    </None>
+    <None Include="..\.design-review\preview-app\Web.config">
+      <Link>Repository\PSUTInternship\.design-review\preview-app\Web.config</Link>
+    </None>
+    <None Include="..\.design-review\preview-app\Workspace.Master">
+      <Link>Repository\PSUTInternship\.design-review\preview-app\Workspace.Master</Link>
+    </None>
+    <None Include="..\.design-review\preview-server-error.log">
+      <Link>Repository\PSUTInternship\.design-review\preview-server-error.log</Link>
+    </None>
+    <None Include="..\.design-review\preview-server.log">
+      <Link>Repository\PSUTInternship\.design-review\preview-server.log</Link>
+    </None>
+    <None Include="..\.design-review\project-server-error.log">
+      <Link>Repository\PSUTInternship\.design-review\project-server-error.log</Link>
+    </None>
+    <None Include="..\.design-review\project-server.log">
+      <Link>Repository\PSUTInternship\.design-review\project-server.log</Link>
+    </None>
+    <None Include="..\.design-review\student-desktop.png">
+      <Link>Repository\PSUTInternship\.design-review\student-desktop.png</Link>
+    </None>
+    <None Include="..\.design-review\student-mobile.png">
+      <Link>Repository\PSUTInternship\.design-review\student-mobile.png</Link>
+    </None>
+    <None Include="..\.design-review\student-overview.png">
+      <Link>Repository\PSUTInternship\.design-review\student-overview.png</Link>
+    </None>
+    <None Include="..\.design-review\video-contact-sheet.jpg">
+      <Link>Repository\PSUTInternship\.design-review\video-contact-sheet.jpg</Link>
+    </None>
+    <None Include="..\.impeccable\design.json">
+      <Link>Repository\PSUTInternship\.impeccable\design.json</Link>
+    </None>
+    <None Include="..\DESIGN.md">
+      <Link>Repository\PSUTInternship\DESIGN.md</Link>
+    </None>
+    <None Include="..\PRODUCT.md">
+      <Link>Repository\PSUTInternship\PRODUCT.md</Link>
+    </None>
+    <None Include="..\design-qa.md">
+      <Link>Repository\PSUTInternship\design-qa.md</Link>
+    </None>
+    <None Include="..\firebase-application-rules.json">
+      <Link>Repository\PSUTInternship\firebase-application-rules.json</Link>
+    </None>
+    <None Include="..\firebase-rules-before-update.json">
+      <Link>Repository\PSUTInternship\firebase-rules-before-update.json</Link>
+    </None>
+    <None Include="..\..\README.md">
+      <Link>Repository\README.md</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Admin\ManageAcademic.aspx" />
+    <Compile Include="Admin\ManageAcademic.aspx.cs"><DependentUpon>ManageAcademic.aspx</DependentUpon><SubType>ASPXCodeBehind</SubType></Compile>
+    <Compile Include="Admin\ManageAcademic.aspx.designer.cs"><DependentUpon>ManageAcademic.aspx</DependentUpon></Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Admin\AssignSuper.aspx" />
+    <Compile Include="Admin\AssignSuper.aspx.cs">
+      <DependentUpon>AssignSuper.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\AssignSuper.aspx.designer.cs">
+      <DependentUpon>AssignSuper.aspx</DependentUpon>
+    </Compile>
+    <Content Include="Admin\ManageCompanies.aspx" />
+    <Compile Include="Admin\ManageCompanies.aspx.cs">
+      <DependentUpon>ManageCompanies.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\ManageCompanies.aspx.designer.cs">
+      <DependentUpon>ManageCompanies.aspx</DependentUpon>
+    </Compile>
+    <Content Include="Admin\ManageStudents.aspx" />
+    <Compile Include="Admin\ManageStudents.aspx.cs">
+      <DependentUpon>ManageStudents.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\ManageStudents.aspx.designer.cs">
+      <DependentUpon>ManageStudents.aspx</DependentUpon>
+    </Compile>
+    <Content Include="ChangePassword.aspx" />
+    <Compile Include="ChangePassword.aspx.cs">
+      <DependentUpon>ChangePassword.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ChangePassword.aspx.designer.cs">
+      <DependentUpon>ChangePassword.aspx</DependentUpon>
+    </Compile>
+    <Content Include="Shared\Layout.Master" />
+    <Compile Include="Shared\Layout.Master.cs">
+      <DependentUpon>Layout.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Shared\Layout.Master.designer.cs">
+      <DependentUpon>Layout.Master</DependentUpon>
     </Compile>
   </ItemGroup>
 </Project>
