@@ -112,6 +112,7 @@
     <Content Include="Academic\ZoomMeetings.css" />
     <Content Include="Academic\ZoomMeetings.js" />
     <Content Include="Admin\Dashboard.aspx" />
+    <Content Include="Admin\ManageAcademic.aspx" />
     <Content Include="Company\Dashboard.aspx" />
     <Content Include="Company\Opportunities.aspx" />
     <Content Include="Company\OpportunityForm.aspx" />
@@ -247,6 +248,13 @@
     </Compile>
     <Compile Include="Admin\Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\ManageAcademic.aspx.cs">
+      <DependentUpon>ManageAcademic.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\ManageAcademic.aspx.designer.cs">
+      <DependentUpon>ManageAcademic.aspx</DependentUpon>
     </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
