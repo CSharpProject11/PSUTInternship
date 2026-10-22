@@ -202,8 +202,10 @@
     <Content Include="Student\Dashboard.aspx" />
     <Content Include="Student\MyApplications.aspx" />
     <Content Include="Student\Opportunities.aspx" />
-    <Content Include="Student\StudentProfile.aspx" />
     <Content Include="Student\StudentNav.ascx" />
+    <Content Include="Student\studentprofile.aspx" />
+    <Content Include="Student\StudentProgress.aspx" />
+    <Content Include="Student\studenttaskes.aspx" />
     <Content Include="ViewSwitcher.ascx" />
     <Content Include="Web.config" />
     <Content Include="Bundle.config" />
@@ -307,6 +309,9 @@
     </Compile>
     <Compile Include="Models\Opportunity.cs" />
     <Compile Include="Models\Application.cs" />
+    <Compile Include="Models\Studentinfo.cs" />
+    <Compile Include="Models\StudentTask.cs" />
+    <Compile Include="Models\TaskSubmission.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shared\FirebaseConfig.cs" />
     <Compile Include="Site.Master.cs">
@@ -323,20 +328,12 @@
     <Compile Include="Site.Mobile.Master.designer.cs">
       <DependentUpon>Site.Mobile.Master</DependentUpon>
     </Compile>
-    <Compile Include="Models\Studentinfo.cs" />
     <Compile Include="Student\MyApplications.aspx.cs">
       <DependentUpon>MyApplications.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Student\MyApplications.aspx.designer.cs">
       <DependentUpon>MyApplications.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Student\StudentProfile.aspx.cs">
-      <DependentUpon>StudentProfile.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Student\StudentProfile.aspx.designer.cs">
-      <DependentUpon>StudentProfile.aspx</DependentUpon>
     </Compile>
     <Compile Include="Student\Apply.aspx.cs">
       <DependentUpon>Apply.aspx</DependentUpon>
@@ -358,6 +355,27 @@
     </Compile>
     <Compile Include="Student\Opportunities.aspx.designer.cs">
       <DependentUpon>Opportunities.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Student\studentprofile.aspx.cs">
+      <DependentUpon>studentprofile.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Student\studentprofile.aspx.designer.cs">
+      <DependentUpon>studentprofile.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Student\StudentProgress.aspx.cs">
+      <DependentUpon>StudentProgress.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Student\StudentProgress.aspx.designer.cs">
+      <DependentUpon>StudentProgress.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Student\studenttaskes.aspx.cs">
+      <DependentUpon>studenttaskes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Student\studenttaskes.aspx.designer.cs">
+      <DependentUpon>studenttaskes.aspx</DependentUpon>
     </Compile>
     <Compile Include="ViewSwitcher.ascx.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
