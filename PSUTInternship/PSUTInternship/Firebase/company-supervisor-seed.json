@@ -1,0 +1,153 @@
+{
+  "companyAccounts": {
+    "ofuqTechnology": {
+      "displayName": "Samer Mahmoud",
+      "email": "samer@example.com",
+      "phone": "",
+      "contactInfo": "",
+      "companyName": "Ofuq Technology",
+      "role": "companySupervisor",
+      "isActive": true
+    }
+  },
+  "opportunities": {
+    "opportunity_frontend": {
+      "companyId": "ofuqTechnology",
+      "title": "Frontend development",
+      "specialization": "Computer Science",
+      "description": "Build and improve web pages with our development team.",
+      "requirements": "HTML, CSS, JavaScript basics",
+      "availableSeats": 2,
+      "status": "open",
+      "applicationDeadline": "2026-10-30",
+      "createdAt": "2026-10-20T09:00:00Z",
+      "isOpen": true
+    },
+    "opportunity_testing": {
+      "companyId": "ofuqTechnology",
+      "title": "Software testing",
+      "specialization": "Computer Science",
+      "description": "Help test web applications and write clear bug reports.",
+      "requirements": "Attention to detail and basic programming",
+      "availableSeats": 1,
+      "status": "open",
+      "applicationDeadline": "2026-10-28",
+      "createdAt": "2026-10-20T09:30:00Z",
+      "isOpen": true
+    },
+    "opportunity_data": {
+      "companyId": "ofuqTechnology",
+      "title": "Data analysis",
+      "specialization": "Data Science",
+      "description": "Prepare simple reports and explore sample datasets.",
+      "requirements": "Excel and basic statistics",
+      "availableSeats": 0,
+      "status": "closed",
+      "applicationDeadline": "2026-10-15",
+      "createdAt": "2026-10-01T08:00:00Z",
+      "isOpen": false
+    }
+  },
+  "applications": {
+    "application_layan": {
+      "studentId": "student_layan",
+      "studentName": "Layan Ahmad",
+      "opportunityId": "opportunity_frontend",
+      "opportunityTitle": "Frontend development",
+      "companyId": "ofuqTechnology",
+      "college": "Computer Science",
+      "skills": "HTML, CSS, and JavaScript",
+      "cvOrPortfolioUrl": "https://example.com/cv/layan",
+      "message": "I would like to apply for this internship. I am interested in building clear and accessible interfaces.",
+      "appliedAt": "2026-10-20T10:00:00Z",
+      "status": "pending",
+      "rejectionReason": "",
+      "studentConfirmed": false
+    },
+    "application_omar": {
+      "studentId": "student_omar",
+      "studentName": "Omar Khaled",
+      "opportunityId": "opportunity_testing",
+      "opportunityTitle": "Software testing",
+      "companyId": "ofuqTechnology",
+      "college": "Computer Science",
+      "skills": "Testing basics and C#",
+      "cvOrPortfolioUrl": "https://example.com/cv/omar",
+      "message": "I enjoy finding issues and explaining them clearly.",
+      "appliedAt": "2026-10-19T11:00:00Z",
+      "status": "pending",
+      "rejectionReason": "",
+      "studentConfirmed": false
+    },
+    "application_noor": {
+      "studentId": "student_noor",
+      "studentName": "Noor Ali",
+      "opportunityId": "opportunity_frontend",
+      "opportunityTitle": "Frontend development",
+      "companyId": "ofuqTechnology",
+      "college": "Information Technology",
+      "skills": "HTML and CSS",
+      "cvOrPortfolioUrl": "https://example.com/cv/noor",
+      "message": "I am excited to learn with your team.",
+      "appliedAt": "2026-10-18T12:00:00Z",
+      "status": "accepted",
+      "rejectionReason": "",
+      "studentConfirmed": true
+    }
+  },
+  "trainees": {
+    "student_noor": {
+      "studentId": "student_noor",
+      "studentName": "Noor Ali",
+      "applicationId": "application_noor",
+      "opportunityId": "opportunity_frontend",
+      "companyId": "ofuqTechnology",
+      "tasksCompleted": 4,
+      "tasksTotal": 6,
+      "approvedTrainingHours": 48,
+      "hoursPendingApproval": 0,
+      "status": "active",
+      "opportunityTitle": "Frontend development"
+    },
+    "student_layan": {
+      "studentId": "student_layan",
+      "studentName": "Layan Ahmad",
+      "applicationId": "application_layan",
+      "opportunityId": "opportunity_frontend",
+      "companyId": "ofuqTechnology",
+      "tasksCompleted": 0,
+      "tasksTotal": 6,
+      "approvedTrainingHours": 0,
+      "hoursPendingApproval": 0,
+      "status": "notStarted",
+      "opportunityTitle": "Frontend development"
+    }
+  },
+  "taskSubmissions": {
+    "submission_layan_weekly_hours": {
+      "studentId": "student_layan",
+      "studentName": "Layan Ahmad",
+      "companyId": "ofuqTechnology",
+      "taskTitle": "Weekly hours report",
+      "dueDate": "2026-10-22",
+      "status": "hoursPendingApproval",
+      "hoursSubmitted": 8,
+      "hoursApproved": false
+    },
+    "submission_omar_software_test": {
+      "studentId": "student_omar",
+      "studentName": "Omar Khaled",
+      "companyId": "ofuqTechnology",
+      "taskTitle": "Software testing task",
+      "dueDate": "2026-10-20",
+      "status": "submitted",
+      "hoursSubmitted": 0,
+      "hoursApproved": false
+    }
+  },
+  "dashboardSummary": {
+    "companyId": "ofuqTechnology",
+    "submissionsToReview": 4,
+    "note": "Calculate live counts from applications, trainees, opportunities, and taskSubmissions after connecting the pages."
+  }
+}

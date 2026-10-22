@@ -1,0 +1,43 @@
+{
+  "rules": {
+    "companyAccounts": {
+      "ofuqTechnology": {
+        ".read": "auth != null && auth.uid === 'OzVXa93jkwSQRDl8FuI5KEJYn7k2'",
+        ".write": "auth != null && auth.uid === 'OzVXa93jkwSQRDl8FuI5KEJYn7k2'"
+      }
+    },
+    "opportunities": {
+      ".indexOn": [
+        "companyId"
+      ],
+      ".read": "auth != null && auth.uid === 'OzVXa93jkwSQRDl8FuI5KEJYn7k2' && query.orderByChild === 'companyId' && query.equalTo === 'ofuqTechnology'",
+      "$id": {
+        ".write": "auth != null && auth.uid === 'OzVXa93jkwSQRDl8FuI5KEJYn7k2' && newData.child('companyId').val() === 'ofuqTechnology'"
+      }
+    },
+    "applications": {
+      ".indexOn": [
+        "companyId"
+      ],
+      ".read": "auth != null && auth.uid === 'OzVXa93jkwSQRDl8FuI5KEJYn7k2' && query.orderByChild === 'companyId' && query.equalTo === 'ofuqTechnology'",
+      "$id": {
+        ".write": "auth != null && auth.uid === 'OzVXa93jkwSQRDl8FuI5KEJYn7k2' && newData.child('companyId').val() === 'ofuqTechnology'"
+      }
+    },
+    "trainees": {
+      ".indexOn": [
+        "companyId"
+      ],
+      ".read": "auth != null && auth.uid === 'OzVXa93jkwSQRDl8FuI5KEJYn7k2' && query.orderByChild === 'companyId' && query.equalTo === 'ofuqTechnology'",
+      "$id": {
+        ".write": "auth != null && auth.uid === 'OzVXa93jkwSQRDl8FuI5KEJYn7k2' && newData.child('companyId').val() === 'ofuqTechnology'"
+      }
+    },
+    "taskSubmissions": {
+      ".indexOn": [
+        "companyId"
+      ],
+      ".read": "auth != null && auth.uid === 'OzVXa93jkwSQRDl8FuI5KEJYn7k2' && query.orderByChild === 'companyId' && query.equalTo === 'ofuqTechnology'"
+    }
+  }
+}
