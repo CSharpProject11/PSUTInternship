@@ -15,7 +15,7 @@
         <div class="form-layout">
             <section class="form-card">
                 <h2>Details</h2>
-                <form method="post">
+                <form method="post"><input type="hidden" name="csrfToken" value="<%= CsrfToken %>"/>
                     <label>Applicant and opportunity</label>
                     <input readonly value="<%= H(StudentApplication.Student) %> / <%= H(StudentApplication.Opportunity) %>"/>
                     <label>Rejection reason</label>

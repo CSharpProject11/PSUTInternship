@@ -7,12 +7,14 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace internship_manegment
+namespace PSUTInternship.Company
 {
 
 
     public partial class EditTask
     {
+        protected global::System.Web.UI.WebControls.TextBox scoreInput;
+        protected global::System.Web.UI.WebControls.TextBox maximumInput;
 
         /// <summary>
         /// form1 control.

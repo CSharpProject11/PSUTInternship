@@ -12,7 +12,7 @@
         <div class="form-layout">
             <section class="form-card">
                 <h2>Details</h2>
-                <form method="post">
+                <form method="post"><input type="hidden" name="csrfToken" value="<%= CsrfToken %>"/>
                     <label>Opportunity title</label>
                     <input name="title" required value="<%= Opportunity == null ? "" : H(Opportunity.Title) %>"/>
                     <label>Specialization</label>
@@ -24,7 +24,7 @@
                     <label>Available seats</label>
                     <input type="number" min="0" name="seats" required value="<%= Opportunity == null ? "1" : Opportunity.Seats.ToString() %>"/>
                     <label>Application deadline</label>
-                    <input name="deadline" placeholder="e.g. 30 Oct 2026" required value="<%= Opportunity == null ? "" : H(Opportunity.Deadline) %>"/>
+                    <input type="date" name="deadline" required value="<%= Opportunity == null ? "" : H(Opportunity.Deadline) %>"/>
                     <p>
                         <button class="btn" type="submit">
                             <%= IsEdit ? "Save changes" : "Publish opportunity" %>

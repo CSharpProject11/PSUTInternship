@@ -1,0 +1,16 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const fields={publicCards:{innerHTML:'',textContent:''},searchStatus:{textContent:''},heroSearch:{value:''},detailContent:{innerHTML:''},detail:{classList:{add(){},remove(){}}}};
+let requested;
+const document={getElementById:id=>fields[id],addEventListener(){}};
+const scope={document,PSUT:{root:'/'},window:{location:{assign(){}}},setTimeout,fetch:async url=>{requested=url;return{ok:true,json:async()=>[{id:'opening-a',title:'<script>unsafe</script> Software',company:'Company A',major:'Software Engineering',seats:2,deadline:'2026-11-30'}]};}};
+vm.createContext(scope);
+vm.runInContext(fs.readFileSync(new URL('../PSUTInternship/PSUTInternship/Scripts/portal.js',import.meta.url),'utf8'),scope);
+await new Promise(resolve=>setImmediate(resolve));
+assert.equal(requested,'/PublicData.aspx');
+assert.match(fields.publicCards.innerHTML,/&lt;script&gt;unsafe&lt;\/script&gt;/);
+assert.equal(fields.publicCards.innerHTML.includes('<script>'),false);
+fields.heroSearch.value='accounting';scope.searchOpps();assert.match(fields.publicCards.innerHTML,/No open opportunities/);
+scope.showDetail('opening-a');assert.match(fields.detailContent.innerHTML,/Login.aspx/);assert.equal(fields.detailContent.innerHTML.includes('<script>'),false);
+console.log('6 public homepage assertions passed: live endpoint, escaped previews, filtering and sign-in links.');

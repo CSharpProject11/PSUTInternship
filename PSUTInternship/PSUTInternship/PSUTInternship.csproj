@@ -104,18 +104,20 @@
     <Content Include="Academic\Account.aspx" />
     <Content Include="Academic\Dashboard.aspx" />
     <Content Include="Academic\FinalEvaluation.aspx" />
-    <Content Include="Academic\MettingFirebase.js" />
+    <Content Include="Admin\CoordinatorAccount.aspx" />
+    <Content Include="Admin\FinalCompletionReview.aspx" />
+    <Content Include="Admin\MonitorPlacements.aspx" />
+    <Content Include="Shared\meetings.js" />
     <Content Include="Academic\StudentMeetingRequest.html" />
     <Content Include="Academic\StudentMeetings.js" />
     <Content Include="Academic\StudentProgress.aspx" />
     <Content Include="Academic\ZommMeetings.html" />
     <Content Include="Academic\ZoomMeetings.css" />
     <Content Include="Academic\ZoomMeetings.js" />
+    <Content Include="Admin\ContactMessages.aspx" />
     <Content Include="Admin\Dashboard.aspx" />
-
     <Content Include="Admin\ManageAcademic.aspx" />
-    <Content Include="Company\Create_task.aspx" />
-
+    <Content Include="Company\CreateTask.aspx" />
     <Content Include="Company\Dashboard.aspx" />
     <Content Include="Company\EditTask.aspx" />
     <Content Include="Company\Opportunities.aspx" />
@@ -126,7 +128,7 @@
     <Content Include="Company\ReportsAndEvaluation.aspx" />
     <Content Include="Company\SendAccounts.aspx" />
     <Content Include="Company\SupervisorAccount.aspx" />
-    <Content Include="Company\task_manegment.aspx" />
+    <Content Include="Company\Tasks.aspx" />
     <Content Include="Company\Trainees.aspx" />
     <Content Include="Company\Account.aspx" />
     <Content Include="Company\ViewTask.aspx" />
@@ -212,19 +214,15 @@
     <Content Include="Scripts\WebForms\WebForms.js" />
     <Content Include="Scripts\WebForms\WebParts.js" />
     <Content Include="Scripts\WebForms\WebUIValidation.js" />
-    <Content Include="Site.Master" />
     <Content Include="Student\Apply.aspx" />
     <Content Include="Student\Dashboard.aspx" />
     <Content Include="Student\MyApplications.aspx" />
     <Content Include="Student\Opportunities.aspx" />
-    <Content Include="Student\StudentNav.ascx" />
+    <Content Include="Shared\StudentNav.ascx" />
     <Content Include="Student\studentprofile.aspx" />
     <Content Include="Student\StudentProgress.aspx" />
-    <Content Include="Student\studenttaskes.aspx" />
-    <Content Include="ViewSwitcher.ascx" />
+    <Content Include="Student\MyTasks.aspx" />
     <Content Include="Web.config" />
-    <Content Include="Bundle.config" />
-    <Content Include="Site.Mobile.Master" />
     <Content Include="Company\Login.aspx" />
     <Content Include="Company\Logout.aspx" />
     <None Include="Firebase\database.rules.example.json" />
@@ -258,12 +256,33 @@
     <Compile Include="Academic\StudentProgress.aspx.designer.cs">
       <DependentUpon>StudentProgress.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Admin\ContactMessages.aspx.cs">
+      <DependentUpon>ContactMessages.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\ContactMessages.aspx.designer.cs">
+      <DependentUpon>ContactMessages.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\CoordinatorAccount.aspx.cs">
+      <DependentUpon>CoordinatorAccount.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\CoordinatorAccount.aspx.designer.cs">
+      <DependentUpon>CoordinatorAccount.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Admin\Dashboard.aspx.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Admin\Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\FinalCompletionReview.aspx.cs">
+      <DependentUpon>FinalCompletionReview.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\FinalCompletionReview.aspx.designer.cs">
+      <DependentUpon>FinalCompletionReview.aspx</DependentUpon>
     </Compile>
     <Compile Include="Admin\ManageAcademic.aspx.cs">
       <DependentUpon>ManageAcademic.aspx</DependentUpon>
@@ -272,16 +291,22 @@
     <Compile Include="Admin\ManageAcademic.aspx.designer.cs">
       <DependentUpon>ManageAcademic.aspx</DependentUpon>
     </Compile>
-    <Compile Include="App_Start\BundleConfig.cs" />
-    <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="Company\CompanyPageBase.cs">
+    <Compile Include="Admin\MonitorPlacements.aspx.cs">
+      <DependentUpon>MonitorPlacements.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Company\Create_task.aspx.cs">
+    <Compile Include="Admin\MonitorPlacements.aspx.designer.cs">
+      <DependentUpon>MonitorPlacements.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Shared\CompanyPageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Company\CreateTask.aspx.cs">
       <DependentUpon>Create_task.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Company\Create_task.aspx.designer.cs">
+    <Compile Include="Company\CreateTask.aspx.designer.cs">
       <DependentUpon>Create_task.aspx</DependentUpon>
     </Compile>
     <Compile Include="Company\EditTask.aspx.cs">
@@ -332,11 +357,11 @@
     <Compile Include="Company\SupervisorAccount.aspx.designer.cs">
       <DependentUpon>SupervisorAccount.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Company\task_manegment.aspx.cs">
+    <Compile Include="Company\Tasks.aspx.cs">
       <DependentUpon>task_manegment.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Company\task_manegment.aspx.designer.cs">
+    <Compile Include="Company\Tasks.aspx.designer.cs">
       <DependentUpon>task_manegment.aspx</DependentUpon>
     </Compile>
     <Compile Include="Company\Trainees.aspx.cs">
@@ -378,33 +403,14 @@
     <Compile Include="Login.aspx.designer.cs">
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
-
-    <Compile Include="Models\CompanyDemoData.cs" />
+    <Compile Include="Models\CompanyModels.cs" />
     <Compile Include="Models\Opportunity.cs" />
     <Compile Include="Models\Application.cs" />
-
-    <Compile Include="Models\TaskModel.cs" />
-
-    <Compile Include="Models\Studentinfo.cs" />
+    <Compile Include="Models\StudentInfo.cs" />
     <Compile Include="Models\StudentTask.cs" />
     <Compile Include="Models\TaskSubmission.cs" />
-
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shared\FirebaseConfig.cs" />
-    <Compile Include="Site.Master.cs">
-      <DependentUpon>Site.Master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Site.Master.designer.cs">
-      <DependentUpon>Site.Master</DependentUpon>
-    </Compile>
-    <Compile Include="Site.Mobile.Master.cs">
-      <DependentUpon>Site.Mobile.Master</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Site.Mobile.Master.designer.cs">
-      <DependentUpon>Site.Mobile.Master</DependentUpon>
-    </Compile>
     <Compile Include="Student\MyApplications.aspx.cs">
       <DependentUpon>MyApplications.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -447,19 +453,12 @@
     <Compile Include="Student\StudentProgress.aspx.designer.cs">
       <DependentUpon>StudentProgress.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Student\studenttaskes.aspx.cs">
+    <Compile Include="Student\MyTasks.aspx.cs">
       <DependentUpon>studenttaskes.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Student\studenttaskes.aspx.designer.cs">
+    <Compile Include="Student\MyTasks.aspx.designer.cs">
       <DependentUpon>studenttaskes.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="ViewSwitcher.ascx.cs">
-      <DependentUpon>ViewSwitcher.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ViewSwitcher.ascx.designer.cs">
-      <DependentUpon>ViewSwitcher.ascx</DependentUpon>
     </Compile>
     <Compile Include="Company\Login.aspx.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -467,15 +466,14 @@
     <Compile Include="Company\Logout.aspx.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Firebase\FirebaseRestClient.cs" />
-    <Compile Include="Firebase\FirebaseAuthClient.cs" />
+    <Compile Include="Shared\FirebaseRestClient.cs" />
+    <Compile Include="Shared\FirebaseAuthClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Firebase\company-supervisor-seed.json" />
     <None Include="Firebase\README.md" />
     <Content Include="Scripts\jquery-3.7.0.slim.min.map" />
     <Content Include="Scripts\jquery-3.7.0.min.map" />
@@ -570,7 +568,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Student\Student.slnx" />
     <None Include="..\..\.gitignore">
       <Link>Repository\.gitignore</Link>
     </None>
@@ -688,20 +685,9 @@
     <None Include="..\design-qa.md">
       <Link>Repository\PSUTInternship\design-qa.md</Link>
     </None>
-    <None Include="..\firebase-application-rules.json">
-      <Link>Repository\PSUTInternship\firebase-application-rules.json</Link>
-    </None>
-    <None Include="..\firebase-rules-before-update.json">
-      <Link>Repository\PSUTInternship\firebase-rules-before-update.json</Link>
-    </None>
     <None Include="..\..\README.md">
       <Link>Repository\README.md</Link>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Admin\ManageAcademic.aspx" />
-    <Compile Include="Admin\ManageAcademic.aspx.cs"><DependentUpon>ManageAcademic.aspx</DependentUpon><SubType>ASPXCodeBehind</SubType></Compile>
-    <Compile Include="Admin\ManageAcademic.aspx.designer.cs"><DependentUpon>ManageAcademic.aspx</DependentUpon></Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Admin\AssignSuper.aspx" />
@@ -736,13 +722,84 @@
     <Compile Include="ChangePassword.aspx.designer.cs">
       <DependentUpon>ChangePassword.aspx</DependentUpon>
     </Compile>
-    <Content Include="Shared\Layout.Master" />
-    <Compile Include="Shared\Layout.Master.cs">
-      <DependentUpon>Layout.Master</DependentUpon>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Shared\PortalPage.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Shared\Layout.Master.designer.cs">
-      <DependentUpon>Layout.Master</DependentUpon>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\FirebaseSignInResult.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Admin\CompletionReview.aspx" />
+    <Compile Include="Admin\CompletionReview.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\CompletionReview.aspx.designer.cs" />
+    <Content Include="Company\TrainingHours.aspx" />
+    <Content Include="CompletionReport.aspx" />
+    <Compile Include="CompletionReport.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Models\AcademicReportData.cs" />
+    <Compile Include="Models\AcademicStudentRow.cs" />
+    <Compile Include="Models\AcademicTaskRow.cs" />
+    <Compile Include="Models\ContactMessage.cs" />
+    <Compile Include="Models\EvaluationTaskRow.cs" />
+    <Compile Include="Models\StudentGroup.cs" />
+    <Compile Include="Shared\CompletionReportPdf.cs" />
+    <Compile Include="Shared\CompletionWorkflow.cs" />
+    <Compile Include="Shared\EvaluationPolicy.cs" />
+    <Compile Include="Shared\OpportunityEligibility.cs" />
+    <Compile Include="Shared\PortalRepository.cs" />
+    <Compile Include="Shared\DatabaseSchema.cs" />
+    <Compile Include="Shared\TaskWorkflow.cs" />
+    <Compile Include="Shared\TrainingHoursWorkflow.cs" />
+    <Content Include="TrainingHours.aspx" />
+    <Compile Include="TrainingHours.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TrainingHours.aspx.designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MeetingApi.aspx" />
+    <Compile Include="MeetingApi.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Content Include="PublicData.aspx" />
+    <Compile Include="PublicData.aspx.cs">
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Models\WorkspaceModels.cs" />
+    <Compile Include="Shared\AcademicAssignments.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Company\Create_task.aspx" />
+    <Content Include="Company\task_manegment.aspx" />
+    <Compile Include="Shared\AccountProvisioning.cs" />
+    <Content Include="Student\studenttaskes.aspx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Shared\StudentLinks.ascx" />
+    <Content Include="Shared\CompanyLinks.ascx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Shared\CoordinatorData.cs" />
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  </ItemGroup>
+  <ItemGroup><Content Include="Admin\Coordinator.css" /><Content Include="Admin\FinalCompletionReview.css" /></ItemGroup>
 </Project>

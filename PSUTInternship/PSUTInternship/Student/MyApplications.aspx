@@ -1,5 +1,5 @@
 <%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="MyApplications.aspx.cs" Inherits="PSUTInternship.Student.MyApplications" %>
-<%@ Register Src="~/Student/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
+<%@ Register Src="~/Shared/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
 <!doctype html>
 <html lang="en">
 <head runat="server">
@@ -21,7 +21,7 @@
                     <ItemTemplate>
                         <article class="sd-card sd-application">
                             <div><h2><%#: Eval("Details.OrganizationName") %></h2><p>Training field: <%#: Eval("Details.TrainingField") %></p><p>Status: <strong><%#: GetApplicationStatus(Container.DataItem) %></strong></p></div>
-                            <div class="sd-application-actions">
+                            <p><%#: Eval("RejectionReason") %></p><div class="sd-application-actions">
                                 <asp:Button ID="AcceptButton" runat="server" Text="Accept offer" CommandName="AcceptOffer" CommandArgument='<%# Eval("Id") %>' OnClientClick="return confirm('Confirm this internship? You can confirm only one offer.');" Visible='<%# CanAcceptOffer(Container.DataItem) %>' />
                                 <asp:Button ID="DeclineButton" runat="server" Text="Decline offer" CommandName="DeclineOffer" CommandArgument='<%# Eval("Id") %>' OnClientClick="return confirm('Decline this internship offer?');" Visible='<%# CanDeclineOffer(Container.DataItem) %>' />
                             </div>

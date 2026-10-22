@@ -1,4 +1,5 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="StudentProgress.aspx.cs"  Async="true" Inherits="WebApplication1.StudentProgress" %>
+<%@ Register Src="~/Shared/StudentLinks.ascx" TagPrefix="psut" TagName="StudentLinks" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="StudentProgress.aspx.cs"  Async="true" Inherits="PSUTInternship.Student.StudentProgress" %>
 
 
 
@@ -239,6 +240,7 @@
 
 <body>
 <form id="form1" runat="server">
+<psut:StudentLinks runat="server" />
 
     <div class="container">
 

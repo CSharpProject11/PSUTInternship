@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PSUTInternship.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,65 +9,18 @@ using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace AcademicSupervisor
+namespace PSUTInternship.Academic
 {
-    public partial class StudentProgress : Page
+    public partial class StudentProgress : PSUTInternship.Shared.PortalPage
     {
         // Direct REST access through HttpClient. No extra service class.
-        private static readonly HttpClient Http = new HttpClient();
-        private const string DatabaseUrl = "https://project-d2551-default-rtdb.firebaseio.com";
-        private const string CurrentSupervisorId = "9A8jqXmuQthnfld1A9Lonba3QTI3";
+        private static readonly HttpClient Http = PSUTInternship.Shared.FirebaseConfig.CreateClient();
+        private static readonly string DatabaseUrl = PSUTInternship.Shared.FirebaseConfig.DatabaseUrl.TrimEnd('/');
+        private string CurrentSupervisorId { get { return CurrentProfileId; } }
 
         private async Task<Dictionary<string, JObject>> ReadAsync(string collection)
         {
-            if (string.IsNullOrWhiteSpace(DatabaseUrl) ||
-                !Uri.TryCreate(DatabaseUrl, UriKind.Absolute, out Uri root) ||
-                root.Scheme != Uri.UriSchemeHttps)
-                throw new InvalidOperationException("Set FirebaseDatabaseUrl in Web.config to your HTTPS Realtime Database URL.");
-            // Public REST request for local UI demo; database rules still apply.
-            string url = DatabaseUrl + "/" + Uri.EscapeDataString(collection) + ".json";
-            using (HttpResponseMessage response = await Http.GetAsync(url).ConfigureAwait(false))
-            {
-                if (!response.IsSuccessStatusCode)
-                    throw new HttpRequestException("Firebase reading " + collection +
-                        " failed (HTTP " + (int)response.StatusCode + "). Check database configuration and read permissions.");
-                string json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                if (string.IsNullOrWhiteSpace(json) || json.Trim() == "null")
-                    return new Dictionary<string, JObject>();
-                JObject result = JObject.Parse(json);
-                return result.Properties()
-                    .Where(p => p.Value is JObject)
-                    .ToDictionary(p => p.Name, p => (JObject)p.Value);
-            }
-        }
-
-        public class StudentRow
-        {
-            public string StudentId { get; set; }
-            public string StudentName { get; set; }
-            public string Company { get; set; }
-            public int ApprovedHours { get; set; }
-            public int RequiredHours { get; set; }
-            public int Progress { get; set; }
-            public string Status { get; set; }
-            public int TaskCount { get; set; }
-            public string InternshipId { get; set; }
-        }
-
-        public class StudentTask
-        {
-            public string Title { get; set; }
-            public string Description { get; set; }
-            public string CreatedAt { get; set; }
-            public string DueDate { get; set; }
-            public string Status { get; set; }
-            public string SubmissionStatus { get; set; }
-            public string SubmittedAt { get; set; }
-            public string FileName { get; set; }
-            public string FileUrl { get; set; }
-            public string SubmissionLink { get; set; }
-            public string Feedback { get; set; }
-            public string ReviewedAt { get; set; }
+            return await PSUTInternship.Shared.PortalRepository.Collection(collection).ConfigureAwait(false);
         }
 
         private static string S(JToken item, string field, string fallback = "")
@@ -101,7 +55,7 @@ namespace AcademicSupervisor
                     ? S(record, "fullName", "Academic Supervisor") : "Academic Supervisor";
             }
         }
-        private List<StudentRow> AssignedStudents()
+        private List<AcademicStudentRow> AssignedStudents()
         {
             var people = Read("academicSupervisors");
             var students = Read("students");
@@ -144,11 +98,12 @@ namespace AcademicSupervisor
                     groupKeys.Contains(S(student.Value, "groupId")))
                     allowed.Add(student.Key);
 
-            var result = new List<StudentRow>();
+            var result = new List<AcademicStudentRow>();
             foreach (string id in allowed)
             {
                 JObject student;
                 if (!students.TryGetValue(id, out student)) continue;
+                if (!string.IsNullOrWhiteSpace(S(student, "academicSupervisorId")) && S(student, "academicSupervisorId") != SupervisorId) continue;
                 if (string.Equals(S(student, "isActive"), "false", StringComparison.OrdinalIgnoreCase)) continue;
                 var placement = internships
                     .Where(x => S(x.Value, "studentId") == id && S(x.Value, "academicSupervisorId") == SupervisorId)
@@ -160,13 +115,13 @@ namespace AcademicSupervisor
                 int required = internship != null ? N(internship, "requiredHours") : 0;
                 if (required <= 0) required = N(student, "requiredHours");
                 if (required <= 0) required = N(student, "requiredTrainingHours");
-                int approved = N(internship, "approvedHours");
-                int progress = required > 0 ? (int)Math.Round(100.0 * approved / required) : 0;
+                decimal approved = (decimal?)internship?["approvedHours"] ?? 0;
+                int progress = required > 0 ? (int)Math.Round(100m * approved / required) : 0;
                 progress = Math.Max(0, Math.Min(100, progress));
                 string state = internship == null ? "Not Started" :
                     (string.Equals(S(internship, "status"), "completed", StringComparison.OrdinalIgnoreCase)
-                        ? "Completed" : ProgressStatus(S(internship, "progressStatus")));
-                result.Add(new StudentRow
+                        ? "Completed" : (tasks.Values.Any(t => S(t, "studentId") == id && S(t, "status") != "Reviewed" && DateTime.TryParse(S(t, "dueDate"), out DateTime due) && due.Date < DateTime.Today) ? "At Risk" : "On Track"));
+                result.Add(new AcademicStudentRow
                 {
                     StudentId = id,
                     StudentName = S(student, "fullName", "Unknown student"),
@@ -192,9 +147,9 @@ namespace AcademicSupervisor
                 default: return string.IsNullOrWhiteSpace(status) ? "Not Started" : status.Replace('_', ' ');
             }
         }
-        private StudentRow FindAssignedStudent(string studentId)
+        private AcademicStudentRow FindAssignedStudent(string studentId)
         {
-            // Only show details for students assigned to the fixed demo supervisor.
+            // Verify the signed-in supervisor assignment before showing student details.
             return AssignedStudents().FirstOrDefault(x => x.StudentId == studentId);
         }
         private void HandleError(Exception ex)
@@ -252,7 +207,7 @@ namespace AcademicSupervisor
                 lblTaskHours.Text = student.ApprovedHours + " / " + student.RequiredHours + " hrs";
                 var tasks = Read("tasks");
                 var submissions = Read("submissions");
-                var output = new List<StudentTask>();
+                var output = new List<AcademicTaskRow>();
                 foreach (var t in tasks.Where(t => S(t.Value, "studentId") == student.StudentId && S(t.Value, "internshipId") == student.InternshipId))
                 {
                     var matches = submissions.Values.Where(s => S(s, "studentId") == student.StudentId &&
@@ -260,7 +215,7 @@ namespace AcademicSupervisor
                     if (matches.Count == 0) matches.Add(null);
                     foreach (var submission in matches)
                     {
-                        output.Add(new StudentTask
+                        output.Add(new AcademicTaskRow
                         {
                             Title = S(t.Value, "title"),
                             Description = S(t.Value, "description"),
@@ -271,7 +226,8 @@ namespace AcademicSupervisor
                             SubmittedAt = S(submission, "submittedAt", "Not submitted"),
                             FileName = S(submission, "fileName", "No file uploaded"),
                             FileUrl = SafeHttps(S(submission, "fileUrl")),
-                            SubmissionLink = SafeHttps(S(submission, "submissionLink")),
+                            SubmissionLink = SafeHttps(S(submission, "attachmentUrl")),
+                            Score = S(t.Value, "score", "—") + " / " + S(t.Value, "maximumScore", "—"),
                             Feedback = S(submission, "feedback", "No feedback yet"),
                             ReviewedAt = S(submission, "reviewedAt", "Not reviewed")
                         });

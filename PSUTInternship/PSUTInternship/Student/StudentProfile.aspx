@@ -1,5 +1,6 @@
-﻿
-<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="StudentProfile.aspx.cs" Async="true" Inherits="Student.StudentProfile" %>
+<%@ Register Src="~/Shared/StudentLinks.ascx" TagPrefix="psut" TagName="StudentLinks" %>
+
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="StudentProfile.aspx.cs" Async="true" Inherits="PSUTInternship.Student.StudentProfile" %>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -307,6 +308,7 @@
 
 <body>
     <form id="form1" runat="server">
+<psut:StudentLinks runat="server" />
 
         <main class="page">
 
@@ -315,6 +317,7 @@
                 <p>Manage your personal and academic information.</p>
             </header>
 
+            <p>Academic supervisor: <asp:Label ID="assignedSupervisor" runat="server" /></p>
             <!-- Personal Information -->
             <section class="card">
                 <div class="section-title">

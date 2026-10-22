@@ -1,4 +1,4 @@
-namespace internship_manegment
+namespace PSUTInternship.Company
 {
     public partial class ReportsAndEvaluation
     {

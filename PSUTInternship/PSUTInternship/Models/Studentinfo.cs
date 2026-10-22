@@ -1,12 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Student
+namespace PSUTInternship.Models
 {
     public class StudentInfo
     {
+        [JsonProperty("academicSupervisorName")] public string AcademicSupervisorName { get; set; }
         // Personal Information
 
         [JsonProperty("fullName")]

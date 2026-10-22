@@ -1,13 +1,22 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace WebApplication1
+namespace PSUTInternship.Models
 {
     public class StudentTask
     {
+        [JsonProperty("companyId")] public string CompanyId { get; set; }
+        [JsonProperty("academicSupervisorId")] public string AcademicSupervisorId { get; set; }
+        [JsonProperty("internshipId")] public string InternshipId { get; set; }
+        [JsonProperty("maximumScore")] public decimal MaximumScore { get; set; }
+        [JsonProperty("score")] public decimal? Score { get; set; }
+        [JsonProperty("feedback")] public string Feedback { get; set; }
+        [JsonProperty("priority")] public string Priority { get; set; }
+        [JsonProperty("evaluationCriteria")] public string EvaluationCriteria { get; set; }
+        [JsonProperty("active")] public bool Active { get; set; } = true;
         [JsonProperty("taskId")]
         public string TaskId { get; set; }
 

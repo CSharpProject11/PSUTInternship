@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Academic Supervisors" Language="C#" Async="true" AutoEventWireup="true" CodeBehind="ManageAcademic.aspx.cs" Inherits="PSUTInternship.Admin.WebForm1" %>
+<%@ Page Title="Academic Supervisors" Language="C#" Async="true" AutoEventWireup="true" CodeBehind="ManageAcademic.aspx.cs" Inherits="PSUTInternship.Admin.ManageAcademic" %>
 
 
 <!DOCTYPE html>

@@ -52,14 +52,14 @@
             <h2>Login</h2>
 
             <asp:TextBox
-                ID="emailTextBox"
+                ID="emailTextBox" aria-label="Email address"
                 runat="server"
                 CssClass="textBox"
                 placeholder="Email">
             </asp:TextBox>
 
             <asp:TextBox
-                ID="passwordTextBox"
+                ID="passwordTextBox" aria-label="Password"
                 runat="server"
                 CssClass="textBox"
                 TextMode="Password"
@@ -73,6 +73,8 @@
                 CssClass="loginButton"
                 OnClick="loginButton_Click" />
 
+            <button type="button" onclick="const input=document.getElementById('<%= passwordTextBox.ClientID %>');input.type=input.type==='password'?'text':'password';this.textContent=input.type==='password'?'Show password':'Hide password';">Show password</button>
+            <asp:Button ID="resetPassword" runat="server" Text="Reset password" OnClick="resetPassword_Click" CausesValidation="false"/>
             <br /><br />
 
             <asp:Label

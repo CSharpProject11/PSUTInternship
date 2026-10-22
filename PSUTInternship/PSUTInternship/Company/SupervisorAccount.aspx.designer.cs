@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace internship_manegment
+namespace PSUTInternship.Company
 {
 
 

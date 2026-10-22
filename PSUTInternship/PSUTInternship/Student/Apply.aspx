@@ -2,7 +2,7 @@
     AutoEventWireup="true"
     CodeBehind="Apply.aspx.cs"
     Inherits="PSUTInternship.Student.Apply" %>
-<%@ Register Src="~/Student/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
+<%@ Register Src="~/Shared/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -43,7 +43,7 @@
                         <div class="col-12 col-md-6"><dt class="text-muted small">Created at</dt><dd class="text-break"><%#: Eval("CreatedAt") %></dd></div>
                         <div class="col-12 col-md-6"><dt class="text-muted small">Location</dt><dd class="text-break"><%#: Eval("Location") %></dd></div>
                         <div class="col-12 col-md-6"><dt class="text-muted small">Work mode</dt><dd class="text-break"><%#: Eval("WorkMode") %></dd></div>
-                        <div class="col-12 col-md-6"><dt class="text-muted small">Duration</dt><dd class="text-break"><%#: Eval("Duration") %> Months</dd></div>
+                        <div class="col-12 col-md-6"><dt class="text-muted small">Duration</dt><dd class="text-break"><%#: Eval("DurationDisplay") %></dd></div>
                         <div class="col-12 col-md-6"><dt class="text-muted small">Application deadline</dt><dd class="text-break"><%#: Convert.ToDateTime(Eval("DeadLine")) == DateTime.MinValue ? "Not specified" : string.Format("{0:dd MMM yyyy}", Eval("DeadLine")) %></dd></div>
                     </dl>
 

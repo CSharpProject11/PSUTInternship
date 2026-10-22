@@ -1,10 +1,10 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="FinalEvaluation.aspx.cs" Inherits="AcademicSupervisor.FinalEvaluation" %>
+<%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="FinalEvaluation.aspx.cs" Inherits="PSUTInternship.Academic.FinalEvaluation" %>
 <!DOCTYPE html>
 <html lang="en">
 <head runat="server">
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Final Academic Evaluation | UIMS</title>
-<link href="AcademicSupervisor.css" rel="stylesheet"/>
+<link href="PSUTInternship.Academic.css" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
 <style>
@@ -659,7 +659,7 @@
 <a class="nav-link active" href="FinalEvaluation.aspx"><span class="nav-icon"><i class="bi bi-clipboard-check"></i></span>Final Evaluation</a>
 <a class="nav-link" href="ZommMeetings.html"><span class="nav-icon"><i class="bi bi-camera-video"></i></span>Zoom Meetings</a>
 <a class="nav-link" href="Account.aspx"><span class="nav-icon"><i class="bi bi-person-circle"></i></span>My Account</a>
-<div class="sidebar-divider"></div><div class="nav-title">General</div><a class="nav-link" href="Default.aspx"><span class="nav-icon"><i class="bi bi-arrow-left"></i></span>Back to Home</a>
+<div class="sidebar-divider"></div><div class="nav-title">General</div><a class="nav-link" href="../Default.aspx"><span class="nav-icon"><i class="bi bi-arrow-left"></i></span>Back to Home</a>
 </aside>
 <main class="main"><header class="topbar"><strong>Academic Supervisor Portal</strong><div class="user-chip"><span class="user-avatar"><asp:Label ID="lblInitials" runat="server" Text="AS"/></span><asp:Label ID="lblSupervisor" runat="server" Text="Academic Supervisor"/></div></header>
 <section class="content">
@@ -667,8 +667,8 @@
 <p class="page-description">Review the company training report, student tasks and approved hours; record academic feedback and submit the assessment to the coordinator queue.</p>
 <div class="intro-banner no-print"><div class="intro-text"><div class="intro-label">Evaluation Workflow</div><h2>Company report → Academic review → Coordinator</h2><p>Company results remain unchanged. Your academic assessment is stored separately and routed for coordinator review.</p></div><div class="intro-icon"><i class="bi bi-file-earmark-check"></i></div></div>
 <asp:Label ID="lblMessage" runat="server" Visible="false" CssClass="message no-print"/>
-<div class="panel no-print"><div class="panel-heading"><div class="panel-heading-icon"><i class="bi bi-person-check"></i></div><div><h2>1. Choose assigned student</h2><p>Only students assigned to Sara Sawalmeh are listed.</p></div></div>
-<div class="field-grid"><div class="field"><label>Select Student</label><asp:DropDownList ID="ddlStudent" runat="server" CssClass="input" AutoPostBack="true" OnSelectedIndexChanged="ddlStudent_SelectedIndexChanged"/></div><div class="field"><label>Assigned Academic Supervisor</label><div class="input" style="display:flex;align-items:center">Sara Sawalmeh</div></div></div></div>
+<div class="panel no-print"><div class="panel-heading"><div class="panel-heading-icon"><i class="bi bi-person-check"></i></div><div><h2>1. Choose assigned student</h2><p>Only students assigned to your account are listed.</p></div></div>
+<div class="field-grid"><div class="field"><label>Select Student</label><asp:DropDownList ID="ddlStudent" runat="server" CssClass="input" AutoPostBack="true" OnSelectedIndexChanged="ddlStudent_SelectedIndexChanged"/></div><div class="field"><label>Assigned Academic Supervisor</label><div class="input" style="display:flex;align-items:center"><%: lblSupervisor.Text %></div></div></div></div>
 <asp:Panel ID="pnlReport" runat="server" Visible="false">
 <div class="panel" id="printArea"><h2 class="report-print-title">University Internship Final Evaluation</h2>
 <div class="panel-heading"><div class="panel-heading-icon"><i class="bi bi-file-earmark-text"></i></div><div><h2>2. Company Training Report</h2><p>Facts retrieved from Firebase, not manually entered grades.</p></div></div>
@@ -684,10 +684,10 @@
 <asp:Label ID="lblReportNotice" runat="server" CssClass="data-note"/>
 </div>
 <div class="panel"><div class="panel-heading"><div class="panel-heading-icon"><i class="bi bi-pencil-square"></i></div><div><h2>3. Academic Supervisor Assessment</h2><p>Add your own feedback without altering the company evaluation.</p></div></div>
-<div class="academic-entry"><div class="field-grid"><div class="field"><label>Academic Score (0–100)</label><asp:TextBox ID="txtScore" runat="server" CssClass="input" TextMode="Number" min="0" max="100" step="0.01" placeholder="e.g. 85"/></div><div class="field"><label>Academic Final Recommendation</label><asp:DropDownList ID="ddlRecommendation" runat="server" CssClass="input"><asp:ListItem Text="Select recommendation" Value=""/><asp:ListItem Text="Pass" Value="Pass"/><asp:ListItem Text="Fail" Value="Fail"/><asp:ListItem Text="More information required" Value="More information required"/><asp:ListItem Text="Additional training required" Value="Additional training required"/></asp:DropDownList></div></div>
+<div class="academic-entry"><div class="field-grid"><div class="field"><label>Academic score</label><asp:TextBox ID="txtScore" runat="server" CssClass="input" TextMode="Number" min="0" max="100" step="0.01" placeholder="e.g. 85"/></div><div class="field"><label>Academic Final Recommendation</label><asp:DropDownList ID="ddlRecommendation" runat="server" CssClass="input"><asp:ListItem Text="Select recommendation" Value=""/><asp:ListItem Text="Pass" Value="Pass"/><asp:ListItem Text="Fail" Value="Fail"/><asp:ListItem Text="More information required" Value="More information required"/><asp:ListItem Text="Additional training required" Value="Additional training required"/></asp:DropDownList></div></div>
 <div class="field"><label>Academic Feedback</label><asp:TextBox ID="txtComments" runat="server" TextMode="MultiLine" Rows="5" CssClass="input" MaxLength="3000" placeholder="Review task quality, training progress, company feedback and final recommendations..."/></div></div>
 <div class="academic-print-section print-only">
- <div class="report-row"><div><span class="report-label">Academic Supervisor</span><strong><asp:Label ID="lblSupervisorPrint" runat="server" Text="Sara Sawalmeh" /></strong></div><div><span class="report-label">Academic Score (0–100)</span><strong id="printAcademicScore">Not provided</strong></div></div>
+ <div class="report-row"><div><span class="report-label">Academic Supervisor</span><strong><asp:Label ID="lblSupervisorPrint" runat="server" Text="" /></strong></div><div><span class="report-label">Academic score</span><strong id="printAcademicScore">Not provided</strong></div></div>
  <div class="report-row"><div><span class="report-label">Academic Recommendation</span><strong id="printAcademicRecommendation">Not provided</strong></div><div><span class="report-label">Report Generated</span><strong id="printGeneratedAt">—</strong></div></div>
  <h3>Academic Supervisor Feedback</h3><div class="report-block" id="printAcademicFeedback">Not provided</div>
 </div>
@@ -708,7 +708,7 @@
         var comments = document.getElementById('<%= txtComments.ClientID %>');
         var rec = recommendation && recommendation.selectedIndex >= 0
             ? recommendation.options[recommendation.selectedIndex].text : '';
-        document.getElementById('printAcademicScore').textContent = score && score.value.trim() ? score.value.trim() + ' / 100' : 'Not provided';
+        document.getElementById('printAcademicScore').textContent = score && score.value.trim() ? score.value.trim() + ' / ' + score.max : 'Not provided';
         document.getElementById('printAcademicRecommendation').textContent = recommendation && recommendation.value ? rec : 'Not provided';
         document.getElementById('printAcademicFeedback').textContent = comments && comments.value.trim() ? comments.value.trim() : 'Not provided';
         document.getElementById('printGeneratedAt').textContent = new Date().toLocaleString();

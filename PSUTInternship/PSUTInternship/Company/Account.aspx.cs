@@ -1,3 +1,4 @@
+using PSUTInternship.Shared;
 using System;
 using PSUTInternship.Models;
 namespace PSUTInternship.Company

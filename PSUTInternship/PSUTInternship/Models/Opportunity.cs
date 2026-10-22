@@ -9,6 +9,10 @@ namespace PSUTInternship.Models
     public class Opportunity
     {
         public string Id { get; set; }
+        [JsonProperty("specialization")] public string Specialization { get; set; }
+        [JsonProperty("college")] public string College { get; set; }
+        [JsonProperty("availableSeats")] public int AvailableSeats { get; set; }
+        public Opportunity() { }
 
         [JsonProperty("title")]
         public string Title { get; set; }
@@ -29,12 +33,14 @@ namespace PSUTInternship.Models
         public string Requirements { get; set; }
 
         [JsonProperty("duration")]
-        public int Duration { get; set; }
+        public string Duration { get; set; }
+        [JsonIgnore] public string DurationDisplay { get { int months; return int.TryParse(Duration, out months) ? months + " months" : Duration; } }
 
         [JsonProperty("deadline")]
         public DateTime DeadLine { get; set; }
 
         [JsonProperty("status")]
+        [JsonConverter(typeof(PSUTInternship.Shared.OpportunityStatusConverter))]
         public bool Status { get; set; }
 
         [JsonProperty("createdAt")]
@@ -52,7 +58,7 @@ namespace PSUTInternship.Models
             Location = location;
             WorkMode = workMode;
             Requirements = requirements;
-            Duration = duration;
+            Duration = duration.ToString(System.Globalization.CultureInfo.InvariantCulture);
             DeadLine = deadLine;
             this.Status = status;
             CreatedAt = createdAt;

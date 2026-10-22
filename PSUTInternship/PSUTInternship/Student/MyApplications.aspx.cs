@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -9,15 +9,17 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using PSUTInternship.Shared;
 using System.Text;
+using PSUTInternship.Models;
 
 
 namespace PSUTInternship.Student
 {
    
 
-    public partial class MyApplications : System.Web.UI.Page
+    public partial class MyApplications : PSUTInternship.Shared.PortalPage
     {
         private string confirmedApplicationId;
+        private bool hasPlacement;
 
         protected override void OnInit(EventArgs e)
         {
@@ -47,15 +49,13 @@ namespace PSUTInternship.Student
             //System.Diagnostics.Debug.WriteLine("Student ID: " + studentId);
             string token = Session["idToken"].ToString();
 
-            string url = FirebaseConfig.DatabaseUrl
-                       + "applications/"
-                       + Uri.EscapeDataString(studentId)
-                       + ".json?auth="
+            string url = FirebaseConfig.DatabaseUrl + "applications.json?orderBy=%22studentId%22&equalTo=" + Uri.EscapeDataString("\"" + studentId + "\"") + "&auth="
                        + Uri.EscapeDataString(token);
 
             try
             {
                 await LoadConfirmation();
+                if (hasPlacement || !string.IsNullOrEmpty(confirmedApplicationId)) await PortalRepository.EnsurePlacement(studentId, confirmedApplicationId);
                 string json = await FirebaseConfig.Client.GetStringAsync(url);
 
                 var applications = JsonConvert.DeserializeObject<
@@ -74,10 +74,11 @@ namespace PSUTInternship.Student
                         continue;
                     }
                     application.Value.Id = application.Key;
-                    if (application.Value.Details == null)
-                    {
-                        application.Value.Details = new Models.TrainingApplicationDetails();
-                    }
+                    if (application.Value.Details == null) application.Value.Details = new Models.TrainingApplicationDetails();
+                    var opening = await PortalRepository.Get<Newtonsoft.Json.Linq.JObject>("opportunities/" + PortalRepository.Key(application.Value.OpportunityId));
+                    if (string.IsNullOrWhiteSpace(application.Value.Details.TrainingField)) application.Value.Details.TrainingField = (string)opening?["title"];
+                    var company = opening == null ? null : await PortalRepository.Get<Newtonsoft.Json.Linq.JObject>("companies/" + PortalRepository.Key((string)opening["companyId"]));
+                    if (string.IsNullOrWhiteSpace(application.Value.Details.OrganizationName)) application.Value.Details.OrganizationName = (string)company?["name"] ?? application.Value.CompanyId;
                 }
                 ApplicationsRepeater.DataSource = applications.Values.Where(application => application != null
                     && application.StudentId == studentId);
@@ -151,10 +152,7 @@ namespace PSUTInternship.Student
             string token = Session["idToken"].ToString();
 
             string url = FirebaseConfig.DatabaseUrl
-                + "applications/"
-                + Uri.EscapeDataString(studentId)
-                + "/"
-                + Uri.EscapeDataString(applicationId)
+                + "applications/" + Uri.EscapeDataString(applicationId)
                 + ".json?auth="
                 + Uri.EscapeDataString(token);
 
@@ -183,6 +181,7 @@ namespace PSUTInternship.Student
             await LoadConfirmation();
             if (confirmedApplicationId == applicationId)
             {
+                await PortalRepository.EnsurePlacement(studentId, applicationId);
                 MessageLabel.Text = "You have already confirmed this internship.";
                 return;
             }
@@ -194,7 +193,7 @@ namespace PSUTInternship.Student
             };
             if (decision == "Accepted")
             {
-                if (!string.IsNullOrEmpty(confirmedApplicationId))
+                if (hasPlacement || !string.IsNullOrEmpty(confirmedApplicationId))
                 {
                     MessageLabel.Text = "You have already confirmed another internship. You can confirm only one.";
                     return;
@@ -223,10 +222,12 @@ namespace PSUTInternship.Student
                     {
                         if (response.StatusCode == System.Net.HttpStatusCode.PreconditionFailed)
                         {
+                            if (confirmedApplicationId == applicationId) await PortalRepository.EnsurePlacement(studentId, applicationId);
                             MessageLabel.Text = "You have already confirmed an internship.";
                         }
                         else if (response.IsSuccessStatusCode)
                         {
+                            await PortalRepository.EnsurePlacement(studentId, applicationId);
                             MessageLabel.Text = "Internship confirmed.";
                         }
                         else
@@ -241,10 +242,7 @@ namespace PSUTInternship.Student
             if (decision == "Declined")
             {
                 string responseUrl = FirebaseConfig.DatabaseUrl
-                    + "applications/"
-                    + Uri.EscapeDataString(studentId)
-                    + "/"
-                    + Uri.EscapeDataString(applicationId)
+                    + "applications/" + Uri.EscapeDataString(applicationId)
                     + "/studentResponse.json?auth="
                     + Uri.EscapeDataString(token);
 
@@ -274,7 +272,7 @@ namespace PSUTInternship.Student
         {
             var application = (Models.Application)item;
 
-            if (application.Id == confirmedApplicationId)
+            if (application.Id == confirmedApplicationId || application.IsOfferConfirmed)
             {
                 return "Accepted — internship confirmed";
             }
@@ -301,6 +299,7 @@ namespace PSUTInternship.Student
 
             string json = await FirebaseConfig.Client.GetStringAsync(url);
             var confirmation = JsonConvert.DeserializeObject<Models.InternshipConfirmation>(json);
+            hasPlacement = await PortalRepository.PlacementForStudent(studentId) != null;
             confirmedApplicationId = null;
             if (confirmation != null)
             {
@@ -312,12 +311,12 @@ namespace PSUTInternship.Student
         {
             var application = (Models.Application)item;
             return application.Status == Models.ApplicationStatus.Approved
-                && application.StudentResponse == null && application.Id != confirmedApplicationId;
+                && !application.IsOfferConfirmed && application.StudentResponse == null && application.Id != confirmedApplicationId;
         }
 
         protected bool CanAcceptOffer(object item)
         {
-            return CanDeclineOffer(item) && string.IsNullOrEmpty(confirmedApplicationId);
+            return !hasPlacement && CanDeclineOffer(item) && string.IsNullOrEmpty(confirmedApplicationId);
         }
     }
     
