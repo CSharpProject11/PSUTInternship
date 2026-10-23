@@ -103,7 +103,7 @@ Full Web Forms markup compilation can also be checked with the .NET Framework `a
 
 `opportunities` is the only opportunity collection used by the application. The old `publicOpportunities` collection is no longer read, written or generated. After deploying the application and `Firebase/database.rules.example.json`, the obsolete `publicOpportunities` node can be deleted from Firebase Console; retain `opportunities` and its IDs so existing applications remain linked. No live records are deleted by this code update.
 
-Anonymous homepage requests return no opportunity previews; authenticated requests project preview fields from `opportunities`. Full opportunity records remain protected by the active-user Firebase read rule. Specialization is descriptive text, not an exact student-major restriction. Explicit college restrictions, active status and deadlines still apply.
+Anonymous and authenticated homepage requests project preview fields from `opportunities`. Deploy `Firebase/database.rules.example.json` to allow public reads of opportunity listings; opportunity writes, applications and profiles still require authentication. Specialization is descriptive text, not an exact student-major restriction. Explicit college restrictions, active status and deadlines still apply.
 
 ## UIMS improvement verification (23 October 2026)
 

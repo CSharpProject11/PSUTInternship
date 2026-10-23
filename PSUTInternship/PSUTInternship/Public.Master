@@ -10,16 +10,18 @@
 <link rel="preload" href="<%= ResolveUrl("~/Assets/manrope-variable.ttf") %>" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="<%= ResolveUrl("~/Content/vendor/bootstrap.min.css") %>">
 <link rel="stylesheet" href="<%= ResolveUrl("~/Content/portal.css") %>">
-<link rel="stylesheet" href="<%= ResolveUrl("~/Content/campus-home.css?v=20261022") %>">
+<link rel="stylesheet" href="<%= ResolveUrl("~/Content/campus-home.css?v=20261023-loop24") %>">
 </head>
 <body class="campus-home" data-role="" data-page="">
+<form id="PublicForm" runat="server">
 <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+</form>
 <div class="psut-modal" id="detail"><div class="modalbox" id="detailContent"></div></div><div class="psut-modal" id="action"><div class="modalbox" id="actionContent"></div></div><div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script>window.PSUT={root:'<%= ResolveUrl("~/") %>',role:'student',page:'Overview'};</script>
 <script src="<%= ResolveUrl("~/Scripts/vendor/bootstrap.bundle.min.js") %>"></script>
-<script src="<%= ResolveUrl("~/Scripts/portal.js") %>"></script>
+<script src="<%= ResolveUrl("~/Scripts/portal.js?v=20261023-opportunities13") %>"></script>
 <script src="<%= ResolveUrl("~/Scripts/wellington.js") %>"></script>
-<script src="<%= ResolveUrl("~/Scripts/interactions.js") %>"></script>
-<script src="<%= ResolveUrl("~/Scripts/campus-home.js?v=20261022") %>"></script>
+<script src="<%= ResolveUrl("~/Scripts/interactions.js?v=20261023-loop24") %>"></script>
+<script src="<%= ResolveUrl("~/Scripts/campus-home.js?v=20261023-opportunities13") %>"></script>
 </body>
 </html>

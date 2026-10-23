@@ -142,7 +142,7 @@
       ]
     },
     "opportunities": {
-      ".read": "auth != null && root.child('users').child(auth.uid).child('isActive').val() === true",
+      ".read": true,
       ".indexOn": [
         "companyId"
       ],

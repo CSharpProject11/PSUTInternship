@@ -800,6 +800,13 @@
   <ItemGroup>
     <Content Include="Portal.Master" />
     <Content Include="Assets\psut-emblem.png" />
+    <Content Include="Content\login.css" />
+    <Content Include="Content\login-fit.css" />
+    <Content Include="Assets\login-campus.png" />
+    <Content Include="Assets\login-wordmark.png" />
+    <Content Include="Assets\login-emblem.png" />
+    <Content Include="Assets\psut-logo-bilingual.png" />
+    <Content Include="Assets\psut-footer-mosaic.png" />
     <Content Include="Shared\PortalNavigation.ascx" />
     <Content Include="Content\portal-workspace.css" />
     <Content Include="Scripts\portal-ui.js" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.IO;
@@ -15,6 +16,29 @@ namespace PSUTInternship
             DateTime deadline;
             return DatabaseSchema.IsOpen((string)item["status"]) && (!DateTime.TryParse((string)item["deadline"], out deadline) || deadline.Date >= DateTime.Today);
         }
+        internal static async System.Threading.Tasks.Task<JArray> LoadOpportunityPreviewsAsync()
+        {
+            // Opportunity listings are public; applications and profiles still require sign-in.
+            bool signedIn = System.Web.HttpContext.Current.Session["idToken"] != null;
+            Dictionary<string, JObject> records;
+            if (signedIn) records = await PortalRepository.Collection("opportunities");
+            else
+            {
+                using (var response = await FirebaseConfig.Client.GetAsync(FirebaseConfig.DatabaseUrl + "opportunities.json"))
+                {
+                    response.EnsureSuccessStatusCode();
+                    records = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(await response.Content.ReadAsStringAsync())
+                        ?? new Dictionary<string, JObject>();
+                }
+            }
+            var companies = new Dictionary<string, JObject>();
+            if (signedIn) companies = await PortalRepository.Collection("companies");
+            return JArray.FromObject(records.Where(x=>x.Value != null && IsOpen(x.Value))
+                .OrderBy(x=>(string)x.Value["deadline"]).ThenBy(x=>x.Key).Take(6).Select(x=> {
+                JObject company; companies.TryGetValue((string)x.Value["companyId"] ?? "", out company);
+                return new {id=x.Key,title=(string)x.Value["title"],company=(string)x.Value["companyName"] ?? (string)company?["name"] ?? "Company",major=(string)x.Value["specialization"],seats=(int?)x.Value["availableSeats"]??0,deadline=(string)x.Value["deadline"]};
+            }));
+        }
         protected async void Page_Load(object sender,EventArgs e)
         {
             Response.ContentType="application/json";Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache);
@@ -23,14 +47,7 @@ namespace PSUTInternship
                 if(Request.HttpMethod=="GET")
                 {
                     if(Request.QueryString["action"]=="contactToken") { Response.Write(JsonConvert.SerializeObject(new {token=CsrfToken}));return; }
-                    // Firebase keeps the single source private to active portal users.
-                    if (Session["idToken"] == null) { Response.Write("[]"); return; }
-                    var records = await PortalRepository.Collection("opportunities");
-                    var companies = await PortalRepository.Collection("companies");
-                    Response.Write(JsonConvert.SerializeObject(records.Where(x=>IsOpen(x.Value)).Select(x=> {
-                        JObject company; companies.TryGetValue((string)x.Value["companyId"] ?? "", out company);
-                        return new {id=x.Key,title=(string)x.Value["title"],company=(string)company?["name"] ?? "Company",major=(string)x.Value["specialization"],seats=(int?)x.Value["availableSeats"]??0,deadline=(string)x.Value["deadline"]};
-                    })));
+                    Response.Write(await LoadOpportunityPreviewsAsync());
                     return;
                 }
                 if(Request.HttpMethod!="POST"||Request.QueryString["action"]!="contact")throw new ArgumentException("Unsupported request.");
@@ -43,7 +60,7 @@ namespace PSUTInternship
                 using(var response=await FirebaseConfig.Client.PostAsync(FirebaseConfig.DatabaseUrl+"contactMessages.json",content))response.EnsureSuccessStatusCode();
                 Session["lastContactAt"]=DateTime.UtcNow;Response.Write("{\"saved\":true}");
             }
-            catch(Exception ex){Response.StatusCode=400;Response.TrySkipIisCustomErrors=true;Response.Write(JsonConvert.SerializeObject(new {error=ex is ArgumentException?ex.Message:"Unable to access the portal data. Please try again."}));}
+            catch(Exception ex){Response.StatusCode=ex is ArgumentException?400:503;Response.TrySkipIisCustomErrors=true;Response.Write(JsonConvert.SerializeObject(new {error=ex is ArgumentException?ex.Message:"Unable to access the portal data. Please try again."}));}
         }
     }
 }

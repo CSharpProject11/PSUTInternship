@@ -1,261 +1,115 @@
-<%@ Page Language="C#" MasterPageFile="~/Public.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="PSUTInternship._Default" %>
+<%@ Page Language="C#" Async="true" MasterPageFile="~/Public.Master" AutoEventWireup="true" ClientIDMode="Static" CodeBehind="Default.aspx.cs" Inherits="PSUTInternship._Default" %>
 
 <asp:Content ID="PageBody" ContentPlaceHolderID="MainContent" runat="server">
-    <a class="skip-link" href="#main-content">Skip to content</a>
+    <asp:HyperLink runat="server" ID="HomeLink1" CssClass="skip-link" NavigateUrl="#main-content">Skip to content</asp:HyperLink>
     <header class="campus-header" id="top">
-        <a href="#home" class="campus-brand" aria-label="PSUT Internship Portal home">
-            <img src="<%= ResolveUrl("~/Assets/psut-logo.jpg") %>" alt="Princess Sumaya University for Technology"></a>
-        <nav class="campus-nav d-none d-lg-flex" aria-label="Main navigation"><a href="#discover">Discover PSUT</a><a href="#where-next">Your workspace</a><a href="#opportunities">Opportunities</a><a href="#our-psut">Campus life</a></nav>
-        <div class="header-actions"><a class="header-login" href="<%= ResolveUrl("~/Login.aspx") %>">Portal sign in <span aria-hidden="true">↗</span></a>
-            <button type="button" class="menu-toggle d-lg-none" data-bs-toggle="collapse" data-bs-target="#mobilePrimaryNav" aria-controls="mobilePrimaryNav" aria-expanded="false">Menu <span class="menu-lines" aria-hidden="true"></span></button>
+        <asp:HyperLink runat="server" ID="HomeLink2" NavigateUrl="#home" CssClass="campus-brand" aria-label="PSUT Internship Portal home">
+            <asp:Image runat="server" ID="HomeImage1" ImageUrl="~/Assets/psut-logo-bilingual.png" AlternateText="Princess Sumaya University for Technology" /></asp:HyperLink>
+        <nav class="campus-nav d-none d-lg-flex" aria-label="Main navigation"><asp:HyperLink runat="server" ID="HomeLink3" NavigateUrl="#discover">About PSUT</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink4" NavigateUrl="#opportunities">Opportunities</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink5" NavigateUrl="#our-psut">Campus life</asp:HyperLink></nav>
+        <div class="header-actions"><asp:HyperLink runat="server" ID="HomeLink6" CssClass="header-login" NavigateUrl="~/Login.aspx">Portal sign in <span aria-hidden="true">↗</span></asp:HyperLink>
+            <button runat="server" ID="HomeButton1" type="button" class="menu-toggle d-lg-none" data-bs-toggle="collapse" data-bs-target="#mobilePrimaryNav" aria-controls="mobilePrimaryNav" aria-expanded="false">Menu <span class="menu-lines" aria-hidden="true"></span></button>
         </div>
         <div class="collapse mobile-primary" id="mobilePrimaryNav">
-            <nav aria-label="Mobile navigation"><a href="#discover">Discover PSUT</a><a href="#where-next">Your workspace</a><a href="#opportunities">Opportunities</a><a href="#our-psut">Campus life</a><a href="#contact">Contact</a></nav>
+            <nav aria-label="Mobile navigation"><asp:HyperLink runat="server" ID="HomeLink7" NavigateUrl="#discover">About PSUT</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink8" NavigateUrl="#opportunities">Opportunities</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink9" NavigateUrl="#our-psut">Campus life</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink10" NavigateUrl="#contact">Contact</asp:HyperLink></nav>
         </div>
     </header>
     <main id="main-content" tabindex="-1">
-        <section class="campus-opening" id="home" aria-labelledby="home-title">
+        <section class="campus-opening" id="home" aria-labelledby="HomeTitle">
             <div class="film-frame">
-                <img class="film-poster" src="<%= ResolveUrl("~/Assets/psut-rooftop.jpg") %>" alt="PSUT campus in Al-Jubeiha, Amman" fetchpriority="high"><video id="introVideo" class="campus-film" autoplay muted loop playsinline preload="metadata" poster="<%= ResolveUrl("~/Assets/psut-rooftop.jpg") %>" aria-label="A film of the Princess Sumaya University for Technology campus">
+                <asp:Image runat="server" ID="HomeImage2" CssClass="film-poster" ImageUrl="~/Assets/psut-rooftop.jpg" AlternateText="PSUT campus in Al-Jubeiha, Amman" fetchpriority="high" /><video id="introVideo" class="campus-film" autoplay muted loop playsinline preload="metadata" poster="<%= ResolveUrl("~/Assets/psut-rooftop.jpg") %>" aria-label="A film of the Princess Sumaya University for Technology campus">
                     <source src="<%= ResolveUrl("~/Assets/psut-campus-loop.mp4") %>" type="video/mp4"></video>
                 <div class="film-shade" aria-hidden="true"></div>
-                <button type="button" class="film-control" id="filmToggle" aria-label="Pause campus film"><span class="pause-symbol" aria-hidden="true">Ⅱ</span><span class="film-control-text">Pause film</span></button></div>
+            </div>
             <div class="opening-copy page-frame">
-                <h1 id="home-title" data-reveal>Your next chapter.</h1>
+                <h1 runat="server" id="HomeTitle" data-reveal="">Your next chapter.</h1>
                 <div class="opening-description">
-                    <p data-reveal>Your internship at Princess Sumaya University for Technology. Find your opportunity and follow your next chapter.</p>
-                    <a class="round-link" href="#opportunities" data-reveal>Find your opportunity <span aria-hidden="true">↗</span></a></div>
-                <a href="#discover" class="scroll-cue" aria-label="Scroll to discover PSUT"><span aria-hidden="true">↓</span></a></div>
+                    <p runat="server" ID="HomeHeading2" data-reveal="">Your internship at Princess Sumaya University for Technology. Find your opportunity and follow your next chapter.</p>
+                    <asp:HyperLink runat="server" ID="HomeLink11" CssClass="round-link" NavigateUrl="#opportunities" data-reveal="">Find your opportunity <span aria-hidden="true">↗</span></asp:HyperLink></div>
+                <asp:HyperLink runat="server" ID="HomeLink12" NavigateUrl="#discover" CssClass="scroll-cue" aria-label="Scroll to About PSUT"><span aria-hidden="true">↓</span></asp:HyperLink></div>
         </section>
-        <section class="discovery" id="discover" aria-labelledby="discover-title">
+        <section class="discovery" id="discover" aria-labelledby="DiscoverTitle">
             <div class="discovery-intro page-frame">
-                <h2 id="discover-title" data-reveal>Ideas begin here.</h2>
-                <p data-reveal>At Princess Sumaya University for Technology, your next chapter starts in Amman. Take what you learn into the world.</p>
+                <h2 runat="server" id="DiscoverTitle" data-reveal="">About PSUT.</h2>
+                <p runat="server" ID="HomeHeading4" data-reveal="">Founded in 1991 in Amman, Princess Sumaya University for Technology is the academic arm of the Royal Scientific Society, bringing education, research and technology together.</p>
             </div>
+            <div class="about-psut-details page-frame">
+                <div data-reveal="">
+                    <h3>A foundation in technology.</h3>
+                    <p>PSUT began with a single bachelor’s degree in Computer Science. It has since grown to offer undergraduate and postgraduate study across computing, engineering and business.</p>
+                </div>
+                <div data-reveal="">
+                    <h3>Learning that looks ahead.</h3>
+                    <p>From software engineering and communications to data science, artificial intelligence and cyber security, the university’s development reflects the changing world of technology.</p>
+                </div>
+                <div data-reveal="">
+                    <h3>Knowledge with purpose.</h3>
+                    <p>As part of the Royal Scientific Society’s academic mission, PSUT connects scientific knowledge with technical skills, research and innovation, preparing graduates to contribute in Jordan and beyond.</p>
+                </div>
+            </div>
+            <div class="discovery-gallery" aria-label="Life at PSUT in photographs">
+                <div class="discovery-gallery-stage">
+                    <div class="discovery-photo-column gallery-outer gallery-left"><asp:Image runat="server" ID="HomeImage3" ImageUrl="~/Assets/psut-rooftop.jpg" AlternateText="PSUT rooftops overlooking Amman" loading="lazy" /></div>
+                    <div class="discovery-photo-column gallery-inner gallery-left"><asp:Image runat="server" ID="HomeImage4" ImageUrl="~/Assets/psut-walkway.jpg" AlternateText="Sunlight through the trees along the campus walkway" loading="lazy" /><asp:Image runat="server" ID="HomeImage5" ImageUrl="~/Assets/psut-entrance.jpg" AlternateText="The campus entrance illuminated at night" loading="lazy" /></div>
             <figure class="campus-panorama">
-                <img src="<%= ResolveUrl("~/Assets/psut-aerial.jpg") %>" alt="Palm trees, gardens, and the entrance road at the PSUT campus" loading="lazy"><figcaption><span>A campus full of possibility.</span>
-                    <button type="button" class="light-link" onclick="watchCampus()">Watch the campus film <span aria-hidden="true">↗</span></button></figcaption></figure>
+                <asp:Image runat="server" ID="HomeImage6" ImageUrl="~/Assets/psut-aerial.jpg" AlternateText="Palm trees, gardens, and the entrance road at the PSUT campus" loading="lazy" /><figcaption><span>A campus full of possibility.</span>
+                    <asp:HyperLink runat="server" ID="AboutPanoramaLink" NavigateUrl="https://www.psut.edu.jo/en/about-psut2" target="_blank" rel="noopener" CssClass="light-link">More about PSUT <span aria-hidden="true">↗</span></asp:HyperLink></figcaption></figure>
+                    <div class="discovery-photo-column gallery-inner gallery-right"><asp:Image runat="server" ID="HomeImage7" ImageUrl="~/Assets/learning.jpg" AlternateText="Bookshelves in the university library" loading="lazy" /><asp:Image runat="server" ID="HomeImage8" ImageUrl="~/Assets/psut-graduation.jpg" AlternateText="Graduation celebrations in the PSUT courtyard" loading="lazy" /></div>
+                    <div class="discovery-photo-column gallery-outer gallery-right"><asp:Image runat="server" ID="HomeImage9" ImageUrl="~/Assets/psut-walkway.jpg" AlternateText="Green gardens and benches on campus" loading="lazy" /></div>
+                </div>
+            </div>
             <div class="discovery-bottom page-frame">
-                <p data-reveal>A university in the heart of Jordan.<br>
-                    A community looking ahead.</p>
-                <a href="https://www.psut.edu.jo/en" target="_blank" rel="noopener" class="light-link" data-reveal>Get to know PSUT <span aria-hidden="true">↗</span></a></div>
+                <p runat="server" ID="HomeHeading5" data-reveal="">A university in the heart of Jordan.<br>
+                    A community looking ahead.</p></div>
         </section>
-        <section class="workspace-section page-frame" id="where-next" aria-labelledby="workspace-title">
-            <div class="section-heading">
-                <div>
-                    <h2 id="workspace-title" data-reveal>Find your place.</h2>
-                    <p data-reveal>One internship journey. A whole team behind you.</p>
-                </div>
-                <span class="section-aside" data-reveal>Learning, connected.</span></div>
-            <div class="role-tabs" role="tablist" aria-label="Choose your workspace">
-                <button type="button" id="role-tab-student" role="tab" aria-selected="true" aria-controls="role-student" tabindex="0" onclick="selectRole(0)">Students</button>
-                <button type="button" id="role-tab-company" role="tab" aria-selected="false" aria-controls="role-company" tabindex="-1" onclick="selectRole(1)">Companies</button>
-                <button type="button" id="role-tab-academic" role="tab" aria-selected="false" aria-controls="role-academic" tabindex="-1" onclick="selectRole(2)">Academic supervisors</button>
-                <button type="button" id="role-tab-admin" role="tab" aria-selected="false" aria-controls="role-admin" tabindex="-1" onclick="selectRole(3)">Coordinators</button></div>
-            <div class="role-panels">
-                <article class="role-panel" id="role-student" role="tabpanel" aria-labelledby="role-tab-student">
-                    <div class="role-photo">
-                        <img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-walkway.jpg") %>" alt="The tree-lined path through PSUT campus"><span>Your future starts here.</span></div>
-                    <div class="role-copy">
-                        <h3>Make your<br>
-                            next move.</h3>
-                        <p>Discover a placement, put your skills to work, and follow your progress with guidance from your company and academic supervisors.</p>
-                        <a href="<%= ResolveUrl("~/Student/Dashboard.aspx") %>" class="round-link">Student workspace <span aria-hidden="true">↗</span></a><a href="#opportunities" class="plain-link">Explore opportunities <span aria-hidden="true">→</span></a></div>
-                </article>
-                <article class="role-panel" id="role-company" role="tabpanel" aria-labelledby="role-tab-company" hidden>
-                    <div class="role-photo">
-                        <img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-students.jpeg") %>" alt="Students and staff gathered at PSUT"><span>Help talent take shape.</span></div>
-                    <div class="role-copy">
-                        <h3>Guide the<br>
-                            next generation.</h3>
-                        <p>Share internship opportunities, review applications, assign meaningful tasks, and give trainees feedback that helps them grow.</p>
-                        <a href="<%= ResolveUrl("~/Company/Dashboard.aspx") %>" class="round-link">Company workspace <span aria-hidden="true">↗</span></a></div>
-                </article>
-                <article class="role-panel" id="role-academic" role="tabpanel" aria-labelledby="role-tab-academic" hidden>
-                    <div class="role-photo">
-                        <img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-community.jpeg") %>" alt="The PSUT community at a university event"><span>Keep learning moving.</span></div>
-                    <div class="role-copy">
-                        <h3>Bring learning<br>
-                            into focus.</h3>
-                        <p>Follow student submissions, review training hours, and connect academic learning with students’ placement experience.</p>
-                        <a href="<%= ResolveUrl("~/Academic/Dashboard.aspx") %>" class="round-link">Academic workspace <span aria-hidden="true">↗</span></a></div>
-                </article>
-                <article class="role-panel" id="role-admin" role="tabpanel" aria-labelledby="role-tab-admin" hidden>
-                    <div class="role-photo">
-                        <img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-rooftop.jpg") %>" alt="PSUT buildings and campus from above"><span>Connect every part of the journey.</span></div>
-                    <div class="role-copy">
-                        <h3>See the<br>
-                            whole picture.</h3>
-                        <p>Connect students with their supervisors, coordinate portal access, and review internship completion in one shared process.</p>
-                        <a href="<%= ResolveUrl("~/Admin/Dashboard.aspx") %>" class="round-link">Coordinator workspace <span aria-hidden="true">↗</span></a></div>
-                </article>
-            </div>
-        </section>
-        <section class="journey-section" aria-labelledby="journey-title">
+        <section class="facts-section opportunity-deck-section" id="opportunities" aria-labelledby="OpportunitiesTitle">
             <div class="section-heading page-frame">
-                <div>
-                    <h2 id="journey-title" data-reveal>Your journey, unfolding.</h2>
-                    <p data-reveal>There is a clear next step, wherever you are.</p>
-                </div>
+                <div><h2 runat="server" id="OpportunitiesTitle" data-reveal="">Find your next opportunity.</h2><p runat="server" ID="HomeHeading7" data-reveal="">Explore internship summaries. Sign in for full details and to apply.</p></div>
                 <div class="rail-controls">
-                    <button type="button" data-rail="journeyRail" data-direction="-1" aria-label="Previous journey cards">←</button>
-                    <button type="button" data-rail="journeyRail" data-direction="1" aria-label="Next journey cards">→</button></div>
+                    <button runat="server" ID="HomeButton3" type="button" data-rail="publicCards" data-direction="-1" aria-label="Previous opportunities">←</button>
+                    <button runat="server" ID="HomeButton4" type="button" data-rail="publicCards" data-direction="1" aria-label="Next opportunities">→</button>
+                </div>
             </div>
-            <div class="story-rail" id="journeyRail" data-drag-rail tabindex="0" role="region" aria-label="Internship journey cards. Drag or use arrow keys to explore.">
-                <a class="story-card" href="#opportunities">
-                    <div class="story-image">
-                        <img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-walkway.jpg") %>" alt="A sunny path through the PSUT gardens"></div>
-                    <div class="story-caption">
-                        <h3>Find your direction</h3>
-                        <span aria-hidden="true">↗</span></div>
-                    <p>Explore a placement that fits your skills.</p>
-                </a>
-                <a class="story-card" href="<%= ResolveUrl("~/Student/MyApplications.aspx") %>">
-                    <div class="story-image">
-                        <img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-welcome.jpeg") %>" alt="New students coming together at PSUT"></div>
-                    <div class="story-caption">
-                        <h3>Take the first step</h3>
-                        <span aria-hidden="true">↗</span></div>
-                    <p>Apply and follow your applications.</p>
-                </a>
-                <a class="story-card" href="<%= ResolveUrl("~/Student/MyTasks.aspx") %>">
-                    <div class="story-image">
-                        <img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-students.jpeg") %>" alt="A PSUT university gathering"></div>
-                    <div class="story-caption">
-                        <h3>Learn by doing</h3>
-                        <span aria-hidden="true">↗</span></div>
-                    <p>Complete tasks with your supervisors.</p>
-                </a>
-                <a class="story-card" href="<%= ResolveUrl("~/Student/StudentProgress.aspx") %>">
-                    <div class="story-image">
-                        <img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-graduation.jpg") %>" alt="The graduation ceremony at PSUT"></div>
-                    <div class="story-caption">
-                        <h3>See how far you go</h3>
-                        <span aria-hidden="true">↗</span></div>
-                    <p>Track your hours, feedback, and progress.</p>
-                </a>
-                <a class="story-card" href="<%= ResolveUrl("~/Student/StudentProfile.aspx") %>">
-                    <div class="story-image">
-                        <img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-aerial.jpg") %>" alt="Gardens at Princess Sumaya University for Technology"></div>
-                    <div class="story-caption">
-                        <h3>Tell your story</h3>
-                        <span aria-hidden="true">↗</span></div>
-                    <p>Keep your profile ready for what comes next.</p>
-                </a>
-            </div>
-            <div class="rail-footer page-frame"><span>Drag to discover</span><div class="rail-progress" aria-hidden="true"><span data-progress="journeyRail"></span></div>
-                <span aria-hidden="true">↔</span></div>
+            <div runat="server" class="fact-deck experience-facts" id="publicCards" data-drag-rail tabindex="0" role="region" aria-label="Six internship opportunity previews. Drag or use arrow keys." aria-busy="true"></div>
+            <p runat="server" class="page-frame opportunity-deck-status" id="searchStatus" role="status" aria-live="polite"></p>
+            <p runat="server" ID="HomeHeading9" class="drag-note">Drag to explore opportunities. <span aria-hidden="true">↔</span></p>
         </section>
-        <section class="opportunities-section page-frame" id="opportunities" aria-labelledby="opportunities-title">
+        <section class="life-section page-frame" id="our-psut" aria-labelledby="LifeTitle">
             <div class="section-heading">
                 <div>
-                    <h2 id="opportunities-title" data-reveal>What comes next?</h2>
-                    <p data-reveal>Find where your skills can take you.</p>
+                    <h2 runat="server" id="LifeTitle" data-reveal="">This is our PSUT.</h2>
+                    <p runat="server" ID="HomeHeading11" data-reveal="">The places, the people, the possibilities.</p>
                 </div>
-                <a href="<%= ResolveUrl("~/Student/Opportunities.aspx") %>" class="round-link">Browse live opportunities <span aria-hidden="true">↗</span></a></div>
-            <div class="opportunity-intro row g-4 align-items-end">
-                <div class="col-lg-6">
-                    <p>Preview open internships, then sign in for full details and applications.</p>
-                </div>
-                <div class="col-lg-6">
-                    <form class="opportunity-search" id="opportunity-search" role="search" onsubmit="event.preventDefault();searchOpps()">
-                        <label class="visually-hidden" for="heroSearch">Search opportunities</label><input type="search" id="heroSearch" placeholder="Your next opportunity…" autocomplete="off">
-                        <button type="submit" aria-label="Search opportunities">→</button></form>
-                </div>
-            </div>
-            <div class="cards" id="publicCards" data-drag-rail tabindex="0" role="region" aria-label="Internship opportunities. Drag or use arrow keys."></div>
-            <div class="opportunity-status">
-                <p id="searchStatus" role="status" aria-live="polite"></p>
-                <span>Live internship previews</span></div>
-        </section>
-        <section class="facts-section" aria-labelledby="facts-title">
-            <div class="section-heading page-frame">
-                <div>
-                    <h2 id="facts-title" data-reveal>Good things to know.</h2>
-                    <p data-reveal>A few essentials for the road ahead.</p>
-                </div>
-                <div class="rail-controls">
-                    <button type="button" data-rail="internship-facts" data-direction="-1" aria-label="Previous internship facts">←</button>
-                    <button type="button" data-rail="internship-facts" data-direction="1" aria-label="Next internship facts">→</button></div>
-            </div>
-            <div class="fact-deck experience-facts" id="internship-facts" data-drag-rail tabindex="0" role="region" aria-label="Internship fact cards. Drag or use arrow keys.">
-                <article class="fact-card mosaic-card sky"><span class="fact-mark" aria-hidden="true">4</span><div>
-                    <h3>One connected team.</h3>
-                    <p>Students, companies, academic supervisors, and coordinators. Everyone has a part in your progress.</p>
-                </div>
-                    <a href="#where-next">Meet your workspace <span aria-hidden="true">↗</span></a></article>
-                <article class="fact-card mosaic-card photo-fact">
-                    <img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-walkway.jpg") %>" alt="Greenery along the PSUT campus walkway"><div>
-                        <h3>Stay curious.<br>
-                            Go further.</h3>
-                        <p>Bring what you know.<br>
-                            Discover what you can do.</p>
-                    </div>
-                    <a href="#opportunities">Explore your next step <span aria-hidden="true">↗</span></a></article>
-                <article class="fact-card mosaic-card navy"><span class="fact-mark" aria-hidden="true">2</span><div>
-                    <h3>Guidance that matters.</h3>
-                    <p>A company supervisor and an academic supervisor help connect your work with your learning.</p>
-                </div>
-                    <a href="#where-next">Find your support <span aria-hidden="true">↗</span></a></article>
-                <article class="fact-card mosaic-card pale"><span class="fact-mark" aria-hidden="true">1</span><div>
-                    <h3>Your chosen placement.</h3>
-                    <p>Follow your applications, choose an accepted offer, and focus on making the most of your experience.</p>
-                </div>
-                    <a href="<%= ResolveUrl("~/Student/MyApplications.aspx") %>">Your applications <span aria-hidden="true">↗</span></a></article>
-                <article class="fact-card mosaic-card photo-fact">
-                    <img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-graduation.jpg") %>" alt="PSUT graduation celebration"><div>
-                        <h3>A chapter<br>
-                            worth building.</h3>
-                        <p>Real tasks. Useful feedback.<br>
-                            Experience you take with you.</p>
-                    </div>
-                    <a href="<%= ResolveUrl("~/Student/StudentProgress.aspx") %>">Follow your progress <span aria-hidden="true">↗</span></a></article>
-            </div>
-            <p class="drag-note">A little drag. A new perspective. <span aria-hidden="true">↔</span></p>
-        </section>
-        <section class="life-section page-frame" id="our-psut" aria-labelledby="life-title">
-            <div class="section-heading">
-                <div>
-                    <h2 id="life-title" data-reveal>This is our PSUT.</h2>
-                    <p data-reveal>The places, the people, the possibilities.</p>
-                </div>
-                <a class="plain-link" href="https://www.psut.edu.jo/ar/media" target="_blank" rel="noopener">Explore the gallery <span aria-hidden="true">↗</span></a></div>
-            <button type="button" class="campus-cinema" onclick="watchCampus()" aria-label="Play the PSUT campus film">
-                <img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-entrance.jpg") %>" alt="The illuminated PSUT entrance and university buildings at night"><span class="cinema-play" aria-hidden="true">▶</span><span class="cinema-title">See yourself here.</span><span class="cinema-caption">Watch the PSUT campus film <span aria-hidden="true">↗</span></span></button><div class="life-grid"><a class="life-photo" href="https://www.psut.edu.jo/ar/media/get-photos/21" target="_blank" rel="noopener">
-                    <img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-community.jpeg") %>" alt="PSUT students and staff at a welcome event"><span>A community to belong to. <span aria-hidden="true">↗</span></span></a><a class="life-photo" href="https://www.psut.edu.jo/ar/media/get-photos/5" target="_blank" rel="noopener"><img loading="lazy" src="<%= ResolveUrl("~/Assets/psut-rooftop.jpg") %>" alt="PSUT campus buildings with Amman beyond"><span>A new point of view. <span aria-hidden="true">↗</span></span></a></div>
-        </section>
-        <section class="closing-section" aria-labelledby="closing-title">
-            <img src="<%= ResolveUrl("~/Assets/psut-aerial.jpg") %>" alt="" aria-hidden="true" loading="lazy"><div class="closing-shade" aria-hidden="true"></div>
-            <div class="closing-content page-frame">
-                <h2 id="closing-title" data-reveal>Your next<br>
-                    chapter awaits.</h2>
-                <div>
-                    <p data-reveal>Your next chapter is waiting.<br>
-                        Start with your PSUT internship.</p>
-                    <a class="round-link light" href="<%= ResolveUrl("~/Login.aspx") %>" data-reveal>Open your portal <span aria-hidden="true">↗</span></a></div>
-            </div>
+                <asp:HyperLink runat="server" ID="HomeLink14" CssClass="plain-link" NavigateUrl="https://www.psut.edu.jo/ar/media" target="_blank" rel="noopener">Explore the gallery <span aria-hidden="true">↗</span></asp:HyperLink></div>
+            <button runat="server" ID="HomeButton5" type="button" class="campus-cinema" onclick="watchCampus()" aria-label="Play the PSUT campus film">
+                <asp:Image runat="server" ID="HomeImage10" loading="lazy" ImageUrl="~/Assets/psut-entrance.jpg" AlternateText="The illuminated PSUT entrance and university buildings at night" /><span class="cinema-play" aria-hidden="true">▶</span><span class="cinema-title">See yourself here.</span><span class="cinema-caption">Watch the PSUT campus film <span aria-hidden="true">↗</span></span></button>
         </section>
     </main>
     <footer class="campus-footer" id="contact">
         <div class="footer-top page-frame">
             <div>
-                <h2>Your next chapter.<br>
+                <h2 runat="server" ID="HomeHeading14">Your next chapter.<br>
                     Made at PSUT.</h2>
-                <a href="https://www.psut.edu.jo/en" target="_blank" rel="noopener">Princess Sumaya University for Technology <span aria-hidden="true">↗</span></a></div>
+                <asp:HyperLink runat="server" ID="HomeLink18" NavigateUrl="https://www.psut.edu.jo/en" target="_blank" rel="noopener">Princess Sumaya University for Technology <span aria-hidden="true">↗</span></asp:HyperLink></div>
             <div>
-                <h3>Let’s connect.</h3>
-                <a href="mailto:info@psut.edu.jo">info@psut.edu.jo</a>
-                <button class="plain-link" type="button" onclick="showContact()">Contact the internship coordinator</button><a href="tel:+96265359949">+962 6 535 9949</a><p>Khalil Saket Street, Al-Jubeiha<br>
+                <h3 runat="server" ID="HomeHeading15">Let’s connect.</h3>
+                <asp:HyperLink runat="server" ID="HomeLink19" NavigateUrl="mailto:info@psut.edu.jo">info@psut.edu.jo</asp:HyperLink>
+                <button runat="server" ID="HomeButton6" class="plain-link" type="button" onclick="showContact()">Contact the internship coordinator</button><asp:HyperLink runat="server" ID="HomeLink20" NavigateUrl="tel:+96265359949">+962 6 535 9949</asp:HyperLink><p runat="server" ID="HomeHeading16">Khalil Saket Street, Al-Jubeiha<br>
                     Amman, Jordan</p>
             </div>
             <div>
-                <h3>Your next step.</h3>
-                <a href="#opportunities">Explore opportunities</a><a href="#where-next">Choose your workspace</a><a href="<%= ResolveUrl("~/Login.aspx") %>">Sign in to the portal</a><a href="#our-psut">Life at PSUT</a></div>
+                <h3 runat="server" ID="HomeHeading17">Your next step.</h3>
+                <asp:HyperLink runat="server" ID="HomeLink21" NavigateUrl="#opportunities">Explore opportunities</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink22" NavigateUrl="~/Login.aspx">Sign in to the portal</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink23" NavigateUrl="#our-psut">Life at PSUT</asp:HyperLink></div>
+            <div class="footer-map">
+                <h3>Find us.</h3>
+                <iframe title="Map of Princess Sumaya University for Technology, Amman" src="https://www.google.com/maps?q=Princess%20Sumaya%20University%20for%20Technology%20Khalil%20Al-Saket%20St%2C%20Amman%2C%20Jordan&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+                <a href="https://www.google.com/maps/search/?api=1&amp;query=Princess%20Sumaya%20University%20for%20Technology%20Khalil%20Al-Saket%20St%2C%20Amman%2C%20Jordan" target="_blank" rel="noopener noreferrer">Open in Google Maps <span aria-hidden="true">↗</span></a>
+            </div>
         </div>
         <div class="footer-signature page-frame"><span class="footer-psut" aria-hidden="true">PSUT</span><div>جامعة الأميرة سمية للتكنولوجيا<br>
             Learning with purpose.<br>
             Experience for what comes next.</div>
         </div>
-        <div class="footer-bottom page-frame"><span>© 2026 PSUT Internship Portal · Academic project</span><a href="https://www.psut.edu.jo/ar/media" target="_blank" rel="noopener">Photography: PSUT Media Gallery</a><a href="#home">Back to top ↑</a></div>
+        <div class="footer-bottom page-frame"><span>© 2026 PSUT Internship Portal · Academic project</span><asp:HyperLink runat="server" ID="HomeLink24" NavigateUrl="https://www.psut.edu.jo/ar/media" target="_blank" rel="noopener">Photography: PSUT Media Gallery</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink25" NavigateUrl="#home">Back to top ↑</asp:HyperLink></div>
+        <img class="footer-mosaic" src="<%= ResolveUrl("~/Assets/psut-footer-mosaic.png") %>" alt="" aria-hidden="true" loading="lazy" width="1893" height="160">
     </footer>
 </asp:Content>

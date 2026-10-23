@@ -38,8 +38,8 @@ function expect(actual,expected,label){assert.equal(actual,expected,label);count
 const simplifiedApplication={studentId:'student',opportunityId:'opening',companyId:'company',status:'Pending',isOfferConfirmed:false,details:{studentName:'Student',studentEmail:'student@example.com'}};
 expect(allowed('write','applications/student_opening','student',{value:simplifiedApplication}),true,'students can create applications without organization or training details');
 expect(allowed('write','applications/offer','student',{value:simplifiedApplication}),false,'create-only application rules prevent overwriting an existing review');
-expect(allowed('read','opportunities',null),false,'anonymous visitors cannot read opportunity records');
-expect(allowed('read','opportunities',null),false,'anonymous visitors cannot read full opportunity records');
+expect(allowed('read','opportunities',null),true,'anonymous visitors can browse opportunity records');
+expect(allowed('write','opportunities/opening',null,{value:{title:'Unauthorized',companyId:'company',status:true,deadline:'2026-12-01'}}),false,'anonymous visitors cannot edit opportunities');
 expect(allowed('read','users',null),false,'anonymous visitors cannot read profiles');
 expect(allowed('read','tasks','student'),false,'unfiltered student task reads are denied');
 expect(allowed('read','tasks','student',{query:{orderByChild:'studentId',equalTo:'student'}}),true,'students can query their own tasks');
