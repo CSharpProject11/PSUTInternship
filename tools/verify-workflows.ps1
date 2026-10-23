@@ -7,7 +7,7 @@ New-Item -ItemType Directory -Path $verification -Force | Out-Null
 $visualStudio = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
 if (!$visualStudio) { throw 'Install Visual Studio with ASP.NET and web development tools.' }
 $compiler = Join-Path $visualStudio 'MSBuild\Current\Bin\Roslyn\csc.exe'
-$sources = @('PortalPage.cs','CoordinatorData.cs','PortalRepository.cs','DatabaseSchema.cs','TaskWorkflow.cs','TrainingHoursWorkflow.cs','CompletionWorkflow.cs','CompletionReportPdf.cs','EvaluationPolicy.cs','OpportunityEligibility.cs','PercentageRules.cs','AcademicCatalog.cs','AcademicAssignments.cs') | ForEach-Object { Join-Path $project "Shared\$_" }
+$sources = @('PortalPage.cs','CoordinatorData.cs','PortalRepository.cs','DatabaseSchema.cs','TaskWorkflow.cs','TrainingHoursWorkflow.cs','CompletionWorkflow.cs','CompletionReportPdf.cs','EvaluationPolicy.cs','OpportunityEligibility.cs','OpportunityPresentation.cs','TaskProgressSummary.cs','CompletionCertificateStore.cs','TaskFileStore.cs','PercentageRules.cs','AcademicCatalog.cs','AcademicAssignments.cs') | ForEach-Object { Join-Path $project "Shared\$_" }
 $sources += @('Opportunity.cs','CompanyModels.cs','Application.cs','StudentTask.cs','TaskSubmission.cs','Studentinfo.cs') | ForEach-Object { Join-Path $project "Models\$_" }
 $sources += Join-Path $PSScriptRoot 'WorkflowTests.cs'
 $executable = Join-Path $verification 'WorkflowTests.exe'

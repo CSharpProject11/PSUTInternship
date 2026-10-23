@@ -86,7 +86,7 @@ namespace PSUTInternship.Shared
                     priority = priority, maximumScore = maximum > 0 ? (decimal?)maximum : null, dueAt = new DateTimeOffset(deadline.Date.AddDays(1), TimeSpan.FromHours(3)).ToUnixTimeMilliseconds() - 1, opportunityId = (string)placement["opportunityId"], dueDate = deadline.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                     studentId = studentId, companyId = PortalRepository.CompanyId, assignedBy = PortalRepository.UserId,
                     academicSupervisorId = (string)placement["academicSupervisorId"], internshipId = DatabaseSchema.Id(placement), companySupervisorId = PortalRepository.ProfileId,
-                    status = "Assigned", active = true, createdAt = DateTime.UtcNow.ToString("o")
+                    status = "Pending", active = true, createdAt = DateTime.UtcNow.ToString("o")
                 };
             }
             await PortalRepository.Patch("", changes);

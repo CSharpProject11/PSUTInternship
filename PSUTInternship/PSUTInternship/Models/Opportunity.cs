@@ -12,6 +12,12 @@ namespace PSUTInternship.Models
         [JsonProperty("specialization")] public string Specialization { get; set; }
         [JsonProperty("college")] public string College { get; set; }
         [JsonProperty("availableSeats")] public int AvailableSeats { get; set; }
+        [JsonProperty("companyName")] public string CompanyName { get; set; }
+        [JsonIgnore] public bool HasApplied { get; set; }
+        [JsonIgnore] public bool IsAccepting { get { return Status && (DeadLine == DateTime.MinValue || DeadLine.Date >= DateTime.UtcNow.Date); } }
+        [JsonIgnore] public string StatusLabel { get { return IsAccepting ? "Open" : "Closed"; } }
+        [JsonIgnore] public string LocationDisplay { get { return string.IsNullOrWhiteSpace(Location) ? "Location not specified" : Location; } }
+        [JsonIgnore] public string WorkModeDisplay { get { return string.IsNullOrWhiteSpace(WorkMode) ? "Work type not specified" : WorkMode; } }
         public Opportunity() { }
 
         [JsonProperty("title")]
@@ -28,6 +34,7 @@ namespace PSUTInternship.Models
 
         [JsonProperty("workMode")]
         public string WorkMode { get; set; }
+        [JsonProperty("workType")] private string LegacyWorkType { set { if (string.IsNullOrWhiteSpace(WorkMode)) WorkMode = value; } }
 
         [JsonProperty("requirements")]
         public string Requirements { get; set; }

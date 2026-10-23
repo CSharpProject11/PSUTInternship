@@ -52,7 +52,8 @@ namespace PSUTInternship.Shared
                     row["status"] = WorkflowStatus((string)row["status"]);
                 if (collection == "tasks") {
                     string status = ((string)row["status"] ?? "").Trim().ToLowerInvariant();
-                    if (status == "pending" || status == "in progress") row["status"] = "Assigned";
+                    if (status == "pending") row["status"] = "Pending";
+                    if (status == "in progress") row["status"] = "In Progress";
                     if (status == "pending review") row["status"] = "Submitted";
                 }
                 if (collection == "students")

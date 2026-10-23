@@ -5,12 +5,12 @@
     <header class="campus-header" id="top">
         <asp:HyperLink runat="server" ID="HomeLink2" NavigateUrl="#home" CssClass="campus-brand" aria-label="PSUT Internship Portal home">
             <asp:Image runat="server" ID="HomeImage1" ImageUrl="~/Assets/psut-logo-bilingual.png" AlternateText="Princess Sumaya University for Technology" /></asp:HyperLink>
-        <nav class="campus-nav d-none d-lg-flex" aria-label="Main navigation"><asp:HyperLink runat="server" ID="HomeLink3" NavigateUrl="#discover">About PSUT</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink4" NavigateUrl="#opportunities">Opportunities</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink5" NavigateUrl="#our-psut">Campus life</asp:HyperLink></nav>
+        <nav class="campus-nav d-none d-lg-flex" aria-label="Main navigation"><asp:HyperLink runat="server" ID="HomeLink3" NavigateUrl="#discover">About PSUT</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink4" NavigateUrl="#opportunities">Opportunities</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink5" NavigateUrl="#our-psut">Internship process</asp:HyperLink></nav>
         <div class="header-actions"><asp:HyperLink runat="server" ID="HomeLink6" CssClass="header-login" NavigateUrl="~/Login.aspx">Portal sign in <span aria-hidden="true">↗</span></asp:HyperLink>
             <button runat="server" ID="HomeButton1" type="button" class="menu-toggle d-lg-none" data-bs-toggle="collapse" data-bs-target="#mobilePrimaryNav" aria-controls="mobilePrimaryNav" aria-expanded="false">Menu <span class="menu-lines" aria-hidden="true"></span></button>
         </div>
         <div class="collapse mobile-primary" id="mobilePrimaryNav">
-            <nav aria-label="Mobile navigation"><asp:HyperLink runat="server" ID="HomeLink7" NavigateUrl="#discover">About PSUT</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink8" NavigateUrl="#opportunities">Opportunities</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink9" NavigateUrl="#our-psut">Campus life</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink10" NavigateUrl="#contact">Contact</asp:HyperLink></nav>
+            <nav aria-label="Mobile navigation"><asp:HyperLink runat="server" ID="HomeLink7" NavigateUrl="#discover">About PSUT</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink8" NavigateUrl="#opportunities">Opportunities</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink9" NavigateUrl="#our-psut">Internship process</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink10" NavigateUrl="#contact">Contact</asp:HyperLink></nav>
         </div>
     </header>
     <main id="main-content" tabindex="-1">
@@ -76,12 +76,14 @@
         <section class="life-section page-frame" id="our-psut" aria-labelledby="LifeTitle">
             <div class="section-heading">
                 <div>
-                    <h2 runat="server" id="LifeTitle" data-reveal="">This is our PSUT.</h2>
-                    <p runat="server" ID="HomeHeading11" data-reveal="">The places, the people, the possibilities.</p>
+                    <h2 runat="server" id="LifeTitle" data-reveal="">Your internship process.</h2>
+                    <p runat="server" ID="HomeHeading11" data-reveal="">See how to start and follow your internship journey.</p>
                 </div>
                 <asp:HyperLink runat="server" ID="HomeLink14" CssClass="plain-link" NavigateUrl="https://www.psut.edu.jo/ar/media" target="_blank" rel="noopener">Explore the gallery <span aria-hidden="true">↗</span></asp:HyperLink></div>
-            <button runat="server" ID="HomeButton5" type="button" class="campus-cinema" onclick="watchCampus()" aria-label="Play the PSUT campus film">
-                <asp:Image runat="server" ID="HomeImage10" loading="lazy" ImageUrl="~/Assets/psut-entrance.jpg" AlternateText="The illuminated PSUT entrance and university buildings at night" /><span class="cinema-play" aria-hidden="true">▶</span><span class="cinema-title">See yourself here.</span><span class="cinema-caption">Watch the PSUT campus film <span aria-hidden="true">↗</span></span></button>
+            <video class="internship-process-video" id="internshipProcessVideo" autoplay muted loop controls playsinline preload="metadata" aria-label="PSUT internship process video">
+                <source src="<%= ResolveUrl("~/Assets/psut-campus-film.mp4") %>" type="video/mp4">
+                Your browser does not support this video. <a href="<%= ResolveUrl("~/Assets/psut-campus-film.mp4") %>">Download the internship process video</a>.
+            </video>
         </section>
     </main>
     <footer class="campus-footer" id="contact">
@@ -98,7 +100,7 @@
             </div>
             <div>
                 <h3 runat="server" ID="HomeHeading17">Your next step.</h3>
-                <asp:HyperLink runat="server" ID="HomeLink21" NavigateUrl="#opportunities">Explore opportunities</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink22" NavigateUrl="~/Login.aspx">Sign in to the portal</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink23" NavigateUrl="#our-psut">Life at PSUT</asp:HyperLink></div>
+                <asp:HyperLink runat="server" ID="HomeLink21" NavigateUrl="#opportunities">Explore opportunities</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink22" NavigateUrl="~/Login.aspx">Sign in to the portal</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink23" NavigateUrl="#our-psut">Internship process</asp:HyperLink></div>
             <div class="footer-map">
                 <h3>Find us.</h3>
                 <iframe title="Map of Princess Sumaya University for Technology, Amman" src="https://www.google.com/maps?q=Princess%20Sumaya%20University%20for%20Technology%20Khalil%20Al-Saket%20St%2C%20Amman%2C%20Jordan&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>

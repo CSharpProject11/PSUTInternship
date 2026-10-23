@@ -34,7 +34,6 @@ namespace PSUTInternship
         protected global::System.Web.UI.WebControls.Image HomeImage7;
         protected global::System.Web.UI.WebControls.Image HomeImage8;
         protected global::System.Web.UI.WebControls.Image HomeImage9;
-        protected global::System.Web.UI.WebControls.Image HomeImage10;
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl HomeTitle;
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl HomeHeading2;
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl DiscoverTitle;
@@ -54,7 +53,6 @@ namespace PSUTInternship
         protected global::System.Web.UI.WebControls.HyperLink AboutPanoramaLink;
         protected global::System.Web.UI.HtmlControls.HtmlButton HomeButton3;
         protected global::System.Web.UI.HtmlControls.HtmlButton HomeButton4;
-        protected global::System.Web.UI.HtmlControls.HtmlButton HomeButton5;
         protected global::System.Web.UI.HtmlControls.HtmlButton HomeButton6;
     }
 }

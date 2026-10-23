@@ -94,6 +94,49 @@ public static class WorkflowTests
             catch (HttpException ex) { expired = ex.GetHttpCode() == 401; }
             Assert(expired, "missing sessions return an explicit authentication error instead of a null reference");
         });
+        var progressTasks = new Dictionary<string,JObject> {
+          {"one",JObject.FromObject(new {studentId="progress-student",status="Revision Requested",active=true})},
+          {"two",JObject.FromObject(new {studentId="progress-student",status="Reviewed",active=true})},
+          {"three",JObject.FromObject(new {studentId="progress-student",status="Pending",active=true})},
+          {"archived",JObject.FromObject(new {studentId="progress-student",status="Reviewed",active=false})},
+          {"foreign",JObject.FromObject(new {studentId="another-student",status="Submitted",active=true})}
+        };
+        var progressSubmissions = new[] { JObject.FromObject(new {taskId="one",studentId="progress-student"}), JObject.FromObject(new {taskId="one",studentId="progress-student"}), JObject.FromObject(new {taskId="two",studentId="progress-student"}), JObject.FromObject(new {taskId="three",studentId="another-student"}) };
+        var taskProgress=TaskProgressSummary.Calculate("progress-student",progressTasks,progressSubmissions);
+        Assert(taskProgress.Total==3&&taskProgress.Submitted==2&&taskProgress.Percentage==66.7m,"task progress counts unique owned submissions and excludes archived and foreign tasks");
+        Assert(taskProgress.Revisions==1&&taskProgress.Reviewed==1&&taskProgress.Pending==1,"progress status totals preserve revision credit and pending work");
+        Assert(TaskProgressSummary.Calculate("nobody",progressTasks,progressSubmissions).Percentage==0,"zero assigned tasks have zero progress");
+        progressTasks["one"]["status"]="Reviewed";
+        Assert(TaskProgressSummary.Calculate("progress-student",progressTasks,progressSubmissions).Submitted==2,"reviewing and resubmitting never inflate submission progress");
+        Assert(DatabaseSchema.WorkflowStatus("Pending")=="Pending","Pending remains a distinct task status");
+        foreach(string extension in new[]{".png",".pdf"}) {
+            var fileId=Guid.NewGuid().ToString("N");var fileMeta=new JObject { ["id"]=fileId,["name"]="student-solution"+extension };
+            string filePath=TaskFileStore.FilePath(fileId,"download-test","student-download");Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+            byte[] bytes=extension==".png"?new byte[]{137,80,78,71,13,10,26,10}:Encoding.ASCII.GetBytes("%PDF-1.4 sample");
+            File.WriteAllBytes(filePath,bytes);
+            Assert(TaskFileStore.Read(fileMeta,"download-test","student-download").SequenceEqual(bytes),"solution downloads preserve "+extension+" binary data and original metadata");
+            bool missing=false;try{TaskFileStore.Read(fileMeta,"different-task","student-download");}catch(HttpException){missing=true;}
+            Assert(missing,"solution file scope prevents downloading "+extension+" under another task");
+            File.Delete(filePath);
+        }
+        Assert(AcademicCatalog.MatchesSupervisor("Software Engineering","Department of Software Engineering","Software Engineering"),"supervisor filtering accepts canonical department and specialization matches");
+        Assert(!AcademicCatalog.MatchesSupervisor("Software Engineering","Software Engineering","Cyber Security"),"supervisor filtering excludes unrelated specializations");
+        Assert(!AcademicCatalog.MatchesSupervisor("Software Engineering","","Software Engineering"),"supervisor filtering excludes missing departments");
+        var previousData = FirebaseRestClient.Data;
+        Identity("preview-student", "student");
+        FirebaseRestClient.Data = JObject.Parse(@"{ 'companies': { 'acme': { 'name': 'Acme', 'location': 'Amman' } }, 'applications': { 'legacy-random-id': { 'studentId': 'preview-student', 'opportunityId': 'one' } } }");
+        var previews = new[] {
+            new Opportunity { Id = "one", CompanyId = "acme", Status = true, DeadLine = DateTime.UtcNow.AddDays(1) },
+            new Opportunity { Id = "two", CompanyId = "missing", Status = true, DeadLine = DateTime.UtcNow.AddDays(-1) },
+            new Opportunity { Id = "three", CompanyId = "acme", Status = false }
+        };
+        await OpportunityPresentation.Populate(previews);
+        Assert(previews[0].HasApplied && !previews[1].HasApplied, "legacy application IDs still mark the correct opportunity as applied");
+        Assert(previews[0].CompanyName == "Acme" && previews[0].LocationDisplay == "Amman", "opportunity previews resolve company names and locations");
+        Assert(previews[1].CompanyName == "Company not specified", "missing company data never displays a database ID");
+        Assert(previews[0].IsAccepting && !previews[1].IsAccepting && !previews[2].IsAccepting, "expired and explicitly closed opportunities cannot accept applications");
+        Assert(JsonConvert.DeserializeObject<Opportunity>(@"{ 'workType': 'Remote' }").WorkModeDisplay == "Remote", "legacy work type is shown in student opportunities");
+        FirebaseRestClient.Data = previousData;
         var opportunity = new CompanyOpportunity { Title = "Software internship", IsOpen = true, Deadline = "2026-11-30", Seats = 2, Specialization = "Software Engineering" };
         var studentOpportunity = JsonConvert.DeserializeObject<Opportunity>(JsonConvert.SerializeObject(opportunity));
         Assert(studentOpportunity.Status && studentOpportunity.DeadLine.Year == 2026, "company opportunities deserialize in student pages");
@@ -273,6 +316,7 @@ public static class WorkflowTests
         Set("evaluations/evaluation2", new { studentId="student1", internshipId="internship1", evaluatorRole="academicSupervisor", evaluatorId="superA1", status="submitted", recommendation="Pass", overallScore=90 });
         Set("coordinatorReviewQueue/evaluation2", new { studentId="student1", internshipId="internship1", status="pending" });
         await CompletionWorkflow.Approve("evaluation2");
+        Assert(CompletionCertificateStore.Read((JObject)FirebaseRestClient.Data["completionReports"]["report1"]).Take(4).SequenceEqual(Encoding.ASCII.GetBytes("%PDF")),"approved certificate is stored and can be read using the student completion record");
         Assert(((JObject)FirebaseRestClient.Data["completionReports"]).Count == 1 && (string)FirebaseRestClient.Data["completionReports"]["report1"]["status"] == "approved", "completion promotes the existing pending report rather than creating a duplicate");
         Assert((string)FirebaseRestClient.Data["completionReports"]["report1"]["companyEvaluationId"] == "evaluation1", "completion follows the existing company evaluation ID");
     }

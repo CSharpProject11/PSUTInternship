@@ -127,3 +127,16 @@ expect(allowed('read','students/student1','superC1'),true,'reverse placement lin
 expect(allowed('read','students/student1','foreign'),false,'reverse placement links do not expose profiles to other companies');
 
 console.log(count+' local rule assertions passed. Verify deployment with the Firebase Emulator Suite before production use.');
+
+data.students.student1.academicSupervisorId="superA1";
+data.meetings={invite:{studentId:'student1',supervisorId:'superA1',status:'Pending',roomName:'UIMS-test-room'}};
+const accepted={...data.meetings.invite,status:'Accepted',respondedAt:'2026-10-23T12:00:00Z'};
+expect(allowed('read','meetings/invite','student1'),true,'assigned student can read a meeting before accepting');
+expect(allowed('write','meetings/invite','student1',{value:accepted}),true,'student can accept their pending invitation');
+expect(allowed('write','meetings/invite','superC1',{value:accepted}),false,'company cannot accept a student invitation');
+expect(allowed('write','meetings/invite',null,{value:accepted}),false,'anonymous users cannot accept invitations');
+expect(allowed('write','meetings/invite','student1',{value:{...accepted,studentId:'another'}}),false,'students cannot transfer invitation ownership');
+data.meetings.invite.status='Accepted';
+expect(allowed('write','meetings/invite','student1',{value:accepted}),false,'database blocks a duplicate acceptance write');
+expect(allowed('write','meetings/invite','superA1',{value:{...accepted,status:'Cancelled'}}),true,'assigned supervisor can cancel an accepted invitation');
+console.log(count+' local rule assertions passed, including meeting acceptance.');

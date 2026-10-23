@@ -83,9 +83,14 @@ namespace PSUTInternship.Admin
             academicSupervisorList.Items.Clear();
             academicSupervisorList.Items.Add(new ListItem("Select academic supervisor", ""));
             var supervisors = await GetRecords("academicSupervisors");
-            foreach (var item in supervisors.Where(x => GetValue(x.Value, "isActive").Equals("true", StringComparison.OrdinalIgnoreCase)))
+            foreach (var item in supervisors.Where(x => GetValue(x.Value, "isActive").Equals("true", StringComparison.OrdinalIgnoreCase))
+                .Where(x => SupervisorMatches(majorTextBox.SelectedValue, x.Value)))
                 academicSupervisorList.Items.Add(new ListItem(GetValue(item.Value, "fullName"), item.Key));
         }
+        private bool SupervisorMatches(string major, Dictionary<string, object> supervisor) {
+            return PSUTInternship.Shared.AcademicCatalog.MatchesSupervisor(major, GetValue(supervisor,"department"), GetValue(supervisor,"specialization"));
+        }
+        protected async void MajorChanged(object sender, EventArgs e) { await PopulateAcademicSupervisors(); ShowForm(); }
         private void ShowList()
         {
             listSection.Visible = true;
@@ -168,8 +173,8 @@ namespace PSUTInternship.Admin
                 string search = searchTextBox.Text.Trim();
 
                 table.Append("<table><thead><tr>");
-                table.Append("<th>Student number</th><th>Name</th><th>Email</th>");
-                table.Append("<th>College</th><th>Major</th><th>Hours</th><th>Status</th><th>Actions</th>");
+                table.Append("<th>University ID</th><th>Student name</th>");
+                table.Append("<th>College</th><th>Actions</th>");
                 table.Append("</tr></thead><tbody>");
 
                 foreach (KeyValuePair<string, Dictionary<string, object>> item in users)
@@ -199,11 +204,7 @@ namespace PSUTInternship.Admin
 
                     table.Append("<tr><td>").Append(HttpUtility.HtmlEncode(number));
                     table.Append("</td><td>").Append(HttpUtility.HtmlEncode(name));
-                    table.Append("</td><td>").Append(HttpUtility.HtmlEncode(email));
                     table.Append("</td><td>").Append(HttpUtility.HtmlEncode(GetValue(student, "college")));
-                    table.Append("</td><td>").Append(HttpUtility.HtmlEncode(GetValue(student, "major")));
-                    table.Append("</td><td>").Append(hours).Append("</td><td>");
-                    table.Append(isActive ? "Active" : "Inactive");
                     table.Append("</td><td>");
                     table.Append("<a class='btn light' href='ManageStudents.aspx?view=").Append(safeId).Append("'>View</a> ");
                     table.Append("<a class='btn light' href='ManageStudents.aspx?edit=").Append(safeId).Append("'>Edit</a> ");
@@ -213,9 +214,9 @@ namespace PSUTInternship.Admin
                 }
 
                 if (total == 0)
-                    table.Append("<tr><td colspan='8'>No students yet.</td></tr>");
+                    table.Append("<tr><td colspan='4'>No students yet.</td></tr>");
                 else if (table.ToString().EndsWith("<tbody>"))
-                    table.Append("<tr><td colspan='8'>No students match your search.</td></tr>");
+                    table.Append("<tr><td colspan='4'>No students match your search.</td></tr>");
 
                 table.Append("</tbody></table>");
                 studentsTable.Text = table.ToString();
@@ -348,6 +349,7 @@ namespace PSUTInternship.Admin
                 var supervisors = await GetRecords("academicSupervisors");
                 if (!supervisors.ContainsKey(academicSupervisorList.SelectedValue))
                     throw new Exception("Select an active academic supervisor. Create one first if the list is empty.");
+                if (!SupervisorMatches(major, supervisors[academicSupervisorList.SelectedValue])) throw new Exception("Select a supervisor matching the student department and specialization.");
                 string studentNumber = GetStudentNumber(year, users, students, uid, oldStudent);
                 Dictionary<string, object> student;
 
@@ -464,8 +466,7 @@ namespace PSUTInternship.Admin
                 }
 
                 Dictionary<string, object> student = users[uid];
-                var selectedSupervisor = academicSupervisorList.Items.FindByValue(GetValue(student, "academicSupervisorId"));
-                if (selectedSupervisor != null) academicSupervisorList.SelectedValue = selectedSupervisor.Value;
+
                 fullNameTextBox.Text = GetValue(student, "fullName");
                 emailTextBox.Text = GetValue(student, "email");
                 enrollmentYearTextBox.Text = GetValue(student, "enrollmentYear");
@@ -477,6 +478,9 @@ namespace PSUTInternship.Admin
                 generatedNumberLabel.Text = HttpUtility.HtmlEncode(GetValue(student, "studentNumber"));
                 PSUTInternship.Shared.AcademicCatalog.Select(collegeTextBox, GetValue(student, "college"));
                 PSUTInternship.Shared.AcademicCatalog.Select(majorTextBox, GetValue(student, "major"));
+                await PopulateAcademicSupervisors();
+                var selectedSupervisor = academicSupervisorList.Items.FindByValue(GetValue(student, "academicSupervisorId"));
+                if (selectedSupervisor != null) academicSupervisorList.SelectedValue = selectedSupervisor.Value;
                 requiredHoursTextBox.Text = GetValue(student, "requiredHours");
                 startDateTextBox.Text = GetValue(student, "startDate");
                 endDateTextBox.Text = GetValue(student, "endDate");

@@ -10,7 +10,7 @@
 <link rel="preload" href="Assets/manrope-variable.ttf" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="Content/vendor/bootstrap.min.css">
 <link rel="stylesheet" href="Content/portal.css">
-<link rel="stylesheet" href="Content/campus-home.css?v=20261023-loop24">
+<link rel="stylesheet" href="Content/campus-home.css?v=20261023-process26">
 </head>
 <body class="campus-home" data-role="" data-page="">
 <form id="PublicForm">
@@ -21,12 +21,12 @@
     <header class="campus-header" id="top">
         <a ID="HomeLink2" href="#home" class="campus-brand" aria-label="PSUT Internship Portal home">
             <img ID="HomeImage1" src="Assets/psut-logo-bilingual.png" alt="Princess Sumaya University for Technology"></a>
-        <nav class="campus-nav d-none d-lg-flex" aria-label="Main navigation"><a ID="HomeLink3" href="#discover">About PSUT</a><a ID="HomeLink4" href="#opportunities">Opportunities</a><a ID="HomeLink5" href="#our-psut">Campus life</a></nav>
+        <nav class="campus-nav d-none d-lg-flex" aria-label="Main navigation"><a ID="HomeLink3" href="#discover">About PSUT</a><a ID="HomeLink4" href="#opportunities">Opportunities</a><a ID="HomeLink5" href="#our-psut">Internship process</a></nav>
         <div class="header-actions"><a ID="HomeLink6" class="header-login" href="Login.aspx">Portal sign in <span aria-hidden="true">↗</span></a>
             <button ID="HomeButton1" type="button" class="menu-toggle d-lg-none" data-bs-toggle="collapse" data-bs-target="#mobilePrimaryNav" aria-controls="mobilePrimaryNav" aria-expanded="false">Menu <span class="menu-lines" aria-hidden="true"></span></button>
         </div>
         <div class="collapse mobile-primary" id="mobilePrimaryNav">
-            <nav aria-label="Mobile navigation"><a ID="HomeLink7" href="#discover">About PSUT</a><a ID="HomeLink8" href="#opportunities">Opportunities</a><a ID="HomeLink9" href="#our-psut">Campus life</a><a ID="HomeLink10" href="#contact">Contact</a></nav>
+            <nav aria-label="Mobile navigation"><a ID="HomeLink7" href="#discover">About PSUT</a><a ID="HomeLink8" href="#opportunities">Opportunities</a><a ID="HomeLink9" href="#our-psut">Internship process</a><a ID="HomeLink10" href="#contact">Contact</a></nav>
         </div>
     </header>
     <main id="main-content" tabindex="-1">
@@ -92,12 +92,14 @@
         <section class="life-section page-frame" id="our-psut" aria-labelledby="LifeTitle">
             <div class="section-heading">
                 <div>
-                    <h2 id="LifeTitle" data-reveal="">This is our PSUT.</h2>
-                    <p ID="HomeHeading11" data-reveal="">The places, the people, the possibilities.</p>
+                    <h2 id="LifeTitle" data-reveal="">Your internship process.</h2>
+                    <p ID="HomeHeading11" data-reveal="">See how to start and follow your internship journey.</p>
                 </div>
                 <a ID="HomeLink14" class="plain-link" href="https://www.psut.edu.jo/ar/media" target="_blank" rel="noopener">Explore the gallery <span aria-hidden="true">↗</span></a></div>
-            <button ID="HomeButton5" type="button" class="campus-cinema" onclick="watchCampus()" aria-label="Play the PSUT campus film">
-                <img ID="HomeImage10" loading="lazy" src="Assets/psut-entrance.jpg" alt="The illuminated PSUT entrance and university buildings at night"><span class="cinema-play" aria-hidden="true">▶</span><span class="cinema-title">See yourself here.</span><span class="cinema-caption">Watch the PSUT campus film <span aria-hidden="true">↗</span></span></button>
+            <video class="internship-process-video" id="internshipProcessVideo" autoplay muted loop controls playsinline preload="metadata" aria-label="PSUT internship process video">
+                <source src="Assets/psut-campus-film.mp4" type="video/mp4">
+                Your browser does not support this video. <a href="Assets/psut-campus-film.mp4">Download the internship process video</a>.
+            </video>
         </section>
     </main>
     <footer class="campus-footer" id="contact">
@@ -114,7 +116,7 @@
             </div>
             <div>
                 <h3 ID="HomeHeading17">Your next step.</h3>
-                <a ID="HomeLink21" href="#opportunities">Explore opportunities</a><a ID="HomeLink22" href="Login.aspx">Sign in to the portal</a><a ID="HomeLink23" href="#our-psut">Life at PSUT</a></div>
+                <a ID="HomeLink21" href="#opportunities">Explore opportunities</a><a ID="HomeLink22" href="Login.aspx">Sign in to the portal</a><a ID="HomeLink23" href="#our-psut">Internship process</a></div>
             <div class="footer-map">
                 <h3>Find us.</h3>
                 <iframe title="Map of Princess Sumaya University for Technology, Amman" src="https://www.google.com/maps?q=Princess%20Sumaya%20University%20for%20Technology%20Khalil%20Al-Saket%20St%2C%20Amman%2C%20Jordan&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
@@ -137,6 +139,6 @@
 <script src="Scripts/portal.js?v=20261023-opportunities13"></script>
 <script src="Scripts/wellington.js"></script>
 <script src="Scripts/interactions.js?v=20261023-loop24"></script>
-<script src="Scripts/campus-home.js?v=20261023-opportunities13"></script>
+<script src="Scripts/campus-home.js?v=20261023-process26"></script>
 </body>
 </html>

@@ -87,18 +87,13 @@
         <div class="table-wrap"><table><thead><tr><th>Student</th><th>Evaluation Period</th><th>Academic Supervisor</th><th>Status</th><th>Action</th></tr></thead><tbody id="EvaluationRows" runat="server"></tbody></table></div>
     </section>
 
-    <section class="panel">
-        <div class="panel-heading"><h2>Internship reports</h2><span class="status status-pending">Review required</span></div>
-        <p class="subtext">Open a report to review its details and enter your assessment.</p>
-        <div class="table-wrap"><table><thead><tr><th>Student</th><th>Report</th><th>Submitted</th><th>Status</th><th>Action</th></tr></thead><tbody id="ReportRows" runat="server"></tbody></table></div>
-        <asp:Panel ID="ReportReview" runat="server" Visible="false">
+    <div hidden><table><tbody id="ReportRows" runat="server"></tbody></table></div><asp:Panel ID="ReportReview" runat="server" Visible="false">
             <h3>Evaluate report</h3><asp:HiddenField ID="ReportId" runat="server" />
             <asp:HyperLink ID="ReportSubmissionLink" runat="server" Text="Open submitted report" Target="_blank" />
             <div class="field"><label for="ReportScore">Score according to university criteria</label><asp:TextBox ID="ReportScore" runat="server" /></div>
             <div class="field"><label for="ReportFeedback">Feedback</label><asp:TextBox ID="ReportFeedback" runat="server" TextMode="MultiLine" /></div>
             <asp:Button ID="SaveReport" runat="server" Text="Save Report Evaluation" CssClass="button" OnClick="SaveReport_Click" />
         </asp:Panel>
-    </section>
 
     </asp:Panel>
     <asp:Panel ID="EvaluationModal" runat="server" CssClass="modal" Visible="false">

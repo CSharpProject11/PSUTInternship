@@ -32,7 +32,12 @@ namespace PSUTInternship.Shared {
             if (!Guid.TryParseExact(id, "N", out parsed)) throw new ArgumentException("Invalid solution file.");
             string scope;
             using (var hash = System.Security.Cryptography.SHA256.Create()) scope = BitConverter.ToString(hash.ComputeHash(System.Text.Encoding.UTF8.GetBytes(taskId + "\n" + studentId))).Replace("-", "");
-            return Path.Combine(HttpContext.Current.Server.MapPath("~/App_Data/TaskSolutions"), scope, parsed.ToString("N") + ".bin");
+            return Path.Combine((System.Web.Hosting.HostingEnvironment.MapPath("~/App_Data/TaskSolutions") ?? Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"App_Data","TaskSolutions")), scope, parsed.ToString("N") + ".bin");
+        }
+        public static byte[] Read(JObject file, string taskId, string studentId) {
+            string path = FilePath((string)file["id"],taskId,studentId);
+            if (!File.Exists(path)) throw new HttpException(404,"The solution file is unavailable. Contact the administrator.");
+            return File.ReadAllBytes(path);
         }
         public static void Delete(JObject file, string taskId, string studentId) { if (file == null) return; string path = FilePath((string)file["id"], taskId, studentId); if (File.Exists(path)) File.Delete(path); }
     }

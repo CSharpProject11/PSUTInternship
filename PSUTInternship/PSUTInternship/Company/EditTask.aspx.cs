@@ -26,8 +26,11 @@ namespace PSUTInternship.Company {
             try {
                 await TaskWorkflow.Review(Request.QueryString["id"], stateDrop.SelectedValue, Feedbackinput.Value, null, stateDrop.SelectedValue == "Revision Requested" ? (DateTime?)deadline : null);
                 subject.Text = "Review saved. The student can see the status, deadline and feedback.";
+                ClientScript.RegisterStartupScript(GetType(), "reviewSaved", "if(window.parent!==window){window.parent.location.reload();}", true);
             } catch (Exception ex) { subject.Text = Server.HtmlEncode(ex.Message); }
         }
-        protected void Cansale_Click(object sender, EventArgs e) { Response.Redirect("Tasks.aspx", false); Context.ApplicationInstance.CompleteRequest(); }
+        protected void Cansale_Click(object sender, EventArgs e) {
+            ClientScript.RegisterStartupScript(GetType(), "cancelReview", "if(window.parent!==window){window.parent.document.getElementById('taskReviewDialog').close();}else{location.href='Tasks.aspx';}",true);
+        }
     }
 }

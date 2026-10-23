@@ -9,6 +9,9 @@ window.MeetingFirebase=(()=>{
     async function setStatus(id,previous,next){await ready;return request('status',{id,previous,next});}
     function safe(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
     function roomLink(item) {
+        if(item.status!=='Accepted')return '';
+        const original=item.meetingLink||item.meetingUrl||item.joinUrl||'';
+        try{const url=new URL(original);if(url.protocol==='https:')return url.href;}catch{}
         const r = item.roomName || '';
         return item.status === 'Accepted' && /^UIMS-[a-z0-9-]{8,100}$/i.test(r) ? 'https://meet.jit.si/' + encodeURIComponent(r) : '';
     }

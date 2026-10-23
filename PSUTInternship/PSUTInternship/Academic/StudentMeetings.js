@@ -9,7 +9,7 @@ function render() {
     $('studentTotal').textContent = list.length;
     for (const [id, status] of [['studentPending', 'Pending'], ['studentAccepted', 'Accepted']]) $(id).textContent = list.filter(m => m.status === status).length;
     $('studentInvitations').innerHTML = list.filter(m => m.status === 'Pending').map(m => F.card(m, `<div class="card-actions"><button type="button" class="accept-button" data-reply="Accepted" data-id="${F.safe(m.id)}"><i class="bi bi-check-circle"></i> Accept</button></div>`)).join('') || F.empty;
-    $('studentUpcoming').innerHTML = list.filter(m => m.status === 'Accepted').map(m => F.card(m, `<a class="join-button" href="${F.roomLink(m)}" target="_blank" rel="noopener noreferrer"><i class="bi bi-camera-video"></i> Join Meeting</a>`)).join('') || F.empty;
+    $('studentUpcoming').innerHTML = list.filter(m => m.status === 'Accepted').map(m => F.card(m, `<a class="join-button" href="${F.safe(F.roomLink(m))}" target="_blank" rel="noopener noreferrer"><i class="bi bi-camera-video"></i> Join Meeting</a>`)).join('') || F.empty;
 }
 async function refresh() { try { meetings = await F.meetings(); render(); } catch (e) { note(e.message); } }
 document.addEventListener('click', async e => {

@@ -222,7 +222,7 @@ namespace PSUTInternship.Admin
 
             foreach (string department in departments)
             {
-                html.Append("<h3>").Append(HttpUtility.HtmlEncode(department)).Append("</h3>");
+                html.Append("<h3 class='assignment-department'>").Append(HttpUtility.HtmlEncode(department)).Append("</h3>");
                 html.Append("<div class='tableWrap'><table><thead><tr>");
                 html.Append("<th>Group</th><th>Academic supervisor</th><th>Students</th><th>Actions</th>");
                 html.Append("</tr></thead><tbody>");
@@ -248,9 +248,8 @@ namespace PSUTInternship.Admin
                     shown++;
                     html.Append("<tr><td>").Append(HttpUtility.HtmlEncode(group.name)).Append("</td>");
                     html.Append("<td>").Append(HttpUtility.HtmlEncode(group.supervisorName)).Append("</td>");
-                    html.Append("<td>").Append(group.studentIds.Count).Append(": ")
-                        .Append(HttpUtility.HtmlEncode(studentNames.ToString())).Append("</td><td>");
-                    html.Append("<a class='btn light' href='AssignSuper.aspx?view=")
+                    html.Append("<td>").Append(group.studentIds.Count).Append("</td>");
+                    html.Append("<td><a class='btn light' href='AssignSuper.aspx?view=")
                         .Append(HttpUtility.UrlEncode(group.id)).Append("'>View</a></td></tr>");
                 }
 

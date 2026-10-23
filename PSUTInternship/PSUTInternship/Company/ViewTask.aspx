@@ -4,8 +4,8 @@
 
 </asp:Content>
 <asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server"><h1>Task details</h1>
-<div id="Describtion"  runat="server">
+<div class="task-detail-surface" id="Describtion"  runat="server">
         </div>
-        <div id="solution"  runat="server"></div>
+        <div class="task-detail-surface" id="solution"  runat="server"></div>
         <asp:Button ID="Cansle" runat="server" OnClick="Cansle_Click" Text="Back to tasks" />
 </asp:Content>

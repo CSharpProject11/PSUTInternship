@@ -244,3 +244,6 @@ html{scroll-behavior:smooth;scroll-padding-top:36px}*{box-sizing:border-box}body
 @media(max-width:767px){.about-psut-details{grid-template-columns:1fr;gap:26px;margin-bottom:32px}.about-psut-details h3{font-size:23px;margin-bottom:10px}.about-psut-details p{max-width:60ch}}
 
 .opportunity-deck-section .fact-deck{overflow-anchor:none}
+
+.internship-process-video{display:block;width:100%;height:clamp(320px,32vw,460px);object-fit:contain;background:var(--night);border-radius:36px}
+@media(max-width:767px){.internship-process-video{height:auto;aspect-ratio:16/9;border-radius:24px}}

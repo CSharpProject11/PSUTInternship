@@ -20,7 +20,7 @@ namespace PSUTInternship.Shared
             {
                 graphics.Clear(Color.White); graphics.TextRenderingHint=System.Drawing.Text.TextRenderingHint.AntiAliasGridFit;
                 graphics.DrawString("Princess Sumaya University\nfor Technology",title,Brushes.Black,new RectangleF(100,100,1040,180));
-                graphics.DrawString("Internship Completion Report",title,Brushes.Black,new RectangleF(100,330,1040,100));
+                graphics.DrawString("Internship Completion Certificate",title,Brushes.Black,new RectangleF(100,330,1040,100));
                 string[] lines={"Student: "+(string)report["studentName"],"Student number: "+(string)report["studentNumber"],"Placement: "+(string)report["company"],
                     "Approved training hours: "+(string)report["approvedHours"]+" / "+(string)report["requiredHours"],"Final grade: "+(string)report["finalGrade"],"Approved on: "+(string)report["approvedAt"]};
                 int y=500;foreach(string line in lines){graphics.DrawString(line,body,Brushes.Black,new RectangleF(100,y,1040,130));y+=150;}

@@ -14,8 +14,8 @@ namespace PSUTInternship {
                 var placement = await PortalRepository.PlacementForRecord(task);
                 string role = PortalRoles.Normalize(Convert.ToString(Session["userRole"]));
                 bool allowed = role == "admin" || role == "student" && (string)task["studentId"] == PortalRepository.UserId
-                    || role == "company" && ((string)placement["companyId"] == PortalRepository.CompanyId || (string)placement["companySupervisorId"] == PortalRepository.ProfileId)
-                    || role == "academic" && (string)placement["academicSupervisorId"] == PortalRepository.ProfileId;
+                    || role == "company" && ((string)placement?["companyId"] == PortalRepository.CompanyId || (string)placement?["companySupervisorId"] == PortalRepository.ProfileId)
+                    || role == "academic" && (string)placement?["academicSupervisorId"] == PortalRepository.ProfileId;
                 if (!allowed) throw new HttpException(403, "This solution is not available to your account.");
                 var submission = await PortalRepository.SubmissionForTask(id, (string)task["studentId"]);
                 var file = submission?["uploadedFile"] as JObject;

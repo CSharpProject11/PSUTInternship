@@ -223,8 +223,8 @@
     </div>
 
 
-    <script src="../Shared/meetings.js?v=20261023"></script>
-    <script src="../Academic/ZoomMeetings.js?v=20261023-workspace"></script>
+    <script src="../Shared/meetings.js?v=20261023-review28"></script>
+    <script src="../Academic/ZoomMeetings.js?v=20261023-review28"></script>
 
 
 </asp:Content>

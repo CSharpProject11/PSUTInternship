@@ -12,8 +12,8 @@ namespace PSUTInternship
             if(role!="admin"&&role!="student")throw new System.Web.HttpException(403,"Report access denied.");
             var report=await PortalRepository.CompletionForStudent(uid);
             if(!DatabaseSchema.ReportApproved(report))throw new System.Web.HttpException(404,"No approved completion report is available.");
-            byte[] pdf=CompletionReportPdf.Create(report);Response.Clear();Response.ContentType="application/pdf";Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache);
-            Response.AddHeader("Content-Disposition","attachment; filename=InternshipCompletion.pdf");Response.BinaryWrite(pdf);Context.ApplicationInstance.CompleteRequest();
+            byte[] pdf=CompletionCertificateStore.Read(report);Response.Clear();Response.ContentType="application/pdf";Response.Cache.SetCacheability(System.Web.HttpCacheability.NoCache);
+            Response.AddHeader("Content-Disposition","attachment; filename=InternshipCompletionCertificate.pdf");Response.BinaryWrite(pdf);Context.ApplicationInstance.CompleteRequest();
         }
     }
 }

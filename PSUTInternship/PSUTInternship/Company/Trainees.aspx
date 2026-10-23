@@ -14,7 +14,6 @@
                     <th>Trainee</th>
                     <th>Internship</th>
                     <th>Tasks</th>
-                    <th>Approved hours</th>
                     <th>Actions</th>
                 </tr>
                 <% foreach(var a in TraineeRows.Where(x => x.Status == "active")){ %>
@@ -27,14 +26,13 @@
                     </td>
                     <td>
                     <%= a.TasksCompleted %> / <%= a.TasksTotal %></td>
-                    <td>
-                    <%= a.ApprovedTrainingHours %> h</td>
+
                     <td>
                         <a href="Application.aspx?id=<%= H(a.ApplicationId) %>">View progress</a>
                     </td>
                 </tr>
                 <% } %>
-                <% if(!TraineeRows.Any(x => x.Status == "active")) { %><tr><td colspan="5">No confirmed active trainees yet.</td></tr><% } %>
+                <% if(!TraineeRows.Any(x => x.Status == "active")) { %><tr><td colspan="4">No confirmed active trainees yet.</td></tr><% } %>
             </table>
         </section>
         <section class="panel" style="margin-top:24px"><h2>Accepted students awaiting confirmation</h2><div class="table-wrap"><table><thead><tr><th>Student</th><th>Opportunity</th><th>Status</th><th>Action</th></tr></thead><tbody>
@@ -43,7 +41,7 @@
         <% if(awaiting.Count == 0) { %><tr><td colspan="4">No accepted students awaiting confirmation.</td></tr><% } %></tbody></table></div></section>
         <section class="panel" style="margin-top:28px">
             <h2>Record history</h2>
-            <p class="muted">Only confirmed placements appear as active trainees. Hours shown here come from Firebase and reflect approved records.</p>
+            <p class="muted">Only confirmed placements appear as active trainees. Task counts reflect active assignments and reviewed work.</p>
         </section>
         <%= PageFooter() %>
         <script>function filterRows(){var q=document.getElementById('filter').value.toLowerCase();document.querySelectorAll('#trainees tr').forEach(function(r,i){if(i)r.style.display=r.innerText.toLowerCase().indexOf(q)>=0?'':'none';});}</script>

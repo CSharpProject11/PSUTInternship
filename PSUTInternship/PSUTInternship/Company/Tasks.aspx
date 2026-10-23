@@ -89,7 +89,7 @@
             <asp:DropDownList AutoPostBack="true" ID="DropDownList1" runat="server" OnSelectedIndexChanged="DropDownList1_SelectedIndexChanged">
                 <asp:ListItem>All statuses</asp:ListItem>
                 <asp:ListItem Value="Submitted">Pending Review</asp:ListItem>
-                <asp:ListItem Value="Assigned">In Progress</asp:ListItem>
+                <asp:ListItem Value="Pending">Pending</asp:ListItem><asp:ListItem Value="Assigned">In Progress</asp:ListItem>
                 <asp:ListItem Value="Revision Requested">Resolve</asp:ListItem>
                 <asp:ListItem Value="Reviewed">Complete</asp:ListItem>
             </asp:DropDownList>
@@ -100,7 +100,7 @@
                 <tr>
                     <th>Task</th>
                     <th>Student</th>
-                    <th>Deadline</th><th>Created Date</th>
+                    <th>Create Date</th><th>Due Date</th>
                     <th>Priority</th>
                     <th>Status</th>
 
@@ -110,4 +110,8 @@
             <tbody id="TaskTablebody" runat="server"></tbody>
         </table>
         </section>
+<dialog id="taskReviewDialog" class="task-review-dialog"><button type="button" class="btn" onclick="this.closest('dialog').close()">Close review</button><iframe title="Review task" id="taskReviewFrame"></iframe></dialog>
+<script>
+document.addEventListener('click',function(event){var link=event.target.closest('[data-task-review]');if(!link)return;event.preventDefault();document.getElementById('taskReviewFrame').src=link.href;document.getElementById('taskReviewDialog').showModal();});
+</script>
 </asp:Content>

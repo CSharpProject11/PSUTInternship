@@ -12,6 +12,12 @@ namespace PSUTInternship
         {
             Response.Cache.SetCacheability(HttpCacheability.NoCache);
             Response.Cache.SetNoStore();
+            if (!IsPostBack && Session["userId"] != null && Session["idToken"] != null)
+            {
+                Response.Redirect((bool?)Session["mustChangePassword"] == true ? "~/ChangePassword.aspx" : PortalRoles.Dashboard(Convert.ToString(Session["userRole"])), false);
+                Context.ApplicationInstance.CompleteRequest();
+                return;
+            }
             if (!IsPostBack && Request.QueryString["expired"] == "1")
                 messageLabel.Text = "Your sign-in form expired. Please enter your details again.";
         }

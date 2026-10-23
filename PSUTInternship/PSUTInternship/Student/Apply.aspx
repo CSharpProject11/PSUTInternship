@@ -5,7 +5,7 @@
 <%@ Register Src="~/Shared/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
 <asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
 <link href="../Content/bootstrap.min.css" rel="stylesheet" />
-    <link href="../Content/student-workspace.css" rel="stylesheet" />
+    <link href="../Content/student-workspace.css?v=20261023-opps2" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
 <div class="student-shell">
@@ -30,13 +30,13 @@
                          />
                     <div class="card-body p-3 p-md-4">
                     <h2 class="h2 text-break mb-3"><%#: Eval("Title") %></h2>
-                    <span class="badge bg-secondary"><%#: Convert.ToBoolean(Eval("Status")) ? "Open" : "Closed" %></span>
+                    <span class='<%# "sd-opening-status " + (Convert.ToBoolean(Eval("IsAccepting")) ? "is-open" : "is-closed") %>'><%#: Eval("StatusLabel") %></span>
 
                     <dl class="row g-3 border-bottom pb-4 my-3">
-                        <div class="col-12 col-md-6"><dt class="text-muted small">Company ID</dt><dd class="text-break"><%#: Eval("CompanyId") %></dd></div>
-                        <div class="col-12 col-md-6"><dt class="text-muted small">Created at</dt><dd class="text-break"><%#: Eval("CreatedAt") %></dd></div>
-                        <div class="col-12 col-md-6"><dt class="text-muted small">Location</dt><dd class="text-break"><%#: Eval("Location") %></dd></div>
-                        <div class="col-12 col-md-6"><dt class="text-muted small">Work mode</dt><dd class="text-break"><%#: Eval("WorkMode") %></dd></div>
+                        <div class="col-12 col-md-6"><dt class="text-muted small">Company</dt><dd class="text-break"><%#: Eval("CompanyName") %></dd></div>
+                        <div class="col-12 col-md-6"><dt class="text-muted small">Created at</dt><dd class="text-break"><%#: FormatCreatedDate(Eval("CreatedAt")) %></dd></div>
+                        <div class="col-12 col-md-6"><dt class="text-muted small">Location</dt><dd class="text-break"><%#: Eval("LocationDisplay") %></dd></div>
+                        <div class="col-12 col-md-6"><dt class="text-muted small">Work type</dt><dd class="text-break"><%#: Eval("WorkModeDisplay") %></dd></div>
                         <div class="col-12 col-md-6"><dt class="text-muted small">Duration</dt><dd class="text-break"><%#: Eval("DurationDisplay") %></dd></div>
                         <div class="col-12 col-md-6"><dt class="text-muted small">Application deadline</dt><dd class="text-break"><%#: Convert.ToDateTime(Eval("DeadLine")) == DateTime.MinValue ? "Not specified" : string.Format("{0:dd MMM yyyy}", Eval("DeadLine")) %></dd></div>
                     </dl>
@@ -48,7 +48,8 @@
                     <p class="text-break"><%#: Eval("Requirements") %></p>
 
                     <div class="mt-4">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#applicationModal">Apply for this opportunity</button>
+                        <asp:Button ID="OpenApplication" runat="server" Text='<%# CanApply ? "Apply for this opportunity" : "Applications unavailable" %>' CssClass="btn btn-primary" Enabled='<%# CanApply %>' OnClientClick="new bootstrap.Modal(document.getElementById('applicationModal')).show(); return false;" CausesValidation="false" />
+<p class="mt-3" role="status"><%#: ApplicationAvailability %></p>
                     </div>
                     </div>
                     </article>

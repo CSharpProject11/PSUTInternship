@@ -11,6 +11,7 @@ namespace PSUTInternship.Shared {
             return value;
         }
         public static bool SameDepartment(string first, string second) { return !string.IsNullOrWhiteSpace(first) && !string.IsNullOrWhiteSpace(second) && Canonical(first) == Canonical(second); }
+        public static bool MatchesSupervisor(string program,string department,string specialization) { return SameDepartment(program,department) && SameDepartment(program,specialization); }
         public static bool ValidProgram(string value) { return Programs.Any(x => SameDepartment(x,value)); }
         public static void Select(DropDownList control, string value) {
             control.ClearSelection(); var option = control.Items.Cast<ListItem>().FirstOrDefault(x => Canonical(x.Value) == Canonical(value));

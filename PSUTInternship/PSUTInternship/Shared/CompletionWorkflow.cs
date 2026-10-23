@@ -39,8 +39,10 @@ namespace PSUTInternship.Shared
             if (DatabaseSchema.ReportApproved(existingReport)) throw new InvalidOperationException("This internship has already been approved.");
             var report = new { studentId=uid, studentName=(string)student["fullName"], studentNumber=(string)student["studentNumber"], company=(string)placement["opportunityTitle"],
                 status="approved", internshipId=placementId, companyEvaluationId=DatabaseSchema.Id(company), academicEvaluationId=academicId, requiredHours=required, totalApprovedHours=approved, reviewedBy=PortalRepository.UserId, reviewedAt=DateTime.UtcNow.ToString("o"), approvedHours=approved, finalGrade=grade, approvedByCoordinator=true, approvedBy=PortalRepository.UserId, approvedAt=DateTime.UtcNow.ToString("o") };
+            var reportRecord = JObject.FromObject(report);
+            reportRecord["certificateId"] = CompletionCertificateStore.Save(reportRecord);
             await PortalRepository.Patch("",new Dictionary<string,object> {
-                {"completionReports/"+reportId,report},{"internships/"+placementId+"/status","completed"},{"internships/"+placementId+"/completionApproved",true},{"internships/"+placementId+"/approvedHours",approved},
+                {"completionReports/"+reportId,reportRecord},{"internships/"+placementId+"/status","completed"},{"internships/"+placementId+"/completionApproved",true},{"internships/"+placementId+"/approvedHours",approved},
                 {"coordinatorReviewQueue/"+academicId+"/status","approved"}
             });
         }

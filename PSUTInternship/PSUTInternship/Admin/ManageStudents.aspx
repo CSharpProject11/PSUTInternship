@@ -1,5 +1,6 @@
 <%@ Page MasterPageFile="~/Portal.Master" Title="Manage Students" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="ManageStudents.aspx.cs" Inherits="PSUTInternship.Admin.ManageStudents" %>
 <asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<link rel="stylesheet" href="Coordinator.css?v=review4" />
 <style>
         * {
             box-sizing: border-box;
@@ -276,7 +277,7 @@
                         <div class="field">
                             <label>College *</label><asp:DropDownList ID="collegeTextBox" runat="server"><asp:ListItem Text="Select college" Value="" /><asp:ListItem>King Hussein School of Computing Sciences</asp:ListItem></asp:DropDownList></div>
                         <div class="field">
-                            <label>Major *</label><asp:DropDownList ID="majorTextBox" runat="server"><asp:ListItem Text="Select program or department" Value="" /><asp:ListItem>Computer Science</asp:ListItem><asp:ListItem>Computer Graphics and Animation</asp:ListItem><asp:ListItem>Software Engineering</asp:ListItem><asp:ListItem>Data Science and Artificial Intelligence</asp:ListItem><asp:ListItem>Cyber Security</asp:ListItem></asp:DropDownList></div>
+                            <label>Major *</label><asp:DropDownList ID="majorTextBox" runat="server" AutoPostBack="true" OnSelectedIndexChanged="MajorChanged"><asp:ListItem Text="Select program or department" Value="" /><asp:ListItem>Computer Science</asp:ListItem><asp:ListItem>Computer Graphics and Animation</asp:ListItem><asp:ListItem>Software Engineering</asp:ListItem><asp:ListItem>Data Science and Artificial Intelligence</asp:ListItem><asp:ListItem>Cyber Security</asp:ListItem></asp:DropDownList></div>
                         <div class="field">
                             <label for="academicSupervisorList">Academic supervisor *</label><asp:DropDownList ID="academicSupervisorList" runat="server" /></div><div class="field">
                             <label>Required training hours *</label><asp:TextBox ID="requiredHoursTextBox" runat="server" Text="96" TextMode="Number" /></div>
@@ -285,8 +286,8 @@
                         <div class="field">
                             <label>End date</label><asp:TextBox ID="endDateTextBox" runat="server" TextMode="Date" /></div>
                     </div>
-                    <asp:Button ID="saveButton" runat="server" Text="Create Student" CssClass="btn" OnClick="saveButton_Click" />
-                    <asp:Button ID="clearButton" runat="server" Text="Clear" CssClass="btn light" CausesValidation="false" OnClick="clearButton_Click" />
+                    <div class="admin-form-actions"><asp:Button ID="saveButton" runat="server" Text="Create Student" CssClass="btn" OnClick="saveButton_Click" />
+                    <asp:Button ID="clearButton" runat="server" Text="Clear" CssClass="btn light" CausesValidation="false" OnClick="clearButton_Click" /></div>
                 </section>
             </asp:Panel>
 

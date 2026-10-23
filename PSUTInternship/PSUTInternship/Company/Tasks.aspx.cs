@@ -28,17 +28,20 @@ namespace PSUTInternship.Company
                 foreach (var p in tasks)
                 {
                     var t = p.Value;
-                    string state = DatabaseSchema.WorkflowStatus((string)t["status"]) ?? "Assigned";
+                    string state = DatabaseSchema.WorkflowStatus((string)t["status"]) ?? "Pending";
+                    var student = await PortalRepository.Get<Newtonsoft.Json.Linq.JObject>("students/" + PortalRepository.Key((string)t["studentId"]));
+                    string studentName = DatabaseSchema.FirstText(student, "fullName", "name");
                     if (DropDownList1.SelectedIndex > 0 && !string.Equals(DropDownList1.SelectedValue, state, StringComparison.OrdinalIgnoreCase)) continue;
                     string title = (string)t["title"] ?? "";
-                    if (search.Text.Trim().Length > 0 && (title + " " + (string)t["studentId"]).IndexOf(search.Text.Trim(), StringComparison.OrdinalIgnoreCase) < 0) continue;
+                    if (search.Text.Trim().Length > 0 && (title + " " + studentName).IndexOf(search.Text.Trim(), StringComparison.OrdinalIgnoreCase) < 0) continue;
                     var row = new HtmlTableRow();
-                    foreach (string value in new[] { title, (string)t["studentId"], (string)t["dueDate"], CreatedDate((string)t["createdAt"]), (string)t["priority"], state == "Reviewed" ? "Complete" : state == "Revision Requested" ? "Resolve" : state })
+                    foreach (string value in new[] { title, studentName, CreatedDate((string)t["createdAt"]), CreatedDate((string)t["dueDate"]), (string)t["priority"], state == "Reviewed" ? "Complete" : state == "Revision Requested" ? "Resolve" : state })
                         row.Cells.Add(new HtmlTableCell { InnerText = value ?? "" });
                     var action = new HtmlTableCell();
                     action.Controls.Add(new HtmlAnchor { HRef = "ViewTask.aspx?id=" + HttpUtility.UrlEncode(p.Key), InnerText = "View submission" });
-                    action.Controls.Add(new LiteralControl(" | "));
-                    action.Controls.Add(new HtmlAnchor { HRef = "EditTask.aspx?id=" + HttpUtility.UrlEncode(p.Key), InnerText = "Review" });
+                    action.Attributes["class"] = "task-actions";
+                    var reviewLink = new HtmlAnchor { HRef = "EditTask.aspx?id=" + HttpUtility.UrlEncode(p.Key), InnerText = "Resolve" };
+                    reviewLink.Attributes["data-task-review"] = "true"; action.Controls.Add(reviewLink);
                     action.Controls.Add(new LiteralControl(" <button type='submit' name='archive' value='" + HttpUtility.HtmlAttributeEncode(p.Key) + "'>" + (((bool?)t["active"] ?? true) ? "Archive" : "Restore") + "</button>"));
                     row.Cells.Add(action); TaskTablebody.Controls.Add(row);
                 }
@@ -48,7 +51,7 @@ namespace PSUTInternship.Company
         }
         private static string CreatedDate(string value) {
             DateTimeOffset date;
-            return DateTimeOffset.TryParse(value, out date) ? TimeZoneInfo.ConvertTime(date, TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time")).ToString("dddd, dd-MM-yyyy") : "Not recorded";
+            return DateTimeOffset.TryParse(value, out date) ? TimeZoneInfo.ConvertTime(date, TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time")).ToString("yyyy-MM-dd") : "Not recorded";
         }
         protected void DropDownList1_SelectedIndexChanged(object sender, EventArgs e) { }
         protected void Create_Click(object sender, EventArgs e) { Response.Redirect("CreateTask.aspx", false); Context.ApplicationInstance.CompleteRequest(); }

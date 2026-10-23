@@ -213,7 +213,7 @@
                 padding: 20px;
             }
         }
-    </style>
+    </style><link rel="stylesheet" href="Coordinator.css?v=review2" />
 </asp:Content>
 <asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
 <input type="hidden" name="csrfToken" value="<%= H(CsrfToken) %>" />
@@ -273,30 +273,8 @@
                                 </div>
                             </div>
 
-                            <div class="account-grid">
-
-                                <div class="account-field">
-                                    <label>Full Name</label>
-                                    <input class="account-input"
-                                           type="text"
-                                           value="<%= H(FullName) %>"
-                                           disabled />
-
-                                    <span class="account-hint">
-                                        This information cannot be edited here.
-                                    </span>
-                                </div>
-
-                                <div class="account-field">
-                                    <label>Account Role</label>
-                                    <input class="account-input"
-                                           type="text"
-                                           value="University Internship Coordinator"
-                                           disabled />
-                                </div>
-
-                            </div>
-                        </section>
+                            <div class="account-grid account-readonly"><div><p>Full Name</p><strong><%= H(FullName) %></strong></div><div><p>Account Role</p><strong>Internship coordinator</strong></div></div>
+</section>
 
                         <!-- Contact Information -->
 <p id="emailHelp">Your sign-in email is managed through Firebase Authentication. You can update your phone number here.</p>
@@ -313,51 +291,10 @@
                                 </div>
                             </div>
 
-                            <div class="account-grid">
-
-                                <div class="account-field">
-                                    <label for="accountEmail">
-                                        Email Address
-                                    </label>
-
-                                    <input id="accountEmail"
-                                           class="account-input"
-                                           type="email"
-                                           name="email" readonly aria-describedby="emailHelp"
-                                           maxlength="120"
-                                           value="<%= H(Email) %>"
-                                           autocomplete="email"
-                                           required />
-                                </div>
-
-                                <div class="account-field">
-                                    <label for="accountPhone">
-                                        Phone Number
-                                    </label>
-
-                                    <input id="accountPhone"
-                                           class="account-input"
-                                           type="tel"
-                                           name="phone"
-                                           maxlength="25"
-                                           value="<%= H(Phone) %>"
-                                           placeholder="+962 7X XXX XXXX"
-                                           autocomplete="tel" />
-                                </div>
-
-                            </div>
-
-                            <div class="account-buttons">
-                                <button class="account-save"
-                                        type="submit"
-                                        name="accountAction"
-                                        value="saveContact"
-                                        formnovalidate
-                                        onclick="return validateContact()">
-                                    Save Changes
-                                </button>
-                            </div>
-                        </section>
+                            <div class="account-grid account-readonly"><div><p>Email</p><strong><%= H(Email) %></strong></div><div><p>Phone</p><strong><%= H(Phone) %></strong></div></div>
+<div class="account-buttons"><button type="button" class="account-save" onclick="document.getElementById('contactEditor').showModal()">Edit</button></div>
+<dialog id="contactEditor" class="account-edit-dialog"><h2>Edit contact information</h2><label for="accountEmail">Email</label><input id="accountEmail" name="email" type="email" value="<%= H(Email) %>" readonly class="account-input"/><p>Email changes require authentication re-verification.</p><label for="accountPhone">Phone</label><input id="accountPhone" name="phone" type="tel" value="<%= H(Phone) %>" class="account-input"/><div class="account-buttons"><button type="button" onclick="document.getElementById('contactEditor').close()">Cancel</button><button type="submit" name="accountAction" value="saveContact" class="account-save" onclick="return validateContact()" formnovalidate>Save Changes</button></div></dialog>
+</section>
 
                         <!-- Security Settings -->
                         <section class="account-section">
@@ -373,7 +310,7 @@
                                 </div>
                             </div>
 
-                            <div class="account-grid">
+                            <div class="account-grid account-security-stack">
 
                                 <div class="account-field">
                                     <label for="currentPassword">

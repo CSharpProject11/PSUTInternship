@@ -383,3 +383,18 @@ body.portal-app{--navy:var(--portal-ink);--blue:var(--portal-accent);--cyan:var(
 .portal-content .tablewrap table{min-width:1000px;border-collapse:separate;border-spacing:0}
 .portal-content .tablewrap :is(th,td){padding:14px 18px;vertical-align:top}
 .portal-content .tablewrap .actions{display:flex;gap:10px;flex-wrap:wrap}
+
+.portal-content .task-actions{white-space:nowrap}
+.portal-content .task-actions a,.portal-content .task-actions button{display:inline-flex;align-items:center;min-height:32px;padding:6px 10px;margin-right:6px;border-radius:8px;font-size:12px;background:var(--portal-primary);color:white;text-decoration:none;border:0;line-height:1.4}
+.portal-app[data-role=company] .portal-content tbody tr:nth-child(even){background:#f0f5fa}
+.portal-app[data-role=company] .portal-form-actions{justify-content:center}
+.portal-app[data-role=company] .portal-form-actions input,.portal-app[data-role=company] .portal-form-actions button{width:auto!important;min-height:36px;padding:8px 18px;font-size:13px}
+.portal-content :is(.card,.panel,.summary-card,.account-section,.wd-action-tile){box-shadow:0 6px 22px rgba(15,42,64,.07)!important}
+
+.task-detail-surface{padding:24px;background:#eef4f8;border-radius:14px;margin-bottom:24px}
+
+.portal-app[data-role=academic] .wd-action-rail{display:grid;grid-template-columns:1fr 1fr}.portal-app[data-role=academic] .wd-action-tile{min-width:0}@media(max-width:600px){.portal-app[data-role=academic] .wd-action-rail{grid-template-columns:1fr}}
+
+.portal-app[data-role=company]{font-family:Inter,Manrope,Arial,sans-serif}.portal-app[data-role=company] .status-open,.portal-app[data-role=company] .status-accepted{background:#e0f2e6;color:#205c3a}.portal-app[data-role=company] .status-pending{background:#fff0ce;color:#735412}.portal-app[data-role=company] .status-closed{background:#e7ebef;color:#41525e}.portal-app[data-role=company] .status-rejected{background:#f7e3e3;color:#8f3030}.portal-academic-back{display:inline-flex;min-height:44px;align-items:center;margin-bottom:18px}
+
+.task-review-dialog{width:min(1000px,calc(100% - 30px));height:min(800px,90svh);padding:18px;border:0;border-radius:16px}.task-review-dialog::backdrop{background:rgba(8,31,48,.6)}.task-review-dialog iframe{display:block;width:100%;height:calc(100% - 48px);border:0;margin-top:12px}

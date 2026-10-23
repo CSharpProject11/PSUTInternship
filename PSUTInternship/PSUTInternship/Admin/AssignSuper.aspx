@@ -1,5 +1,6 @@
 <%@ Page Title="Manage Student Groups - UIMS" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="AssignSuper.aspx.cs" Inherits="PSUTInternship.Admin.AssignSuper" %>
 <asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<link rel="stylesheet" href="Coordinator.css?v=review4" />
 <style>
         * {
             box-sizing: border-box;

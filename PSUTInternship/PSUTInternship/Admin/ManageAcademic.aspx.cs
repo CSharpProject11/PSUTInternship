@@ -135,9 +135,6 @@ namespace PSUTInternship.Admin
                     "<tr><th>Name</th>" +
                     "<th>Email</th>" +
                     "<th>College</th>" +
-                    "<th>Department</th>" +
-                    "<th>Specialization</th>" +
-                    "<th>Status</th>" +
                     "<th>Actions</th>" +
                     "</tr>" +
                     "</thead>" +
@@ -167,9 +164,7 @@ namespace PSUTInternship.Admin
                     table.Append("<tr><td>").Append(HttpUtility.HtmlEncode(name));
                     table.Append("</td><td>").Append(HttpUtility.HtmlEncode(email));
                     table.Append("</td><td>").Append(HttpUtility.HtmlEncode(college));
-                    table.Append("</td><td>").Append(HttpUtility.HtmlEncode(department));
-                    table.Append("</td><td>").Append(HttpUtility.HtmlEncode(specialization));
-                    table.Append("</td><td>").Append(isActive ? "Active" : "Inactive").Append("</td><td>");
+                    table.Append("</td><td>");
                     table.Append("<a class='btn light' href='ManageAcademic.aspx?view=").Append(id).Append("'>View</a> ");
                     table.Append("<a class='btn light' href='ManageAcademic.aspx?edit=").Append(id).Append("'>Edit</a> ");
                     table.Append("<a class='btn danger' href='ManageAcademic.aspx?toggle=").Append(id);
@@ -177,8 +172,8 @@ namespace PSUTInternship.Admin
                     table.Append(isActive ? "Deactivate</a></td></tr>" : "Activate</a></td></tr>");
                 }
 
-                if (total == 0) table.Append("<tr><td colspan='7'>No academic supervisors yet.</td></tr>");
-                else if (table.ToString().EndsWith("<tbody>")) table.Append("<tr><td colspan='7'>No supervisors match your search.</td></tr>");
+                if (total == 0) table.Append("<tr><td colspan='4'>No academic supervisors yet.</td></tr>");
+                else if (table.ToString().EndsWith("<tbody>")) table.Append("<tr><td colspan='4'>No supervisors match your search.</td></tr>");
                 table.Append("</tbody></table>");
 
                 tableLiteral.Text = table.ToString();

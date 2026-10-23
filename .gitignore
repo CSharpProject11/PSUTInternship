@@ -8,4 +8,5 @@ obj/
 .verification/
 __pycache__/
 
-App_Data/TaskSolutions/
+**/App_Data/TaskSolutions/
+**/App_Data/Certificates/

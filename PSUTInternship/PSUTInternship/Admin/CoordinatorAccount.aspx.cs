@@ -17,7 +17,8 @@ public partial class CoordinatorAccount : PortalPage
         try
         {
             var user = await CoordinatorData.Read("users/" + PortalRepository.Key(PortalRepository.UserId));
-            FullName = CoordinatorData.Str(user, "fullName", "Coordinator");
+            FullName = DatabaseSchema.FirstText(user as Newtonsoft.Json.Linq.JObject, "fullName", "name");
+            if (string.IsNullOrWhiteSpace(FullName)) FullName = "Coordinator";
             Email = CoordinatorData.Str(user, "email");
             Phone = CoordinatorData.Str(user, "phoneNumber");
             if (!IsPostBack) return;
@@ -26,6 +27,8 @@ public partial class CoordinatorAccount : PortalPage
             else if (action == "changePassword") await ChangePassword();
         }
         catch (Exception ex) { Notice = ex.Message; }
+        if (IsPostBack && Request.Form["accountAction"] == "saveContact" && Notice != "Contact information saved.")
+            ClientScript.RegisterStartupScript(GetType(), "contactEditor", "document.addEventListener('DOMContentLoaded',function(){document.getElementById('contactEditor').showModal();});", true);
     }
 
     private async Task SaveContactInformation()

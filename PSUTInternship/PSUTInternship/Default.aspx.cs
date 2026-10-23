@@ -10,6 +10,14 @@ namespace PSUTInternship
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (Session["userId"] != null && Session["idToken"] != null)
+            {
+                string dashboard = Shared.PortalRoles.Dashboard(Convert.ToString(Session["userRole"]));
+                HomeLink6.NavigateUrl = dashboard;
+                HomeLink6.Text = "My workspace <span aria-hidden=\"true\">↗</span>";
+                HomeLink22.NavigateUrl = dashboard;
+                HomeLink22.Text = "Return to my workspace";
+            }
             RegisterAsyncTask(new PageAsyncTask(LoadOpportunitiesAsync));
         }
 

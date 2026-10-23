@@ -75,9 +75,24 @@
  menu.addEventListener('show.bs.collapse',()=>{document.querySelector('.campus-header').classList.add('menu-expanded')});menu.addEventListener('hidden.bs.collapse',()=>document.querySelector('.campus-header').classList.remove('menu-expanded'));
  /* A modal film is paused on closing, and keyboard focus stays inside its dialog. */
  const baseOpen=window.openModal,baseClose=window.closeModal,states=new Map();
- window.watchCampus=function(){document.getElementById('detailContent').innerHTML='<div class="modalhead"><h2>Discover PSUT</h2><button type="button" class="close" onclick="closeModal(\'detail\')" aria-label="Close film">×</button></div><video class="campus-player" id="campusPlayer" src="'+PSUT.root+'Assets/psut-campus-enhanced.mp4" poster="'+PSUT.root+'Assets/psut-rooftop.jpg" controls autoplay playsinline></video><p class="small muted">Princess Sumaya University for Technology · Campus film</p>';document.querySelector('#detail .modalbox').style.width='min(1100px, 100%)';openModal('detail');document.getElementById('campusPlayer').play().catch(()=>{});};
+ window.watchCampus=function(){document.getElementById('detailContent').innerHTML='<div class="modalhead"><h2>Discover PSUT</h2><button type="button" class="close" onclick="closeModal(\'detail\')" aria-label="Close film">×</button></div><video class="campus-player" id="campusPlayer" src="'+PSUT.root+'Assets/psut-campus-film.mp4" poster="'+PSUT.root+'Assets/psut-rooftop.jpg" controls autoplay playsinline></video><p class="small muted">Princess Sumaya University for Technology · Campus film</p>';document.querySelector('#detail .modalbox').style.width='min(1100px, 100%)';openModal('detail');document.getElementById('campusPlayer').play().catch(()=>{});};
  window.openModal=function(id){if(id==='login'){baseOpen(id);return;}const el=document.getElementById(id);if(!el||el.classList.contains('show'))return;document.querySelectorAll('.psut-modal.show').forEach(m=>window.closeModal(m.id));const state={focus:document.activeElement,inert:new Map()};for(const sibling of document.body.children){if(sibling===el||sibling.tagName==='SCRIPT'||sibling.classList.contains('toast'))continue;state.inert.set(sibling,sibling.inert);sibling.inert=true;}states.set(id,state);el.inert=false;baseOpen(id);document.body.classList.add('dialog-open');el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label',el.querySelector('h2')?.textContent||'Portal dialog');focusableWithin(el)[0]?.focus();syncFilm();};
  window.closeModal=function(id){const el=document.getElementById(id);if(!el)return;el.querySelectorAll('video').forEach(v=>v.pause());baseClose(id);const state=states.get(id);if(state){state.inert.forEach((value,sibling)=>sibling.inert=value);states.delete(id);document.body.classList.remove('dialog-open');state.focus?.isConnected&&state.focus.focus();}if(id==='detail')el.querySelector('.modalbox').style.width='';syncFilm();};
  document.addEventListener('keydown',event=>{const modal=document.querySelector('.psut-modal.show');if(modal){if(event.key==='Escape'){event.preventDefault();closeModal(modal.id);}if(event.key==='Tab'){const f=focusableWithin(modal);if(!f.length)return;if(event.shiftKey&&document.activeElement===f[0]){event.preventDefault();f.at(-1).focus();}else if(!event.shiftKey&&document.activeElement===f.at(-1)){event.preventDefault();f[0].focus();}}}else if(event.key==='Escape'&&menu.classList.contains('show')){bootstrap.Collapse.getOrCreateInstance(menu).hide();trigger.focus();}});
  document.querySelectorAll('.psut-modal').forEach(modal=>modal.addEventListener('click',event=>{if(event.target===modal)closeModal(modal.id);}));
+})();
+
+/* Start the process film once in view; native controls own subsequent play/pause. */
+(()=>{
+ const film=document.getElementById('internshipProcessVideo');
+ if(!film)return;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ if(reduced.matches){film.autoplay=false;film.pause();return;}
+ const observer=new IntersectionObserver(entries=>{
+  if(!entries[0].isIntersecting)return;
+  film.play().catch(()=>{});
+  observer.disconnect();
+ },{threshold:.25});
+ film.autoplay=false;
+ observer.observe(film);
 })();

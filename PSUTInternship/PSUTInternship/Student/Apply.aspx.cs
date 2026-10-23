@@ -53,12 +53,19 @@ namespace PSUTInternship.Student
             RegisterAsyncTask(new PageAsyncTask(SubmitApplication));
         }
 
+        protected string FormatCreatedDate(object value)
+        {
+            DateTime date;
+            return DateTime.TryParse(Convert.ToString(value), out date) ? date.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) : "Not specified";
+        }
         protected string ApplicationImage(object value) { Uri image; return Uri.TryCreate(Convert.ToString(value),UriKind.Absolute,out image) && image.Scheme == "https" ? image.AbsoluteUri : ResolveUrl("~/Assets/technology.jpg"); }
         private string Field(string name) {
             string[] aliases = name == "studentName" ? new[] { "fullName" } : name == "studentEmail" ? new[] { "email" } : name == "universityId" ? new[] { "studentNumber", "studentId" } : name == "program" ? new[] { "major", "program" } : name == "faculty" ? new[] { "college", "faculty" } : name == "university" ? new[] { "university" } : null;
             return aliases != null && AuthoritativeProfile != null ? DatabaseSchema.FirstText(AuthoritativeProfile, aliases) : (Request.Form[name] ?? "").Trim();
         }
 
+        protected bool CanApply { get; private set; }
+        protected string ApplicationAvailability { get; private set; }
         private JObject AuthoritativeProfile;
         private async Task LoadStudentInformation()
         {
@@ -122,6 +129,7 @@ namespace PSUTInternship.Student
                 string uid = Convert.ToString(Session["userId"]);
                 string token = Convert.ToString(Session["idToken"]);
                 if (!DetailsPanel.Visible) throw new ArgumentException("Choose a valid opportunity before applying.");
+                if (!CanApply) throw new ArgumentException(ApplicationAvailability ?? "This opportunity is unavailable.");
                 if (!string.Equals(Convert.ToString(Session["userRole"]), "student", StringComparison.OrdinalIgnoreCase))
                     throw new ArgumentException("Only student accounts can submit applications.");
 
@@ -195,6 +203,7 @@ namespace PSUTInternship.Student
                         response.EnsureSuccessStatusCode();
                     }
                 }
+                await LoadOpportunity();
                 MessageLabel.CssClass = "alert alert-success d-block";
                 MessageLabel.Text = "Application submitted successfully. Your status is Pending.";
             }
@@ -208,6 +217,7 @@ namespace PSUTInternship.Student
         {
             MessageLabel.CssClass = "alert alert-danger d-block";
             MessageLabel.Text = HttpUtility.HtmlEncode(message);
+            if (!CanApply) return;
             var values = Request.Form.AllKeys.Where(k => k != null && !k.StartsWith("__"))
                 .ToDictionary(k => k, k => Request.Form[k]);
             if (AuthoritativeProfile != null) foreach (string field in new[] {"studentName","studentEmail","universityId","university","faculty","program"}) values[field] = Field(field);
@@ -246,6 +256,10 @@ namespace PSUTInternship.Student
                 }
 
                 opportunity.Id = id;
+                await OpportunityPresentation.Populate(new[] { opportunity });
+                CanApply = opportunity.IsAccepting && !opportunity.HasApplied;
+                ApplicationAvailability = opportunity.HasApplied ? "You have already applied to this opportunity." : !opportunity.IsAccepting ? "Applications are closed for this opportunity." : "";
+
 
                 OpportunityDetails.DataSource =
                     new[] { opportunity };

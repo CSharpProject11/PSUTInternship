@@ -9,8 +9,9 @@
     <title>PSUT Internship Portal</title>
     <link rel="icon" type="image/png" href="<%= ResolveUrl("~/Assets/psut-emblem.png") %>" />
     <script>try { if (localStorage.getItem('psut.sidebar.collapsed') === 'true') document.documentElement.classList.add('portal-rail-collapsed'); } catch (e) { }</script>
+    <% if (PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "company") { %><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" /><% } %>
     <asp:ContentPlaceHolder ID="PortalHead" runat="server" />
-    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/portal-workspace.css?v=15") %>" />
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/portal-workspace.css?v=review27") %>" />
     <script src="<%= ResolveUrl("~/Scripts/portal-ui.js?v=15") %>" defer></script>
 </head>
 <body class="portal-app" data-role="<%: PortalRoles.Normalize(Convert.ToString(Session["userRole"])) %>">
@@ -24,7 +25,7 @@
                 <div class="portal-breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><strong><%: PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "admin" ? "Coordinator" : PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "company" ? "Company supervisor" : PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "academic" ? "Academic supervisor" : "Student" %></strong></div>
                 <div class="portal-top-actions"><span class="portal-term">PSUT · Internship portal</span><a class="portal-account-link" href="<%= ResolveUrl(PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "admin" ? "~/Admin/CoordinatorAccount.aspx" : PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "company" ? "~/Company/Account.aspx" : PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "academic" ? "~/Academic/Account.aspx" : "~/Student/StudentProfile.aspx") %>" aria-label="My account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></a></div>
             </header>
-            <main id="portal-main" class="portal-content" tabindex="-1"><asp:ContentPlaceHolder ID="PortalContent" runat="server" /></main>
+            <main id="portal-main" class="portal-content" tabindex="-1"><% if (PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "academic" && !Request.AppRelativeCurrentExecutionFilePath.EndsWith("Dashboard.aspx", StringComparison.OrdinalIgnoreCase)) { %><a class="portal-academic-back" href="<%= ResolveUrl("~/Academic/Dashboard.aspx") %>">Back to dashboard</a><% } %><asp:ContentPlaceHolder ID="PortalContent" runat="server" /></main>
             <footer class="portal-footer"><span>PSUT Internship Portal</span><span>Learning. Experience. Progress.</span></footer>
         </div>
     </div>

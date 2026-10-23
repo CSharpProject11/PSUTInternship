@@ -56,6 +56,7 @@ namespace PSUTInternship
                     using(var response=await FirebaseConfig.Client.SendAsync(read))
                     {
                         response.EnsureSuccessStatusCode();var meeting=JObject.Parse(await response.Content.ReadAsStringAsync());
+                        if ((string)meeting["status"] == next && role == "student" && (string)meeting["studentId"] == PortalRepository.UserId) { Response.Write("{\"saved\":true}"); return; }
                         if((string)meeting["status"]!=previous)throw new ArgumentException("The meeting changed. Refresh and retry.");
                         bool allowed=role=="student"?(string)meeting["studentId"]==PortalRepository.UserId&&previous=="Pending"&&(next=="Accepted"||next=="Rejected")
                             :(string)meeting["supervisorId"]==PortalRepository.ProfileId&&(previous=="Pending"||previous=="Accepted")&&next=="Cancelled";
@@ -63,14 +64,20 @@ namespace PSUTInternship
                         meeting["status"]=next;meeting["respondedAt"]=DateTime.UtcNow.ToString("o");
                         using(var save=new HttpRequestMessage(HttpMethod.Put,url))
                         {
-                            save.Headers.TryAddWithoutValidation("if-match",response.Headers.ETag.ToString());save.Content=new StringContent(meeting.ToString(Formatting.None),Encoding.UTF8,"application/json");
-                            using(var saved=await FirebaseConfig.Client.SendAsync(save))saved.EnsureSuccessStatusCode();
+                            System.Collections.Generic.IEnumerable<string> tags;
+                            if (!response.Headers.TryGetValues("ETag", out tags) || string.IsNullOrWhiteSpace(tags.FirstOrDefault())) throw new ArgumentException("Firebase did not return a version for this meeting. Refresh and retry.");
+                            save.Headers.TryAddWithoutValidation("if-match", tags.First());save.Content=new StringContent(meeting.ToString(Formatting.None),Encoding.UTF8,"application/json");
+                            using(var saved=await FirebaseConfig.Client.SendAsync(save)) {
+                                if (saved.StatusCode == System.Net.HttpStatusCode.PreconditionFailed) throw new ArgumentException("This invitation was already updated. Refresh to see its current status.");
+                                if (saved.StatusCode == System.Net.HttpStatusCode.Forbidden || saved.StatusCode == System.Net.HttpStatusCode.Unauthorized) throw new ArgumentException("Firebase denied the meeting update. Sign in again; if this continues, ask the coordinator to deploy the meeting access rules.");
+                                saved.EnsureSuccessStatusCode();
+                            }
                         }
                     }
                 }
                 Response.Write("{\"saved\":true}");
             }
-            catch(Exception ex){Response.StatusCode=400;Response.TrySkipIisCustomErrors=true;Response.Write(JsonConvert.SerializeObject(new {error=ex is ArgumentException?ex.Message:"The meeting request failed. Refresh and retry."}));}
+            catch(Exception ex){System.Diagnostics.Trace.TraceError("Meeting request failed: {0}", ex.GetType().Name);Response.StatusCode=400;Response.TrySkipIisCustomErrors=true;Response.Write(JsonConvert.SerializeObject(new {error=ex is ArgumentException?ex.Message:"The meeting request failed. Refresh and retry."}));}
         }
     }
 }

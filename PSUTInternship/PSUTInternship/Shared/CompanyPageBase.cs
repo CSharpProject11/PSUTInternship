@@ -56,7 +56,7 @@ namespace PSUTInternship.Shared
                     .Where(x => x.CompanyId == CompanyId).ToList();
                 CompanyProfile = profileTask.GetAwaiter().GetResult() ?? CompanyProfile;
                 var tasks = taskRows.GetAwaiter().GetResult();
-                foreach(var trainee in TraineeRows){trainee.TasksTotal=tasks.Values.Count(x=>(string)x["studentId"]==trainee.StudentId);trainee.TasksCompleted=tasks.Values.Count(x=>(string)x["studentId"]==trainee.StudentId&&(string)x["status"]=="Reviewed");}
+                foreach(var trainee in TraineeRows){trainee.TasksTotal=tasks.Values.Count(x=>(string)x["studentId"]==trainee.StudentId&&(bool?)x["active"]!=false);trainee.TasksCompleted=tasks.Values.Count(x=>(string)x["studentId"]==trainee.StudentId&&(bool?)x["active"]!=false&&(string)x["status"]=="Reviewed");}
                 foreach(var app in ApplicationRows){var opening=OpportunityRows.FirstOrDefault(x=>x.Id==app.OpportunityId);if(opening!=null)app.Opportunity=opening.Title;
                     if (app.Details == null || string.IsNullOrWhiteSpace(app.Details.StudentName)) { var student = PortalRepository.Get<JObject>("students/"+PortalRepository.Key(app.StudentId)).GetAwaiter().GetResult(); app.Student = (string)student?["fullName"]; }}
                 return true;

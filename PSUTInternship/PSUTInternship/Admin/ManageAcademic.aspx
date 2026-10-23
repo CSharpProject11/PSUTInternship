@@ -1,5 +1,6 @@
 <%@ Page MasterPageFile="~/Portal.Master" Title="Academic Supervisors" Language="C#" Async="true" AutoEventWireup="true" CodeBehind="ManageAcademic.aspx.cs" Inherits="PSUTInternship.Admin.ManageAcademic" %>
 <asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<link rel="stylesheet" href="Coordinator.css?v=review4" />
 <style>
         * {
             box-sizing: border-box;

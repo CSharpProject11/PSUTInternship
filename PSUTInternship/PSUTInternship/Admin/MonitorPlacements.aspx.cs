@@ -147,8 +147,8 @@ public partial class MonitorPlacements : PortalPage
     private static string Score(JObject evaluation)
     {
         if(evaluation==null) return "Not recorded";
-        string maximum=PortalRoles.Normalize(CoordinatorData.Str(evaluation,"evaluatorRole"))=="academic" ? EvaluationPolicy.AcademicMaximum.ToString(System.Globalization.CultureInfo.InvariantCulture) : CoordinatorData.Str(evaluation,"totalMaximum","—");
-        return CoordinatorData.Str(evaluation,"overallScore","—")+" / "+maximum;
+        string maximum=PortalRoles.Normalize(CoordinatorData.Str(evaluation,"evaluatorRole"))=="academic" ? EvaluationPolicy.AcademicMaximum.ToString(System.Globalization.CultureInfo.InvariantCulture) : CoordinatorData.Str(evaluation,"totalMaximum","â€”");
+        return CoordinatorData.Str(evaluation,"overallScore","â€”")+" / "+maximum;
     }
 
     // Encode text to prevent HTML injection
@@ -257,7 +257,6 @@ public partial class MonitorPlacements : PortalPage
                         "&amp;view=evaluation'>" +
                         "View Evaluations" +
                     "</a>" +
-                    "<a class='btn secondary' href='MonitorPlacements.aspx?id="+HttpUtility.UrlEncode(student.Id)+"&amp;view=hours'>View Hours</a>" +
                 "</div>";
 
             return
@@ -265,7 +264,7 @@ public partial class MonitorPlacements : PortalPage
                     "<td>" + H(student.Student) + "</td>" +
                     "<td>" + H(student.Company) + "</td>" +
                     "<td>" + H(student.Supervisor) + "</td>" +
-                    "<td>" + totalTasks + " Tasks</td>" +
+                    "<td class='task-count'>" + totalTasks + " Tasks</td>" +
                     "<td>" + student.Hours + " / " +
                         student.Required + " hrs</td>" +
                     "<td>" + progressHtml + "</td>" +

@@ -9,7 +9,7 @@
                 new[] {"Dashboard", "~/Admin/Dashboard.aspx", "grid"}, new[] {"Students", "~/Admin/ManageStudents.aspx", "people"},
                 new[] {"Company supervisors", "~/Admin/ManageCompanies.aspx", "bag"}, new[] {"Academic supervisors", "~/Admin/ManageAcademic.aspx", "people"},
                 new[] {"Assign supervisors", "~/Admin/AssignSuper.aspx", "link"}, new[] {"Placements", "~/Admin/MonitorPlacements.aspx", "bag"},
-                new[] {"Completion review", "~/Admin/FinalCompletionReview.aspx", "check"},
+                new[] {"Completion review", "~/Admin/CompletionReview.aspx", "check"},
                 new[] {"Contact messages", "~/Admin/ContactMessages.aspx", "mail"}};
             if (Role == "company") return new[] {
                 new[] {"Dashboard", "~/Company/Dashboard.aspx", "grid"}, new[] {"Opportunities", "~/Company/Opportunities.aspx", "bag"},

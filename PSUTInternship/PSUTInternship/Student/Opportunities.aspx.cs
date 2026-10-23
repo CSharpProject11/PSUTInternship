@@ -37,15 +37,16 @@ namespace PSUTInternship.Student
         public async Task loadOpportunities()
         {
             var records = (await PortalRepository.Collection("opportunities"))
-                .ToDictionary(x => x.Key, x => x.Value.ToObject<Opportunity>());
+                .Where(x => x.Value != null).ToDictionary(x => x.Key, x => x.Value.ToObject<Opportunity>());
 
             foreach (var record in records)
             {
-                record.Value.Id = record.Key;
+                if (record.Value != null) record.Value.Id = record.Key;
             }
 
             var profile = await PortalRepository.Get<JObject>("students/" + PortalRepository.ProfileId);
-            var eligible = records.Values.Where(x => x != null && x.Status && (x.DeadLine == DateTime.MinValue || x.DeadLine.Date >= DateTime.UtcNow.Date) && OpportunityEligibility.Matches(x, profile)).ToList();
+            var eligible = records.Values.Where(x => x != null && OpportunityEligibility.Matches(x, profile)).ToList();
+            await OpportunityPresentation.Populate(eligible);
             OpportunitiesRepeater.DataSource = eligible;
             OpportunitiesRepeater.DataBind();
             EmptyMessage.Visible = eligible.Count == 0;
