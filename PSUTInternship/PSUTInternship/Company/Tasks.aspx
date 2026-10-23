@@ -1,44 +1,10 @@
 <%@ Register Src="~/Shared/CompanyLinks.ascx" TagPrefix="psut" TagName="CompanyLinks" %>
 <%@ Page MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="Tasks.aspx.cs" Inherits="PSUTInternship.Company.Tasks" %>
 <asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
-<style>
-        .cards {
-            display:flex;
-            gap:10px;
-
-        }
-        #Box1Total{
-            flex:1;
-            border:1px solid black;
-            border-radius:40px;
-            padding:40px;
-        }
-        #Box2Pending{
-            flex:1;
-             border:1px solid black;
-             border-radius:40px;
-             padding:40px;
-        }
-        #Box3Progress{
-            flex:1;
-             border:1px solid black;
-             border-radius:40px;
-             padding:40px;
-        }
-        #Box4Reviewed{
-            flex:1;
-             border:1px solid black;
-             border-radius:40px;
-             padding:40px;
-        }
-    </style>
+<link rel="stylesheet" href="../Content/company-tasks.css?v=1" />
 </asp:Content>
 <asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
-<h1>Tasks &amp; submissions</h1>
-        <p>
-            <a href="ReportsAndEvaluation.aspx">Reports &amp; Final Evaluation</a> |
-            <a href="SupervisorAccount.aspx">Supervisor Account</a>
-        </p>
+<div class="company-task-page"><h1>Tasks &amp; submissions</h1>
         <div>
         </div>
         <p>
@@ -82,20 +48,18 @@
         <section class="panel">
             <div class="panel-heading">
                 <h2>Tasks and submissions</h2>
-                <asp:Button ID="Create" runat="server" Text="+ Create New Task" OnClick="Create_Click" />
+                <asp:Button ID="Create" runat="server" Text="Create task" CssClass="btn" OnClick="Create_Click" />
             </div>
-        <p>
-            <asp:TextBox ID="search" runat="server" placeholder="Search task or student" AutoPostBack="true" OnTextChanged="search_TextChanged"></asp:TextBox>
-            <asp:DropDownList AutoPostBack="true" ID="DropDownList1" runat="server" OnSelectedIndexChanged="DropDownList1_SelectedIndexChanged">
+        <div class="task-filterbar"><label>Search tasks<asp:TextBox ID="search" runat="server" placeholder="Search task or student" AutoPostBack="true" OnTextChanged="search_TextChanged"></asp:TextBox>
+</label><label>Status<asp:DropDownList AutoPostBack="true" ID="DropDownList1" runat="server" OnSelectedIndexChanged="DropDownList1_SelectedIndexChanged">
                 <asp:ListItem>All statuses</asp:ListItem>
                 <asp:ListItem Value="Submitted">Pending Review</asp:ListItem>
                 <asp:ListItem Value="Pending">Pending</asp:ListItem><asp:ListItem Value="Assigned">In Progress</asp:ListItem>
                 <asp:ListItem Value="Revision Requested">Resolve</asp:ListItem>
                 <asp:ListItem Value="Reviewed">Complete</asp:ListItem>
-            </asp:DropDownList>
-        </p>
+            </asp:DropDownList></label></div>
 
-        <table style="width: 100%;" border="1">
+        <div class="task-table-scroll"><table>
             <thead>
                 <tr>
                     <th>Task</th>
@@ -108,9 +72,9 @@
                 </tr>
             </thead>
             <tbody id="TaskTablebody" runat="server"></tbody>
-        </table>
+        </table></div>
         </section>
-<dialog id="taskReviewDialog" class="task-review-dialog"><button type="button" class="btn" onclick="this.closest('dialog').close()">Close review</button><iframe title="Review task" id="taskReviewFrame"></iframe></dialog>
+</div><dialog id="taskReviewDialog" class="task-review-dialog"><button type="button" class="btn" onclick="this.closest('dialog').close()">Close review</button><iframe title="Review task" id="taskReviewFrame"></iframe></dialog>
 <script>
 document.addEventListener('click',function(event){var link=event.target.closest('[data-task-review]');if(!link)return;event.preventDefault();document.getElementById('taskReviewFrame').src=link.href;document.getElementById('taskReviewDialog').showModal();});
 </script>

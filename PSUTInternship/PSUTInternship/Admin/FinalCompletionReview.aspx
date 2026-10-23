@@ -3,7 +3,7 @@
     Inherits="FinalCompletionReview" %>
 <asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
 <link href="Coordinator.css?v=10" rel="stylesheet" />
-    <link href="FinalCompletionReview.css?v=10" rel="stylesheet" />
+    <link href="FinalCompletionReview.css?v=11" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
 <input type="hidden" name="csrfToken" value="<%= H(CsrfToken) %>" />
@@ -339,8 +339,7 @@
                 </div>
             <% } else if (!CanCreateCertificate(SelectedStudent)) { %>
                 <div class="fcr-alert fcr-alert-warning">
-                    Certificate creation is unavailable until both evaluations
-                    are Pass and all university requirements are completed.
+                    <%= SelectedStudent.ReadyForApproval ? "All checks passed. Select Approve &amp; Create Certificate to approve completion and generate the official certificate." : "Passing evaluations are only part of completion. Approved training hours, reviewed tasks, and a submitted academic review with a Pass recommendation are also required." %>
                 </div>
             <% } %>
 
@@ -351,11 +350,11 @@
                 Close
             </a>
 
-            <% if (!SelectedStudent.Approved && SelectedStudent.ReadyForApproval) { %><button type="submit" class="btn" name="approveCompletion" value="<%= H(SelectedStudent.ReviewId) %>">Approve completion</button><% } %>
+            <% if (!SelectedStudent.Approved && SelectedStudent.ReadyForApproval) { %><button type="submit" class="btn" name="approveCompletion" value="<%= H(SelectedStudent.ReviewId) %>">Approve &amp; Create Certificate</button><% } %>
 <% if (CanCreateCertificate(SelectedStudent)) { %>
                 <a class="btn green"
                    href="<%= H(PopupUrl(SelectedStudent.Id, "certificate")) %>">
-                    Create Certificate
+                    Preview Certificate
                 </a>
             <% } %>
         </div>

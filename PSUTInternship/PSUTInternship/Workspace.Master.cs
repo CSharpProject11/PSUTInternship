@@ -24,8 +24,8 @@ namespace PSUTInternship
         public string FocusText { get; private set; }
         public string WorkLabel { get; private set; }
         public string DateLabel { get { return TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Jordan Standard Time").ToString("dddd, dd MMM yyyy", CultureInfo.InvariantCulture); } }
-        public string PrimaryUrl { get { return Role == "student" ? ResolveUrl("~/Student/Opportunities.aspx") : "#workspace"; } }
-        public string PrimaryLabel { get { return Role == "student" ? "Find an opportunity" : "Open workspace"; } }
+        public string PrimaryUrl { get { return Role == "student" ? ResolveUrl("~/Student/Opportunities.aspx") : Role == "company" ? ResolveUrl("~/Company/Applications.aspx") : "#workspace"; } }
+        public string PrimaryLabel { get { return Role == "student" ? "Find an opportunity" : Role == "company" ? "Review applications" : "Open workspace"; } }
         public List<WorkspaceMetric> Metrics { get; private set; } = new List<WorkspaceMetric>();
         public List<WorkspaceRow> Rows { get; private set; } = new List<WorkspaceRow>();
         public List<WorkspaceOpening> Openings { get; private set; } = new List<WorkspaceOpening>();

@@ -143,7 +143,7 @@ public partial class FinalCompletionReview : PortalPage
         {
             if(IsPostBack && !string.IsNullOrEmpty(Request.Form["approveCompletion"]))
             {
-                try { await CompletionWorkflow.Approve(Request.Form["approveCompletion"]); Notice="Completion approved. The official report is available to download."; }
+                try { await CompletionWorkflow.Approve(Request.Form["approveCompletion"]); Notice="Completion approved and certificate created. The official report is available to download."; }
                 catch(Exception ex) { FirebaseError=ex.Message; }
             }
             await LoadFirebase();
@@ -424,7 +424,7 @@ public partial class FinalCompletionReview : PortalPage
             }
 
             if (!student.Approved && student.ReadyForApproval)
-                actions += "<button class='btn' type='submit' name='approveCompletion' value='" + H(student.ReviewId) + "'>Approve completion</button>";
+                actions += "<button class='btn' type='submit' name='approveCompletion' value='" + H(student.ReviewId) + "'>Approve &amp; Create Certificate</button>";
             actions += "</div>";
 
             string hours =

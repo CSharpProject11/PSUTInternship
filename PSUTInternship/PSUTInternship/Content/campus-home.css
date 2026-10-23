@@ -247,3 +247,22 @@ html{scroll-behavior:smooth;scroll-padding-top:36px}*{box-sizing:border-box}body
 
 .internship-process-video{display:block;width:100%;height:clamp(320px,32vw,460px);object-fit:contain;background:var(--night);border-radius:36px}
 @media(max-width:767px){.internship-process-video{height:auto;aspect-ratio:16/9;border-radius:24px}}
+/* Contact dialog: a readable, consistently sized form independent of browser defaults. */
+#actionContent:has(#contactForm){width:min(620px,calc(100vw - 32px));max-height:90dvh;overflow-y:auto;padding:32px;border-radius:20px;background:#fff;box-sizing:border-box;scrollbar-width:thin}
+#actionContent:has(#contactForm) .modalhead{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:12px}
+#actionContent:has(#contactForm) .modalhead h2{font-size:27px!important;line-height:1.25!important;letter-spacing:-.03em!important;max-width:20ch;margin:0!important;color:#163449}
+#actionContent:has(#contactForm) .close{display:grid;place-items:center;flex-shrink:0;width:36px;height:36px;min-width:36px;padding:0;border:1px solid #dce7ee;border-radius:50%;font-size:22px;background:#f2f7fa;color:#345c76;cursor:pointer}
+#actionContent:has(#contactForm)>p{font-size:13px;line-height:1.8;color:#597387;margin:0 0 10px}
+#actionContent:has(#contactForm) #contactNotice{font-size:12px;padding:0;margin:0 0 24px;color:#60798b}
+#contactForm .contact-fields{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 16px;margin-bottom:24px}
+#contactForm .contact-fields label{display:flex;flex-direction:column;gap:8px;min-width:0;font-size:12px;font-weight:600;line-height:1.5;color:#34586f;margin:0}
+#contactForm .contact-full{grid-column:1/-1}
+#contactForm .contact-fields :is(input,textarea){display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;border:1px solid #cbdbe5;border-radius:8px;background:#fbfcfd;color:#193b52;padding:12px 14px;font:400 14px/1.6 Manrope,Arial,sans-serif;outline-offset:3px;box-shadow:none}
+#contactForm .contact-fields input{min-height:46px}
+#contactForm .contact-fields textarea{min-height:130px;resize:vertical}
+#contactForm .contact-fields :is(input,textarea)::placeholder{color:#7b8e9d;opacity:1}
+#contactForm .contact-fields :is(input,textarea):focus{border-color:#0078b5;background:#fff;outline:2px solid #bfe3f4}
+#contactForm .well-pill{display:flex;align-items:center;justify-content:center;gap:14px;width:100%;min-height:48px;padding:12px 20px;border:0;border-radius:8px;background:#003e73;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+#contactForm .well-pill svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.6}
+#contactForm .well-pill:hover{background:#002f59}
+@media(max-width:550px){#actionContent:has(#contactForm){padding:24px}#contactForm .contact-fields{grid-template-columns:minmax(0,1fr);gap:16px}#actionContent:has(#contactForm) .modalhead h2{font-size:23px!important}}

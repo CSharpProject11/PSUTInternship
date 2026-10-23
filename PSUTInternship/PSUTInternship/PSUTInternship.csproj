@@ -133,6 +133,7 @@
     <Content Include="Company\Account.aspx" />
     <Content Include="Company\ViewTask.aspx" />
     <Content Include="Content\Company.css" />
+    <Content Include="Content\company-tasks.css" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />
@@ -561,6 +562,7 @@
     <Content Include="Logout.aspx" />
     <Content Include="Content\workspace.css" />
     <Content Include="Content\student-workspace.css" />
+    <Content Include="Content\student-workspace.css" />
     <Content Include="Content\homepage-interactions.css" />
     <Content Include="Scripts\workspace.js" />
     <Content Include="Scripts\interactions.js" />
@@ -797,6 +799,7 @@
   <ItemGroup>
     <Content Include="Admin\Coordinator.css" />
     <Content Include="Admin\FinalCompletionReview.css" />
+    <Content Include="Admin\CompletionReview.css" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Portal.Master" />

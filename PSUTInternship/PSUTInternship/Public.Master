@@ -10,7 +10,7 @@
 <link rel="preload" href="<%= ResolveUrl("~/Assets/manrope-variable.ttf") %>" as="font" type="font/ttf" crossorigin>
 <link rel="stylesheet" href="<%= ResolveUrl("~/Content/vendor/bootstrap.min.css") %>">
 <link rel="stylesheet" href="<%= ResolveUrl("~/Content/portal.css") %>">
-<link rel="stylesheet" href="<%= ResolveUrl("~/Content/campus-home.css?v=20261023-process26") %>">
+<link rel="stylesheet" href="<%= ResolveUrl("~/Content/campus-home.css?v=20261023-contact27") %>">
 </head>
 <body class="campus-home" data-role="" data-page="">
 <form id="PublicForm" runat="server">
@@ -20,7 +20,7 @@
 <script>window.PSUT={root:'<%= ResolveUrl("~/") %>',role:'student',page:'Overview'};</script>
 <script src="<%= ResolveUrl("~/Scripts/vendor/bootstrap.bundle.min.js") %>"></script>
 <script src="<%= ResolveUrl("~/Scripts/portal.js?v=20261023-opportunities13") %>"></script>
-<script src="<%= ResolveUrl("~/Scripts/wellington.js") %>"></script>
+<script src="<%= ResolveUrl("~/Scripts/wellington.js?v=contact2") %>"></script>
 <script src="<%= ResolveUrl("~/Scripts/interactions.js?v=20261023-loop24") %>"></script>
 <script src="<%= ResolveUrl("~/Scripts/campus-home.js?v=20261023-process26") %>"></script>
 </body>

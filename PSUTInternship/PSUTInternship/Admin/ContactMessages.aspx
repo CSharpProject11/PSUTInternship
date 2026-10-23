@@ -5,276 +5,10 @@
 <link href="Coordinator.css" rel="stylesheet" />
 
     <style>
-        .message-filter {
-            display: flex;
-            align-items: flex-end;
-            gap: 12px;
-            margin: 20px 0;
-        }
-
-        .message-filter .field {
-            width: 230px;
-        }
-
-        .message-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .message-actions .btn {
-            white-space: nowrap;
-            padding: 9px 14px;
-            font-size: 12px;
-            text-decoration: none;
-        }
-
-        .message-modal {
-            position: fixed;
-            inset: 0;
-            z-index: 3000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: rgba(12, 26, 48, .65);
-            backdrop-filter: blur(3px);
-        }
-
-        .message-dialog {
-            display: flex;
-            flex-direction: column;
-            background: #fff;
-            width: 100%;
-            max-width: 720px;
-            max-height: 90vh;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 24px 70px rgba(12,26,48,.25);
-        }
-
-        .message-modal-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 20px;
-            padding: 24px 28px;
-            border-bottom: 1px solid #e7edf5;
-        }
-
-        .message-modal-header h2 {
-            margin: 0 0 7px;
-            font-size: 22px;
-            color: #172b4d;
-        }
-
-        .message-modal-header p {
-            margin: 0;
-            color: #71829a;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        .message-close {
-            display: grid;
-            place-items: center;
-            width: 37px;
-            height: 37px;
-            background: #f2f5fa;
-            border-radius: 9px;
-            color: #64748b;
-            text-decoration: none;
-            font-size: 26px;
-            flex-shrink: 0;
-        }
-
-        .message-dialog-body {
-            padding: 25px 28px;
-            overflow-y: auto;
-            min-height: 0;
-        }
-
-        .message-sender-card {
-            display: flex;
-            align-items: center;
-            gap: 13px;
-            padding: 17px;
-            border: 1px solid #e2eaf4;
-            border-radius: 12px;
-            background: #f6f9fd;
-            margin-bottom: 23px;
-        }
-
-        .message-sender-avatar {
-            width: 48px;
-            height: 48px;
-            display: grid;
-            place-items: center;
-            border-radius: 11px;
-            background: #e2edfb;
-            color: #265b9b;
-            font-weight: 700;
-            font-size: 17px;
-            flex-shrink: 0;
-        }
-
-        .message-sender-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .message-sender-info strong {
-            display: block;
-            color: #172b4d;
-            font-size: 15px;
-            margin-bottom: 5px;
-        }
-
-        .message-sender-info span {
-            color: #71829a;
-            font-size: 12px;
-            overflow-wrap: anywhere;
-        }
-
-        .message-section-title {
-            font-size: 15px;
-            color: #172b4d;
-            margin: 22px 0 15px;
-            font-weight: 700;
-        }
-
-        .message-detail {
-            margin-bottom: 16px;
-        }
-
-        .message-detail label,
-        .reply-field label {
-            display: block;
-            font-size: 12px;
-            font-weight: 700;
-            color: #566d89;
-            margin-bottom: 8px;
-        }
-
-        .message-detail p {
-            margin: 0;
-            padding: 13px 15px;
-            background: #f4f7fb;
-            border: 1px solid #e7edf5;
-            border-radius: 9px;
-            color: #172b4d;
-            line-height: 1.7;
-            overflow-wrap: anywhere;
-        }
-
-        .message-detail .message-body {
-            white-space: pre-wrap;
-            min-height: 95px;
-        }
-
-        .message-divider {
-            height: 1px;
-            background: #e7edf5;
-            margin: 23px 0;
-        }
-
-        .reply-field textarea {
-            display: block;
-            box-sizing: border-box;
-            width: 100%;
-            min-height: 145px;
-            padding: 14px;
-            border: 1px solid #cedae8;
-            border-radius: 10px;
-            color: #172b4d;
-            font-family: inherit;
-            font-size: 13px;
-            line-height: 1.7;
-            resize: vertical;
-            outline: none;
-        }
-
-        .reply-field textarea:focus {
-            border-color: #3477bd;
-            box-shadow: 0 0 0 3px rgba(52,119,189,.1);
-        }
-
-        .reply-help {
-            margin: 9px 0 0;
-            color: #8392a7;
-            font-size: 12px;
-        }
-
-        .message-dialog-footer {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            gap: 10px;
-            border-top: 1px solid #e7edf5;
-            padding: 18px 28px;
-            background: #fff;
-            flex-shrink: 0;
-        }
-
-        .reply-error {
-            background: #fff1f2;
-            color: #ac3145;
-            border: 1px solid #f2cbd1;
-            border-radius: 9px;
-            padding: 12px 15px;
-            font-size: 13px;
-            margin-bottom: 15px;
-        }
-
-        .reply-notice {
-            padding: 14px 17px;
-            border: 1px solid #b9e2cb;
-            background: #edf9f1;
-            color: #207145;
-            border-radius: 9px;
-            margin: 0 0 20px;
-            line-height: 1.6;
-        }
-
-        .message-disabled-note {
-            margin: 0;
-            background: #f3f8f5;
-            color: #48735a;
-            border: 1px solid #d9e9df;
-            border-radius: 9px;
-            padding: 15px;
-            font-size: 13px;
-        }
-
-        @media (max-width: 600px) {
-            .message-filter {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .message-filter .field {
-                width: 100%;
-            }
-
-            .message-modal {
-                padding: 10px;
-            }
-
-            .message-dialog {
-                max-height: 95vh;
-            }
-
-            .message-modal-header,
-            .message-dialog-body,
-            .message-dialog-footer {
-                padding: 18px;
-            }
-
-            .message-sender-card {
-                flex-wrap: wrap;
-            }
-        }
-    </style>
+.portal-app .portal-content .contact-inbox{max-width:1240px;margin:auto}.portal-app .portal-content .contact-inbox .heading{padding-bottom:24px;margin:0 0 24px;border-bottom:1px solid #dfe7ee}.portal-app .portal-content .contact-inbox h1{font-size:28px!important;letter-spacing:-.03em;margin:0 0 8px!important}.contact-inbox .heading p{font-size:13px!important;font-weight:400!important;color:#607587;line-height:1.8;margin:0;max-width:70ch}.portal-app .portal-content .contact-inbox .card{padding:24px!important;border:1px solid #dce6ed!important;border-radius:14px!important;background:#fff!important;box-shadow:none!important}.portal-app .portal-content .contact-inbox h2{font-size:18px!important;margin:0 0 18px!important}.contact-inbox .message-filter{display:flex;align-items:flex-end;gap:12px;padding:16px;background:#f3f6f9;border-radius:8px;margin:0 0 22px}.contact-inbox .field{display:grid;gap:6px;min-width:220px}.portal-app .portal-content .contact-inbox .field label{font-size:11px!important;font-weight:600;margin:0;color:#607587}.portal-app .portal-content .contact-inbox select{font-size:13px!important;min-height:40px!important;background:#fff;border:1px solid #cbd9e3;border-radius:6px;padding:9px 12px}.portal-app .portal-content .contact-inbox .btn,.portal-app .portal-content .message-dialog .btn{font-size:12px!important;font-weight:600!important;min-height:38px!important;border-radius:6px!important;padding:9px 14px!important;line-height:1.5!important}.portal-app .portal-content .contact-inbox th{background:#f7f9fb!important;font-size:11px!important;font-weight:600!important;color:#607587;padding:12px 16px!important}.portal-app .portal-content .contact-inbox td{font-size:13px!important;font-weight:400!important;padding:18px 16px!important;line-height:1.7;border-color:#e5ecf1!important;vertical-align:middle!important}.contact-inbox .tablewrap{border:1px solid #e0e8ee;border-radius:8px}.contact-inbox .message-actions{display:flex;gap:8px}.contact-inbox tbody tr:hover{background:#f8fafc}.contact-inbox .tag{font-size:11px;font-weight:600;border-radius:5px}
+.portal-app .portal-content .message-modal{position:fixed;inset:0;z-index:1100;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(9,29,46,.62)}.portal-app .portal-content .message-dialog{display:flex;flex-direction:column;width:min(760px,100%);max-height:90dvh;min-width:0;border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 24px 80px #071f323d;color:#19394f}.message-dialog *{min-width:0;box-sizing:border-box;overflow-wrap:anywhere}.message-modal-header{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 28px;border-bottom:1px solid #e0e8ef}.portal-app .portal-content .message-modal-header h2{font-size:21px!important;letter-spacing:-.025em;margin:0 0 6px!important}.message-modal-header p{font-size:12px!important;font-weight:400!important;line-height:1.7;color:#607587;margin:0}.message-dialog-body{overflow-y:auto;min-height:0;padding:24px 28px;scrollbar-width:thin}.message-sender-card{display:flex;align-items:center;gap:14px;padding-bottom:22px;border-bottom:1px solid #e3ebf1;margin-bottom:22px}.message-sender-avatar{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:#e5eff6;color:#345e7a;font-size:14px;font-weight:650;flex-shrink:0}.message-sender-info{flex:1}.message-sender-info strong{display:block;font-size:14px;font-weight:650}.message-sender-info span{display:block;font-size:12px;color:#607587;margin-top:4px}.message-section-title{font-size:14px;font-weight:700;margin:0 0 16px;color:#19394f}.message-detail{margin:0 0 18px}.message-detail label,.reply-field label{display:block;font-size:11px;font-weight:600;color:#607587;margin-bottom:7px}.portal-app .portal-content .message-detail p{font-size:14px!important;font-weight:400!important;line-height:1.8;margin:0;color:#345269}.message-body{white-space:pre-wrap;word-break:break-word}.message-divider{border-top:1px solid #e3ebf1;margin:24px 0}.portal-app .portal-content .reply-field textarea{display:block;width:100%;min-height:160px;resize:vertical;border:1px solid #bfceda;border-radius:8px;background:#fbfcfd;padding:14px;font-size:13px;line-height:1.8;color:#23485f}.portal-app .portal-content .reply-help{font-size:11px!important;color:#607587;font-weight:400!important;line-height:1.7;margin:10px 0 0}.message-dialog-footer{display:flex;justify-content:flex-end;gap:10px;padding:16px 28px;background:#f5f8fa;border-top:1px solid #e1e9ef;flex-shrink:0}.message-disabled-note,.reply-notice{font-size:12px;padding:14px 16px;border-radius:8px;background:#edf5f0;color:#326347}.reply-error{font-size:12px;padding:12px;background:#fff0ee;color:#9b4038;border-radius:6px;margin-bottom:14px}.message-dialog :focus-visible,.contact-inbox :focus-visible{outline:3px solid #0078b5;outline-offset:3px}
+@media(max-width:600px){.portal-app .portal-content .message-modal{padding:12px}.portal-app .portal-content .message-dialog{max-height:94dvh}.message-modal-header,.message-dialog-body,.message-dialog-footer{padding:18px}.contact-inbox .message-filter{flex-wrap:wrap}.contact-inbox .field{min-width:0;flex:1}.portal-app .portal-content .contact-inbox .card{padding:18px!important}.message-sender-card{flex-wrap:wrap}}
+</style>
 </asp:Content>
 <asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
 <input type="hidden" name="csrfToken" value="<%= H(CsrfToken) %>" />
@@ -292,7 +26,7 @@
                 <span class="avatar">CO</span>
             </header>
 
-            <main>
+            <main class="contact-inbox">
                 <div class="heading">
                     <h1>Contact Messages</h1>
                     <p>
@@ -309,14 +43,14 @@
 
                 <section class="card">
 
-                    <h2>Contact Us Inbox</h2>
+                    <h2>Inbox</h2>
 
                     <!-- Status Filter -->
                     <div class="message-filter">
 
                         <div class="field">
                             <label for="statusFilter">
-                                Filter by Status
+                                Message status
                             </label>
 
                             <select id="statusFilter" name="status">
@@ -378,7 +112,7 @@
                 <div class="message-modal-header">
                     <div>
                         <h2 id="messageModalTitle">
-                            Message Details &amp; Reply
+                            Message &amp; response
                         </h2>
                         <p>
                             Review the inquiry and send a response

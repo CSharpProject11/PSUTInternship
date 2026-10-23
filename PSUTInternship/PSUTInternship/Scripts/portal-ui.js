@@ -162,3 +162,16 @@ document.addEventListener('DOMContentLoaded',function(){
         dialog.addEventListener('cancel',function(event){event.preventDefault();dialog.querySelector('[data-profile-cancel]').click();});
     });
 });
+// Prepare password settings before activation; never retain entered credentials on close.
+(function(){
+function passwordLink(link){if(!link)return null;const url=new URL(link.href,location.href);return /\/ChangePassword\.aspx$/i.test(url.pathname)&&url.origin===location.origin?url:null;}
+function prepare(link){const url=passwordLink(link);if(!url)return null;let dialog=document.getElementById('accountPasswordOverlay');if(dialog)return dialog;
+ dialog=document.createElement('dialog');dialog.id='accountPasswordOverlay';dialog.setAttribute('aria-label','Change password');const frame=document.createElement('iframe');frame.title='Change password';url.searchParams.set('embedded','1');frame.src=url.href;dialog.appendChild(frame);document.body.appendChild(dialog);
+ dialog.addEventListener('close',function(){try{frame.contentDocument.querySelectorAll('.password-input-wrap input').forEach(function(input){input.value='';input.type='password';});frame.contentDocument.querySelectorAll('.password-visibility').forEach(function(button){button.textContent='Show';button.setAttribute('aria-pressed','false');button.setAttribute('aria-label','Show password');});}catch(e){frame.src=url.href;}});return dialog;}
+function warm(){if(window.parent!==window)return;const link=Array.from(document.querySelectorAll('a[href]')).find(passwordLink);if(link)prepare(link);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',warm);else warm();
+document.addEventListener('pointerover',function(event){prepare(event.target.closest('a[href]'));});
+document.addEventListener('focusin',function(event){prepare(event.target.closest('a[href]'));});
+document.addEventListener('click',function(event){const link=event.target.closest('a[href]');if(!passwordLink(link))return;event.preventDefault();const dialog=prepare(link);if(!dialog.open)dialog.showModal();});
+window.addEventListener('message',function(event){if(event.origin!==location.origin)return;const dialog=document.getElementById('accountPasswordOverlay');if(!dialog||event.source!==dialog.querySelector('iframe').contentWindow)return;if(event.data&&event.data.type==='password-settings-height'&&Number.isFinite(event.data.height)){dialog.style.height=Math.min(event.data.height,window.innerHeight*0.94)+'px';}if(event.data==='close-password-settings')dialog.close();});
+})();

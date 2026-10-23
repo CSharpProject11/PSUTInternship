@@ -3,217 +3,19 @@
 <link href="Coordinator.css" rel="stylesheet" />
 
     <style>
-        .account-container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        .account-banner {
-            background: linear-gradient(120deg, #172e52, #28528b);
-            border-radius: 15px;
-            padding: 28px;
-            color: white;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 24px;
-        }
-
-        .account-avatar {
-            width: 72px;
-            height: 72px;
-            border-radius: 18px;
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 27px;
-            font-weight: 700;
-            flex-shrink: 0;
-        }
-
-        .account-banner h2 {
-            color: white;
-            font-size: 22px;
-            margin: 0 0 7px;
-        }
-
-        .account-banner p {
-            color: #d4e3fa;
-            font-size: 14px;
-            margin: 0;
-        }
-
-        .account-section {
-            background: white;
-            border: 1px solid #e0e8f2;
-            border-radius: 13px;
-            padding: 27px;
-            margin-bottom: 22px;
-        }
-
-        .account-section-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 22px;
-        }
-
-        .account-section-icon {
-            width: 41px;
-            height: 41px;
-            background: #edf3fc;
-            color: #255c9b;
-            border-radius: 11px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 19px;
-        }
-
-        .account-section-title h2 {
-            margin: 0;
-            font-size: 19px;
-            color: #172b4d;
-        }
-
-        .account-section-title p {
-            color: #73849e;
-            margin: 5px 0 0;
-            font-size: 13px;
-        }
-
-        .account-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 20px;
-        }
-
-        .account-field {
-            min-width: 0;
-        }
-
-        .account-field label {
-            display: block;
-            color: #344c70;
-            font-size: 13px;
-            font-weight: 600;
-            margin-bottom: 9px;
-        }
-
-        .account-input {
-            box-sizing: border-box;
-            width: 100%;
-            padding: 13px 14px;
-            border: 1px solid #d5e0ee;
-            border-radius: 8px;
-            outline: none;
-            background: white;
-            color: #172b4d;
-            font-size: 14px;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .account-input:focus {
-            border-color: #2d67ad;
-            box-shadow: 0 0 0 3px rgba(45,103,173,0.1);
-        }
-
-        .account-input:disabled {
-            background: #f3f6fa;
-            color: #657891;
-            cursor: not-allowed;
-        }
-
-        .account-hint {
-            display: block;
-            font-size: 12px;
-            color: #8491a6;
-            margin-top: 7px;
-        }
-
-        .password-wrapper {
-            display: flex;
-            align-items: stretch;
-            position: relative;
-        }
-
-        .password-wrapper .account-input {
-            padding-right: 74px;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            border: none;
-            background: transparent;
-            color: #245b9d;
-            cursor: pointer;
-            padding: 8px;
-            font-weight: 600;
-            font-size: 12px;
-        }
-
-        .account-buttons {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 23px;
-        }
-
-        .account-save {
-            background: #245da4;
-            border: none;
-            color: white;
-            padding: 12px 23px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .account-save:hover {
-            background: #194983;
-        }
-
-        .account-save.security {
-            background: #142f53;
-        }
-
-        .account-save.security:hover {
-            background: #234a7c;
-        }
-
-        .security-info {
-            background: #f1f6fd;
-            color: #476181;
-            padding: 13px;
-            border-radius: 8px;
-            font-size: 13px;
-            margin-top: 19px;
-        }
-
-        @media (max-width: 700px) {
-            .account-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .account-banner {
-                padding: 20px;
-            }
-
-            .account-avatar {
-                width: 58px;
-                height: 58px;
-            }
-
-            .account-section {
-                padding: 20px;
-            }
-        }
-    </style><link rel="stylesheet" href="Coordinator.css?v=review2" />
+.portal-app .portal-content .account-container{max-width:1050px;margin:0 auto;color:#19364b}.account-container .heading{padding-bottom:24px;margin-bottom:24px;border-bottom:1px solid #dce5ec}.portal-app .portal-content .account-container .heading h1{font-size:30px!important;letter-spacing:-.035em;margin:0 0 8px!important}.account-container .heading p{font-size:13px!important;color:#607587;line-height:1.7;margin:0}
+.portal-app .portal-content .account-banner{display:flex;align-items:center;gap:18px;padding:24px 28px;background:#f2f6f9!important;color:#19364b!important;border:1px solid #dce6ed;border-radius:12px;margin-bottom:24px}.account-avatar{display:grid;place-items:center;width:60px;height:60px;flex-shrink:0;border-radius:50%;background:#003e73;color:#fff;font-size:18px;font-weight:700}.portal-app .portal-content .account-banner h2{font-size:22px!important;letter-spacing:-.025em;color:#19364b!important;margin:0 0 5px!important}.portal-app .portal-content .account-banner p{font-size:12px!important;font-weight:400;color:#607587!important;margin:0;line-height:1.7}
+.portal-app .portal-content .account-section{display:grid;grid-template-columns:240px minmax(0,1fr);column-gap:36px;background:#fff;border:1px solid #dfe7ed;border-radius:12px;padding:28px;margin-bottom:22px}.account-section-title{grid-column:1;grid-row:1 / span 3;align-self:start}.account-section-icon{display:none}.portal-app .portal-content .account-section-title h2{font-size:16px!important;letter-spacing:-.015em;margin:0 0 8px!important;color:#193b53}.account-section-title p{font-size:12px!important;font-weight:400;color:#607587;line-height:1.8;margin:0;max-width:25ch}
+.portal-app .portal-content .account-section .account-grid{grid-column:2;display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:18px!important}.portal-app .portal-content .account-readonly>div{padding-bottom:16px;border-bottom:1px solid #e6edf2}.portal-app .portal-content .account-readonly p{font-size:11px!important;font-weight:500;color:#607587;margin:0 0 6px!important}.portal-app .portal-content .account-readonly strong{font-size:14px!important;font-weight:600;color:#25485f;overflow-wrap:anywhere}.account-field{min-width:0}.account-field label{display:block;font-size:12px!important;font-weight:600;color:#486479;margin-bottom:8px}
+.portal-app .portal-content .account-input{width:100%!important;min-height:44px;border:1px solid #cbd9e3!important;border-radius:6px!important;background:#fff;padding:11px 13px;font-size:13px!important;color:#193b53;box-sizing:border-box}.password-wrapper{position:relative}.password-wrapper .account-input{padding-right:65px}.portal-app .portal-content .toggle-password{position:absolute;right:8px;top:50%;transform:translateY(-50%);padding:6px!important;min-height:30px!important;min-width:0!important;border:0!important;border-radius:4px;background:transparent!important;color:#345e7c!important;font-size:11px!important;cursor:pointer}
+.account-buttons{grid-column:2;display:flex;justify-content:flex-start;gap:10px;margin-top:20px}.portal-app .portal-content .account-save{display:inline-flex;align-items:center;justify-content:center;width:auto!important;min-height:40px;padding:10px 17px!important;border:1px solid #003e73!important;border-radius:6px!important;background:#003e73!important;color:#fff!important;font-size:12px!important;font-weight:650!important;cursor:pointer;box-shadow:none!important}.portal-app .portal-content .account-save:hover{background:#002f59!important}.security-info{grid-column:2;background:#f4f7fa;padding:12px 14px;border-radius:6px;color:#607587;font-size:11px!important;font-weight:400!important;line-height:1.8;margin-top:18px}.account-container .notice{padding:14px 16px;background:#edf4f9;color:#254c68;font-size:13px;border-radius:8px;margin-bottom:20px}
+.portal-app .portal-content .account-edit-dialog{width:min(480px,calc(100vw - 32px));padding:26px;border:0;border-radius:12px;color:#193b53;box-shadow:0 24px 70px #071f3233}.account-edit-dialog::backdrop{background:#071f3299}.account-edit-dialog h2{font-size:20px!important;margin:0 0 22px}.account-edit-dialog label{display:block;font-size:12px;font-weight:600;margin:18px 0 8px}.account-edit-dialog p{font-size:12px!important;color:#607587}.portal-app .portal-content .account-edit-dialog button:not(.account-save){background:#fff;color:#486479;border:1px solid #ccd9e3;border-radius:6px;padding:10px 16px;font-size:12px}.account-container :focus-visible{outline:3px solid #0078b5;outline-offset:3px}
+@media(max-width:750px){.portal-app .portal-content .account-section{grid-template-columns:minmax(0,1fr);padding:20px;gap:20px}.account-section-title{grid-column:1;grid-row:auto}.account-section-title p{max-width:none}.portal-app .portal-content .account-section .account-grid,.account-buttons,.security-info{grid-column:1}.account-buttons,.security-info{margin-top:0}.portal-app .portal-content .account-banner{padding:20px}.portal-app .portal-content .account-container .heading h1{font-size:25px!important}}
+/* A dedicated settings composition, isolated from generic portal cards. */
+.portal-app .portal-content .account-container{max-width:1120px!important;margin:0 auto!important}.coordinator-settings{display:grid;grid-template-columns:285px minmax(0,1fr);gap:28px;align-items:start}.settings-identity{padding:28px 24px;border:1px solid #dce5ed;border-radius:14px;background:#f1f5f8;position:sticky;top:24px}.settings-monogram{display:grid;place-items:center;width:64px;height:64px;border-radius:50%;background:#003e73;color:#fff;font-weight:700;font-size:20px;margin-bottom:20px}.portal-app .portal-content .settings-identity h2{font-size:21px!important;letter-spacing:-.025em;margin:0 0 6px!important;overflow-wrap:anywhere}.settings-identity>p{font-size:12px!important;color:#607587;margin:0}.settings-identity dl{padding-top:24px;margin:0}.settings-identity dl>div{margin-bottom:20px}.settings-identity dt{font-size:10px;font-weight:600;color:#607587;margin-bottom:6px}.settings-identity dd{font-size:12px;line-height:1.8;margin:0;color:#34566f;overflow-wrap:anywhere}.settings-identity nav{border-top:1px solid #dce5ed;padding-top:14px;margin-top:24px}.settings-identity nav a{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;font-weight:600;text-decoration:none;color:#34566f;padding:12px 0}.settings-identity nav a:hover{color:#0078b5}.settings-content{min-width:0;border:1px solid #dce5ed;border-radius:14px;background:#fff;overflow:hidden}
+.portal-app .portal-content .settings-content .account-section{display:block!important;border:0!important;border-bottom:1px solid #e2e9ef!important;border-radius:0!important;box-shadow:none!important;background:#fff!important;padding:28px 30px!important;margin:0!important;scroll-margin-top:20px}.portal-app .portal-content .settings-content .account-section:last-child{border-bottom:0!important}.portal-app .portal-content .settings-content .account-section-title{display:block!important;margin:0 0 24px!important}.portal-app .portal-content .settings-content .account-section-title h2{font-size:18px!important;letter-spacing:-.02em;margin:0 0 7px!important}.portal-app .portal-content .settings-content .account-section-title p{max-width:52ch;font-size:12px!important;line-height:1.7!important}.portal-app .portal-content .settings-content .account-readonly{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:22px!important}.portal-app .portal-content .settings-content .account-readonly>div{border:0!important;padding:0!important}.portal-app .portal-content .settings-content .account-security-stack{max-width:460px;gap:18px!important}.portal-app .portal-content .settings-content .account-input{background:#fbfcfd!important;min-height:46px!important}.portal-app .portal-content .settings-content .account-input:focus{background:#fff!important;border-color:#0078b5!important}.settings-content .account-buttons{margin-top:24px;padding-top:20px;border-top:1px solid #e6edf2;justify-content:flex-end}.settings-content .security-info{max-width:460px;background:transparent!important;padding:0!important;color:#607587;font-size:11px!important;line-height:1.8;margin-top:14px}.settings-content .account-edit-dialog .account-buttons{border:0;padding:0}.settings-content .account-edit-dialog{max-height:90dvh;overflow:auto}
+@media(max-width:850px){.coordinator-settings{grid-template-columns:minmax(0,1fr);gap:20px}.settings-identity{position:static;display:grid;grid-template-columns:64px minmax(0,1fr);column-gap:18px;padding:22px}.settings-monogram{grid-row:1/3;margin:0}.settings-identity dl,.settings-identity nav{grid-column:1/-1}.settings-identity nav{display:flex;gap:24px;margin-top:4px}.settings-identity dl{display:flex;flex-wrap:wrap;gap:18px 30px}.settings-identity dl>div{margin:0}.portal-app .portal-content .settings-content .account-section{padding:22px!important}}@media(max-width:500px){.portal-app .portal-content .settings-content .account-readonly{grid-template-columns:1fr!important}.settings-identity nav{display:block}}
+</style><link rel="stylesheet" href="Coordinator.css?v=review2" />
 </asp:Content>
 <asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
 <input type="hidden" name="csrfToken" value="<%= H(CsrfToken) %>" />
@@ -235,7 +37,7 @@
                     <div class="account-container">
 
                         <div class="heading">
-                            <h1>Account Settings</h1>
+                            <h1>My account</h1>
                             <p>
                                 Manage your contact information
                                 and account security.
@@ -248,37 +50,17 @@
                             </div>
                         <% } %>
 
-                        <!-- Account Banner -->
-                        <div class="account-banner">
-                            <div class="account-avatar">CO</div>
-
-                            <div>
+                        <div class="coordinator-settings">
+                            <aside class="settings-identity">
+                                <div class="settings-monogram" aria-hidden="true">CO</div>
                                 <h2><%= H(FullName) %></h2>
-                                <p>University Internship Coordinator</p>
-                                <p>Primary System Administrator</p>
-                            </div>
-                        </div>
+                                <p>Internship coordinator</p>
+                                <dl><div><dt>Sign-in email</dt><dd><%= H(Email) %></dd></div><div><dt>Account access</dt><dd>Coordinator workspace</dd></div></dl>
+                                <nav aria-label="Account sections"><a href="#contactSettings">Contact details <span aria-hidden="true">→</span></a><a href="#passwordSettings">Password &amp; security <span aria-hidden="true">→</span></a></nav>
+                            </aside>
+                            <div class="settings-content">                        <!-- Contact Information -->
 
-                        <!-- Profile Information -->
-                        <section class="account-section">
-
-                            <div class="account-section-title">
-                                <div class="account-section-icon">
-                                    &#9787;
-                                </div>
-
-                                <div>
-                                    <h2>Profile Information</h2>
-                                    <p>Your official account identity</p>
-                                </div>
-                            </div>
-
-                            <div class="account-grid account-readonly"><div><p>Full Name</p><strong><%= H(FullName) %></strong></div><div><p>Account Role</p><strong>Internship coordinator</strong></div></div>
-</section>
-
-                        <!-- Contact Information -->
-<p id="emailHelp">Your sign-in email is managed through Firebase Authentication. You can update your phone number here.</p>
-                        <section class="account-section">
+                        <section class="account-section" id="contactSettings">
 
                             <div class="account-section-title">
                                 <div class="account-section-icon">
@@ -286,18 +68,18 @@
                                 </div>
 
                                 <div>
-                                    <h2>Contact Information</h2>
-                                    <p>Update your email address and phone number</p>
+                                    <h2>Contact details</h2>
+                                    <p>Review your sign-in email and keep your phone number up to date.</p>
                                 </div>
                             </div>
 
                             <div class="account-grid account-readonly"><div><p>Email</p><strong><%= H(Email) %></strong></div><div><p>Phone</p><strong><%= H(Phone) %></strong></div></div>
-<div class="account-buttons"><button type="button" class="account-save" onclick="document.getElementById('contactEditor').showModal()">Edit</button></div>
+<div class="account-buttons"><button type="button" class="account-save" onclick="document.getElementById('contactEditor').showModal()">Edit contact details</button></div>
 <dialog id="contactEditor" class="account-edit-dialog"><h2>Edit contact information</h2><label for="accountEmail">Email</label><input id="accountEmail" name="email" type="email" value="<%= H(Email) %>" readonly class="account-input"/><p>Email changes require authentication re-verification.</p><label for="accountPhone">Phone</label><input id="accountPhone" name="phone" type="tel" value="<%= H(Phone) %>" class="account-input"/><div class="account-buttons"><button type="button" onclick="document.getElementById('contactEditor').close()">Cancel</button><button type="submit" name="accountAction" value="saveContact" class="account-save" onclick="return validateContact()" formnovalidate>Save Changes</button></div></dialog>
 </section>
 
                         <!-- Security Settings -->
-                        <section class="account-section">
+                        <section class="account-section" id="passwordSettings">
 
                             <div class="account-section-title">
                                 <div class="account-section-icon">
@@ -305,8 +87,8 @@
                                 </div>
 
                                 <div>
-                                    <h2>Security Settings</h2>
-                                    <p>Update your account password securely</p>
+                                    <h2>Password &amp; security</h2>
+                                    <p>Choose a new password to protect your coordinator account.</p>
                                 </div>
                             </div>
 
@@ -322,7 +104,7 @@
                                                class="account-input"
                                                type="password"
                                                name="currentPassword"
-                                               autocomplete="off"
+                                               autocomplete="current-password"
                                                 value=""
                                                placeholder="Enter current password" />
 
@@ -392,7 +174,8 @@
                                         onclick="return validatePassword()">
                                     Update Password
                                 </button>
-                            </div>
+                            </div></div>
+                    </div>
 
                         </section>
 

@@ -3,13 +3,17 @@ const F = window.MeetingFirebase; const $ = id => document.getElementById(id);
 let meetings = [];
 function note(s, ok = false) { const e = $('studentMessage'); e.textContent = s; e.className = 'form-feedback ' + (ok ? 'success' : 'error'); }
 function chosen() { return $('studentAccount').value; }
+function studentMeetingCard(m, actions) {
+    const safe = F.safe;
+    return `<article class="student-meeting-row"><div class="student-meeting-main"><span class="student-meeting-status">${safe(m.status)}</span><h3>${safe(m.title || 'Supervisor meeting')}</h3><p>${safe(m.purpose || 'Meeting with your academic supervisor')}</p>${m.notes ? `<p class="student-meeting-notes">${safe(m.notes)}</p>` : ''}</div><dl class="student-meeting-facts"><div><dt>Date &amp; time</dt><dd>${safe(m.date || m.meetingDate || 'Not scheduled')} · ${safe(m.time || m.meetingTime || '')}</dd></div><div><dt>Academic supervisor</dt><dd>${safe(m.supervisorName || 'Not recorded')}</dd></div><div><dt>Duration</dt><dd>${safe(m.duration || '—')} min</dd></div></dl><div class="student-meeting-actions">${actions}</div></article>`;
+}
 function render() {
     const list = meetings.filter(m => m.studentId === chosen());
     $('studentChip').textContent = '● ' + ($('studentAccount').selectedOptions[0]?.textContent || 'Student');
     $('studentTotal').textContent = list.length;
     for (const [id, status] of [['studentPending', 'Pending'], ['studentAccepted', 'Accepted']]) $(id).textContent = list.filter(m => m.status === status).length;
-    $('studentInvitations').innerHTML = list.filter(m => m.status === 'Pending').map(m => F.card(m, `<div class="card-actions"><button type="button" class="accept-button" data-reply="Accepted" data-id="${F.safe(m.id)}"><i class="bi bi-check-circle"></i> Accept</button></div>`)).join('') || F.empty;
-    $('studentUpcoming').innerHTML = list.filter(m => m.status === 'Accepted').map(m => F.card(m, `<a class="join-button" href="${F.safe(F.roomLink(m))}" target="_blank" rel="noopener noreferrer"><i class="bi bi-camera-video"></i> Join Meeting</a>`)).join('') || F.empty;
+    $('studentInvitations').innerHTML = list.filter(m => m.status === 'Pending').map(m => studentMeetingCard(m, `<div class="card-actions"><button type="button" class="accept-button" data-reply="Accepted" data-id="${F.safe(m.id)}"><i class="bi bi-check-circle"></i> Accept</button></div>`)).join('') || F.empty;
+    $('studentUpcoming').innerHTML = list.filter(m => m.status === 'Accepted').map(m => studentMeetingCard(m, `<a class="join-button" href="${F.safe(F.roomLink(m))}" target="_blank" rel="noopener noreferrer"><i class="bi bi-camera-video"></i> Join Meeting</a>`)).join('') || F.empty;
 }
 async function refresh() { try { meetings = await F.meetings(); render(); } catch (e) { note(e.message); } }
 document.addEventListener('click', async e => {
