@@ -204,6 +204,7 @@
     <Content Include="Student\Opportunities.aspx" />
     <Content Include="Student\StudentNav.ascx" />
     <Content Include="Student\studentprofile.aspx" />
+	  <Content Include="Student\MyTasks.aspx" />
     <Content Include="Student\StudentProgress.aspx" />
     <Content Include="Student\studenttaskes.aspx" />
     <Content Include="ViewSwitcher.ascx" />
@@ -236,6 +237,13 @@
     <Compile Include="Academic\FinalEvaluation.aspx.designer.cs">
       <DependentUpon>FinalEvaluation.aspx</DependentUpon>
     </Compile>
+	  <Compile Include="Student\MyTasks.aspx.cs">
+		  <DependentUpon>MyTasks.aspx</DependentUpon>
+		  <SubType>ASPXCodeBehind</SubType>
+	  </Compile>
+	  <Compile Include="Student\MyTasks.aspx.designer.cs">
+		  <DependentUpon>MyTasks.aspx</DependentUpon>
+	  </Compile>
     <Compile Include="Academic\StudentProgress.aspx.cs">
       <DependentUpon>StudentProgress.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

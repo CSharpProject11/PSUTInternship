@@ -1,356 +1,266 @@
-﻿using Newtonsoft.Json.Linq;
+
+
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
+using Newtonsoft.Json.Linq;
+using PSUTInternship.Models;
+using PSUTInternship.Shared;
 
-namespace WebApplication1
+namespace PSUTInternship.Student
 {
-    public partial class StudentProgress : System.Web.UI.Page
+    public partial class MyProgress : PortalPage
     {
-        protected async void Page_Load(object sender, EventArgs e)
+        protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                await LoadTotalTasks();
-                await LoadSubmittedTasks();
-                await LoadTaskProgress();
-                await LoadFeedback();
-                await LoadTrainingProgress();
-                await LoadCompletionReport();
-                await LoadEvaluations();
+                RegisterAsyncTask(
+                    new PageAsyncTask(LoadProgress)
+                );
             }
         }
 
-            private async Task LoadTotalTasks()
+        private static bool IsCompleted(string status)
         {
-            string studentId = "student1"; //for test
-            HttpClient client = new HttpClient();
+            return IsStatus(status, "Completed", "Complete", "Reviewed");
+        }
 
-            string url = "https://teacher-124b2-default-rtdb.firebaseio.com/tasks.json";
+        private static bool IsSubmitted(string status)
+        {
+            return IsStatus(status, "Submitted");
+        }
 
-            string json = await client.GetStringAsync(url);
+        private static bool IsReassigned(string status)
+        {
+            return IsStatus(
+                status,
+                "Reassign",
+                "Reassigned",
+                "Revision Requested"
+            );
+        }
 
-            if (json == "null")
+        private static bool IsStatus(
+            string status,
+            params string[] allowed)
+        {
+            return allowed.Any(value =>
+                string.Equals(
+                    status?.Trim(),
+                    value,
+                    StringComparison.OrdinalIgnoreCase
+                ));
+        }
+
+        private static DateTime ParseDate(string value)
+        {
+            DateTime date;
+
+            return DateTime.TryParse(value, out date)
+                ? date
+                : DateTime.MaxValue;
+        }
+
+        private static string ReadText(
+            JObject source,
+            params string[] keys)
+        {
+            if (source == null)
+                return "";
+
+            foreach (string key in keys)
             {
-                lblTotalTasks.Text = "0";
-                return;
-            }
+                var token = source[key];
 
-            JObject tasks = JObject.Parse(json);
-
-            int totalTasks = 0;
-
-            foreach (var task in tasks.Properties())
-            {
-                string taskStudentId = (string)task.Value["studentId"];
-
-                if (taskStudentId == studentId)
+                if (token != null &&
+                    token.Type != JTokenType.Null)
                 {
-                    totalTasks++;
+                    string value = token.ToString().Trim();
+
+                    if (!string.IsNullOrWhiteSpace(value))
+                        return value;
                 }
             }
 
-            lblTotalTasks.Text = totalTasks.ToString();
-        
+            return "";
         }
 
-        private async Task LoadSubmittedTasks()
+        private async Task LoadProgress()
         {
-            string studentId = "student1"; //for test
-
-            HttpClient client = new HttpClient();
-
-            string url = "https://teacher-124b2-default-rtdb.firebaseio.com/taskSubmissions.json";
-
-            string json = await client.GetStringAsync(url);
-
-            if (json == "null")
+            try
             {
-                lblSubmittedTasks.Text = "0";
-                return;
-            }
+                lblMessage.Text = "";
 
-            JObject submissions = JObject.Parse(json);
+                var tasks =
+                    await PortalRepository.Collection("tasks");
 
-            int submittedTasks = 0;
+                var placement =
+                    await PortalRepository.PlacementForStudent(
+                        PortalRepository.UserId
+                    );
 
-            foreach (var submission in submissions.Properties())
-            {
-                string submissionStudentId =
-                    (string)submission.Value["studentId"];
+                string internshipId = placement == null
+                    ? ""
+                    : DatabaseSchema.Id(placement);
 
-                if (submissionStudentId == studentId)
-                {
-                    submittedTasks++;
-                }
-            }
-
-            lblSubmittedTasks.Text = submittedTasks.ToString();
-        }
-
-        private async Task LoadTaskProgress()
-        {
-            string studentId = "student1";
-
-            HttpClient client = new HttpClient();
-
-            string tasksUrl = "https://teacher-124b2-default-rtdb.firebaseio.com/tasks.json";
-
-            string submissionsUrl = "https://teacher-124b2-default-rtdb.firebaseio.com/taskSubmissions.json";
-            string feedbackUrl = "https://teacher-124b2-default-rtdb.firebaseio.com/taskFeedback.json";
-
-            string tasksJson = await client.GetStringAsync(tasksUrl);
-            string submissionsJson = await client.GetStringAsync(submissionsUrl);
-            string feedbackJson = await client.GetStringAsync(feedbackUrl);
-
-            if (tasksJson == "null")
-            {
-                lblNoTasks.Visible = true;
-                return;
-            }
-
-            JObject tasks = JObject.Parse(tasksJson);
-
-            JObject submissions = submissionsJson == "null" ? new JObject(): JObject.Parse(submissionsJson);
-
-            JObject feedback = feedbackJson == "null"? new JObject(): JObject.Parse(feedbackJson);
-
-            var taskList = new List<object>();
-
-            foreach (var task in tasks.Properties())
-            {
-                string taskId = task.Name;
-                string taskStudentId = (string)task.Value["studentId"];
-
-                if (taskStudentId != studentId)
-                {
-                    continue;
-                }
-
-                JToken submission = submissions[taskId];
-
-                bool isSubmitted =
-                    submission != null &&
-                    (string)submission["studentId"] == studentId;
-                JToken taskFeedback = feedback[taskId];
-
-                string status = (string)task.Value["status"];
-
-                if (string.IsNullOrWhiteSpace(status))
-                {
-                    status = isSubmitted ? "Submitted" : "Pending";
-                }
-                taskList.Add(new
-                {
-                    Title = (string)task.Value["title"] ?? "Untitled Task",
-                    SubmissionDate = isSubmitted
-                        ? (string)submission["submittedAt"] ?? "—"
-                        : "—",
-                    Status = status
-                });
-            }
-
-            rptTasks.DataSource = taskList;
-            rptTasks.DataBind();
-
-            lblNoTasks.Visible = taskList.Count == 0;
-        }
-
-        private async Task LoadFeedback()
-        {
-            string studentId = "student1";
-
-            HttpClient client = new HttpClient();
-
-            string url = "https://teacher-124b2-default-rtdb.firebaseio.com/taskFeedback.json";
-
-            string json = await client.GetStringAsync(url);
-
-            if (json == "null")
-            {
-                lblNoEvaluations.Visible = true;
-                lblRevisions.Text = "0";
-                return;
-            }
-
-            JObject feedback = JObject.Parse(json);
-
-            var feedbackList = new List<object>();
-
-            int revisions = 0;
-
-            foreach (var item in feedback.Properties())
-            {
-                string feedbackStudentId = (string)item.Value["studentId"];
-
-                if (feedbackStudentId != studentId)
-                {
-                    continue;
-                }
-
-                string status = (string)item.Value["status"];
-
-                if (status == "Revision Requested")
-                {
-                    revisions++;
-                }
-
-                feedbackList.Add(new
-                {
-                    Title = "Task Feedback - " + item.Name,
-                    Comments = (string)item.Value["comments"]
-                });
-            }
-
-            rptEvaluations.DataSource = feedbackList;
-            rptEvaluations.DataBind();
-
-            lblNoEvaluations.Visible = feedbackList.Count == 0;
-            lblRevisions.Text = revisions.ToString();
-        }
-
-        private async Task LoadTrainingProgress()
-        {
-            string studentId = "student1";
-
-            HttpClient client = new HttpClient();
-
-            string url = "https://teacher-124b2-default-rtdb.firebaseio.com/trainingProgress/"  + studentId + ".json";
-
-            string json = await client.GetStringAsync(url);
-
-            if (json == "null")
-            {
-                lblApprovedHours.Text = "0";
-                lblHoursProgress.Text = "No training hours available";
-                return;
-            }
-
-            JObject data = JObject.Parse(json);
-
-            int requiredHours = (int)data["requiredHours"];
-            int approvedHours = (int)data["approvedHours"];
-
-            lblApprovedHours.Text = approvedHours.ToString();
-
-            lblHoursProgress.Text = approvedHours + " / " + requiredHours + " hours";
-
-            double percentage = 0;
-
-            if (requiredHours > 0)
-            {
-                percentage = (double)approvedHours / requiredHours * 100;
-            }
-            lblPercentage.Text = percentage.ToString("0.0") + "%";
-            progressFill.Style["width"] =
-                Math.Min(percentage, 100).ToString(
-                    System.Globalization.CultureInfo.InvariantCulture) + "%";
-        }
-
-        private async Task LoadCompletionReport()
-        {
-            string studentId = "student1";
-
-            HttpClient client = new HttpClient();
-
-            string url = "https://teacher-124b2-default-rtdb.firebaseio.com/completionReports/"
-                         + studentId + ".json";
-
-            string json = await client.GetStringAsync(url);
-
-            if (json == "null")
-            {
-                lblReportStatus.Text = "No completion report available";
-                lnkReport.Visible = false;
-                return;
-            }
-
-            JObject data = JObject.Parse(json);
-
-            bool approved = (bool?)data["approvedByCoordinator"] ?? false;
-            string reportUrl = (string)data["reportUrl"];
-
-            Uri pdfLink;
-
-            bool validUrl = Uri.TryCreate(reportUrl, UriKind.Absolute, out pdfLink)
-                && pdfLink.Scheme == Uri.UriSchemeHttps;
-
-            if (approved && validUrl)
-            {
-                lblReportStatus.Text = "Approved by Coordinator";
-
-                lnkReport.NavigateUrl = pdfLink.AbsoluteUri;
-                lnkReport.Visible = true;
-            }
-            else
-            {
-                lblReportStatus.Text = approved
-                    ? "Approved - Report not available yet"
-                    : "Awaiting Coordinator Approval";
-
-                lnkReport.Visible = false;
-            }
-        }
-
-        private async Task LoadEvaluations()
-        {
-            string studentId = "student1";
-
-            HttpClient client = new HttpClient();
-
-            string url = "https://teacher-124b2-default-rtdb.firebaseio.com/evaluations.json";
-
-            string json = await client.GetStringAsync(url);
-
-            if (json == "null")
-            {
-                lblNoInternshipEvaluations.Visible = true;
-                return;
-            }
-
-            JObject evaluations = JObject.Parse(json);
-
-            var evaluationList = new List<object>();
-
-            foreach (var item in evaluations.Properties())
-            {
-                string evaluationStudentId =
-                    (string)item.Value["studentId"];
-
-                string status =
-                    (string)item.Value["status"];
-
-                // عرض تقييمات الطالب الجاهزة فقط
-                if (evaluationStudentId == studentId &&
-                    status == "submitted")
-                {
-                    evaluationList.Add(new
+                var studentTasks = tasks
+                    .Select(item =>
                     {
-                        Title = (string)item.Value["evaluationType"]
-                                ?? "Internship Evaluation",
+                        StudentTask task =
+                            item.Value.ToObject<StudentTask>();
 
-                        Comments = (string)item.Value["comments"]
-                                   ?? "No comments provided."
-                    });
-                }
+                        task.TaskId = item.Key;
+
+                        return new
+                        {
+                            Task = task,
+                            Data = item.Value
+                        };
+                    })
+                    .Where(item =>
+                        item.Task.Active &&
+                        item.Task.StudentId == PortalRepository.UserId &&
+                        !string.IsNullOrWhiteSpace(internshipId) &&
+                        item.Task.InternshipId == internshipId)
+                    .ToList();
+
+                // TASK STATISTICS
+                int total = studentTasks.Count;
+
+                int completed = studentTasks.Count(item =>
+                    IsCompleted(item.Task.Status));
+
+                int submitted = studentTasks.Count(item =>
+                    IsSubmitted(item.Task.Status));
+
+                int reassigned = studentTasks.Count(item =>
+                    IsReassigned(item.Task.Status));
+
+                double percentage = total == 0
+                    ? 0
+                    : (double)completed / total * 100;
+
+                // UPDATE DASHBOARD
+                litTotal.Text = total.ToString();
+
+                litCompleted.Text = completed.ToString();
+
+                litSubmitted.Text = submitted.ToString();
+
+                litReassigned.Text = reassigned.ToString();
+
+                litPercentage.Text =
+                    Math.Round(percentage).ToString("0") + "%";
+
+                litProgressDescription.Text =
+                    completed + " of " + total + " tasks completed";
+
+                // CIRCULAR PROGRESS
+                progressRing.Style["--progress"] =
+                    percentage.ToString(
+                        "0.##",
+                        CultureInfo.InvariantCulture
+                    );
+
+                // TASK TRACKING
+                var taskRows = studentTasks
+                    .OrderBy(item =>
+                        ParseDate(item.Task.DueDate))
+                    .Select(item => new
+                    {
+                        Title = item.Task.Title,
+                        Status = item.Task.Status,
+                        DueDate = item.Task.DueDate
+                    })
+                    .ToList();
+
+                rptProgressTasks.DataSource = taskRows;
+                rptProgressTasks.DataBind();
+
+                pnlNoTasks.Visible = taskRows.Count == 0;
+
+                // SUPERVISOR FEEDBACK
+                var feedbackRows = studentTasks
+                    .Select(item => new
+                    {
+                        Title = item.Task.Title,
+                        Status = item.Task.Status,
+
+                        Feedback = ReadText(
+                            item.Data,
+                            "supervisorFeedback",
+                            "feedback",
+                            "revisionNotes"
+                        )
+                    })
+                    .Where(item =>
+                        !string.IsNullOrWhiteSpace(item.Feedback))
+                    .Select(item => new
+                    {
+                        item.Title,
+                        item.Status,
+                        item.Feedback
+                    })
+                    .ToList();
+
+                rptFeedback.DataSource = feedbackRows;
+                rptFeedback.DataBind();
+
+                pnlNoFeedback.Visible =
+                    feedbackRows.Count == 0;
+            }
+            catch (Exception ex)
+            {
+                lblMessage.Text =
+                    "<pre style='white-space:pre-wrap;direction:ltr'>" +
+                    Server.HtmlEncode(ex.ToString()) +
+                    "</pre>";
             }
 
-            rptInternshipEvaluations.DataSource = evaluationList;
-            rptInternshipEvaluations.DataBind();
+        }
+        protected string GetStatusText(object status)
+        {
+            string value = Convert.ToString(status)?.Trim();
 
-            lblNoInternshipEvaluations.Visible =
-                evaluationList.Count == 0;
+            switch (value?.ToLowerInvariant())
+            {
+                case "reviewed":
+                case "complete":
+                case "completed":
+                    return "Completed";
+
+                case "revision requested":
+                case "reassigned":
+                case "reassign":
+                    return "Reassign";
+
+                case "submitted":
+                    return "Submitted";
+
+                case "assigned":
+                case "pending":
+                    return "Assigned";
+
+                default:
+                    return value ?? "";
+            }
         }
 
+        protected string GetStatusClass(object status)
+        {
+            string value = GetStatusText(status);
 
-
-
+            switch (value)
+            {
+                case "Completed": return "completed";
+                case "Submitted": return "submitted";
+                case "Reassign": return "reassign";
+                default: return "assigned";
+            }
+        }
     }
 }
-     
-    
