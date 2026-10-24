@@ -56,9 +56,12 @@ namespace PSUTInternship.Shared
                     .Where(x => x.CompanyId == CompanyId).ToList();
                 CompanyProfile = profileTask.GetAwaiter().GetResult() ?? CompanyProfile;
                 var tasks = taskRows.GetAwaiter().GetResult();
-                foreach(var trainee in TraineeRows){trainee.TasksTotal=tasks.Values.Count(x=>(string)x["studentId"]==trainee.StudentId&&(bool?)x["active"]!=false);trainee.TasksCompleted=tasks.Values.Count(x=>(string)x["studentId"]==trainee.StudentId&&(bool?)x["active"]!=false&&(string)x["status"]=="Reviewed");}
-                foreach(var app in ApplicationRows){var opening=OpportunityRows.FirstOrDefault(x=>x.Id==app.OpportunityId);if(opening!=null)app.Opportunity=opening.Title;
-                    if (app.Details == null || string.IsNullOrWhiteSpace(app.Details.StudentName)) { var student = PortalRepository.Get<JObject>("students/"+PortalRepository.Key(app.StudentId)).GetAwaiter().GetResult(); app.Student = (string)student?["fullName"]; }}
+                foreach (var trainee in TraineeRows) { trainee.TasksTotal = tasks.Values.Count(x => (string)x["studentId"] == trainee.StudentId && (bool?)x["active"] != false); trainee.TasksCompleted = tasks.Values.Count(x => (string)x["studentId"] == trainee.StudentId && (bool?)x["active"] != false && (string)x["status"] == "Reviewed"); }
+                foreach (var app in ApplicationRows)
+                {
+                    var opening = OpportunityRows.FirstOrDefault(x => x.Id == app.OpportunityId); if (opening != null) app.Opportunity = opening.Title;
+                    if (app.Details == null || string.IsNullOrWhiteSpace(app.Details.StudentName)) { var student = PortalRepository.Get<JObject>("students/" + PortalRepository.Key(app.StudentId)).GetAwaiter().GetResult(); app.Student = (string)student?["fullName"]; }
+                }
                 return true;
             }
             catch (Exception)
@@ -85,7 +88,7 @@ namespace PSUTInternship.Shared
                     continue;
                 }
                 CompanyTrainee trainee = record.Value as CompanyTrainee;
-                if (trainee != null) { trainee.Id = record.Key; var student = await PortalRepository.Get<JObject>("students/"+PortalRepository.Key(trainee.StudentId)).ConfigureAwait(false); trainee.StudentName = trainee.StudentName ?? (string)student?["fullName"]; var opening = await PortalRepository.Get<JObject>("opportunities/"+PortalRepository.Key(trainee.OpportunityId)).ConfigureAwait(false); trainee.OpportunityTitle = trainee.OpportunityTitle ?? (string)opening?["title"]; }
+                if (trainee != null) { trainee.Id = record.Key; var student = await PortalRepository.Get<JObject>("students/" + PortalRepository.Key(trainee.StudentId)).ConfigureAwait(false); trainee.StudentName = trainee.StudentName ?? (string)student?["fullName"]; var opening = await PortalRepository.Get<JObject>("opportunities/" + PortalRepository.Key(trainee.OpportunityId)).ConfigureAwait(false); trainee.OpportunityTitle = trainee.OpportunityTitle ?? (string)opening?["title"]; }
                 CompanyTaskSubmission submission = record.Value as CompanyTaskSubmission;
                 if (submission != null) submission.Id = record.Key;
             }
@@ -100,19 +103,19 @@ namespace PSUTInternship.Shared
 
         protected string CreateOpportunity(CompanyOpportunity opportunity)
         {
-            opportunity.Id=Guid.NewGuid().ToString("N"); opportunity.CompanyId=CompanyId;
+            opportunity.Id = Guid.NewGuid().ToString("N"); opportunity.CompanyId = CompanyId;
             UpdateOpportunity(opportunity); return opportunity.Id;
         }
         protected void UpdateOpportunity(CompanyOpportunity opportunity)
         {
-            opportunity.CompanyId=CompanyId;
+            opportunity.CompanyId = CompanyId;
             var fields = JObject.FromObject(opportunity); fields.Remove("Id");
-            var changes = fields.Properties().ToDictionary(x => "opportunities/"+opportunity.Id+"/"+x.Name, x => (object)x.Value);
-            FirebaseRestClient.PatchAsync("",changes,IdToken).GetAwaiter().GetResult();
+            var changes = fields.Properties().ToDictionary(x => "opportunities/" + opportunity.Id + "/" + x.Name, x => (object)x.Value);
+            FirebaseRestClient.PatchAsync("", changes, IdToken).GetAwaiter().GetResult();
         }
-        protected void UpdateOpportunityStatus(string id,bool isOpen)
+        protected void UpdateOpportunityStatus(string id, bool isOpen)
         {
-            var row=OpportunityRows.First(x=>x.Id==id);row.IsOpen=isOpen;UpdateOpportunity(row);
+            var row = OpportunityRows.First(x => x.Id == id); row.IsOpen = isOpen; UpdateOpportunity(row);
         }
         protected void UpdateApplication(string id, string status, string rejectionReason)
         {
@@ -142,9 +145,22 @@ namespace PSUTInternship.Shared
         protected bool TryFirebase(Action action)
         {
             try { action(); return true; }
+            catch (System.Net.Http.HttpRequestException ex)
+            {
+                // FirebaseRestClient includes the HTTP status and Firebase's safe error detail,
+                // while deliberately omitting the request URL and its authentication token.
+                FirebaseError = "Firebase could not save the change: " + ex.Message;
+                return false;
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Show expected workflow failures such as a full opportunity or a stale decision.
+                FirebaseError = ex.Message;
+                return false;
+            }
             catch (Exception)
             {
-                FirebaseError = "Firebase could not save the change. Check the user login and database rules.";
+                FirebaseError = "Could not save the change because of an unexpected server error. Please try again.";
                 return false;
             }
         }

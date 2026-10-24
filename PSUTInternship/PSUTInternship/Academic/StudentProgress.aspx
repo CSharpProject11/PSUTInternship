@@ -1,6 +1,7 @@
 <%@ Page Title="Student Progress Monitor | UIMS" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true"
     CodeBehind="StudentProgress.aspx.cs"
     Inherits="PSUTInternship.Academic.StudentProgress" %>
+
 <asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
 <style>
 /* Scoped to academic progress; the portal shell owns typography and navigation. */
@@ -181,7 +182,7 @@ body.portal-app .portal-content .academic-progress .action-cell .btn i{display:n
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
                             <asp:TextBox ID="txtSearch" runat="server" CssClass="ap-search-input" placeholder="Search student, ID or company" aria-label="Search student, ID or company" />
                         </div>
-                        <div class="ap-status-select"><asp:DropDownList ID="ddlStatus" runat="server" CssClass="ap-status-input" aria-label="Filter students by progress status"><asp:ListItem Value="All">All students</asp:ListItem><asp:ListItem Value="On Track">On track</asp:ListItem><asp:ListItem Value="At Risk">Needs attention</asp:ListItem><asp:ListItem Value="Not Started">Not started</asp:ListItem><asp:ListItem Value="Completed">Completed</asp:ListItem></asp:DropDownList></div>
+                        <div class="ap-status-select"><asp:DropDownList ID="ddlStatus" runat="server" CssClass="ap-status-input" aria-label="Filter students by progress status"><asp:ListItem Value="All">All students</asp:ListItem><asp:ListItem Value="On Track">On track</asp:ListItem><asp:ListItem Value="At Risk">Needs attention</asp:ListItem><asp:ListItem Value="Awaiting Certificate">Awaiting certificate</asp:ListItem><asp:ListItem Value="Not Started">Not started</asp:ListItem><asp:ListItem Value="Completed">Completed</asp:ListItem></asp:DropDownList></div>
                         <asp:Button ID="btnFilter" runat="server" Text="Search" CssClass="btn ap-search-submit" OnClick="btnFilter_Click" />
                         <asp:Button ID="btnReset" runat="server" Text="Clear" CssClass="btn btn-light ap-clear" OnClick="btnReset_Click" />
                     </div>

@@ -15,13 +15,13 @@ namespace PSUTInternship.Academic
     {
 
         /// <summary>
-        /// form1 control.
+        /// lblPageError control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+        protected global::System.Web.UI.WebControls.Label lblPageError;
 
         /// <summary>
         /// lblSupervisorName control.
@@ -31,15 +31,6 @@ namespace PSUTInternship.Academic
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblSupervisorName;
-
-        /// <summary>
-        /// lblPageError control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblPageError;
 
         /// <summary>
         /// lblTotal control.
@@ -294,6 +285,15 @@ namespace PSUTInternship.Academic
         protected global::System.Web.UI.WebControls.Label lblEvaluationRecommendation;
 
         /// <summary>
+        /// lblEvaluationDate control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblEvaluationDate;
+
+        /// <summary>
         /// lblEvaluationComments control.
         /// </summary>
         /// <remarks>
@@ -310,15 +310,6 @@ namespace PSUTInternship.Academic
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblEvaluationScore;
-
-        /// <summary>
-        /// lblEvaluationDate control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblEvaluationDate;
 
         /// <summary>
         /// btnCloseEvaluation control.

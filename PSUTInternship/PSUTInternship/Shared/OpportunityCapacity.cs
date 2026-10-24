@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -11,6 +12,14 @@ namespace PSUTInternship.Shared
 {
     public static class OpportunityCapacity
     {
+        private static string ReadEtag(HttpResponseMessage response)
+        {
+            if (response.Headers.ETag != null) return response.Headers.ETag.ToString();
+            IEnumerable<string> values;
+            if (response.Headers.TryGetValues("ETag", out values)) return values.FirstOrDefault();
+            return null;
+        }
+
         private static string ReservationKey(string id)
         {
             using (var hash = SHA256.Create())
@@ -46,7 +55,8 @@ namespace PSUTInternship.Shared
                 {
                     using (var read = new HttpRequestMessage(HttpMethod.Get, url))
                     {
-                        read.Headers.TryAddWithoutValidation("X-Firebase-ETag", "true");
+                        if (!read.Headers.TryAddWithoutValidation("X-Firebase-ETag", "true"))
+                            throw new InvalidOperationException("The Firebase ETag request header could not be added.");
                         using (var response = await FirebaseConfig.Client.SendAsync(read).ConfigureAwait(false))
                         {
                             response.EnsureSuccessStatusCode();
@@ -57,10 +67,11 @@ namespace PSUTInternship.Shared
                             opening["seatReservations"] = reservations;
                             opening["occupiedSeats"] = reservations.Count;
                             if (reservations.Count >= (int)opening["availableSeats"]) opening["status"] = false;
-                            if (response.Headers.ETag == null) throw new InvalidOperationException("Seat availability could not be verified.");
+                            string etag = ReadEtag(response);
+                            if (string.IsNullOrWhiteSpace(etag)) throw new InvalidOperationException("Firebase did not return an ETag for the opportunity. Check that the database endpoint supports conditional requests and that the X-Firebase-ETag header is preserved.");
                             using (var save = new HttpRequestMessage(HttpMethod.Put, url))
                             {
-                                save.Headers.TryAddWithoutValidation("if-match", response.Headers.ETag.ToString());
+                                save.Headers.TryAddWithoutValidation("if-match", etag);
                                 save.Content = new StringContent(opening.ToString(), Encoding.UTF8, "application/json");
                                 using (var saved = await FirebaseConfig.Client.SendAsync(save).ConfigureAwait(false))
                                 {
@@ -93,7 +104,8 @@ namespace PSUTInternship.Shared
             {
                 using (var read = new HttpRequestMessage(HttpMethod.Get, url))
                 {
-                    read.Headers.TryAddWithoutValidation("X-Firebase-ETag", "true");
+                    if (!read.Headers.TryAddWithoutValidation("X-Firebase-ETag", "true"))
+                        throw new InvalidOperationException("The Firebase ETag request header could not be added.");
                     using (var response = await FirebaseConfig.Client.SendAsync(read).ConfigureAwait(false))
                     {
                         response.EnsureSuccessStatusCode();
@@ -109,10 +121,11 @@ namespace PSUTInternship.Shared
                         opening["seatReservations"] = reservations;
                         opening["occupiedSeats"] = reservations.Count;
                         if (reservations.Count >= capacity.Value) opening["status"] = false;
-                        if (response.Headers.ETag == null) throw new InvalidOperationException("Seat availability could not be verified. Refresh and retry.");
+                        string etag = ReadEtag(response);
+                        if (string.IsNullOrWhiteSpace(etag)) throw new InvalidOperationException("Firebase did not return an ETag for the opportunity. Check that the database endpoint supports conditional requests and that the X-Firebase-ETag header is preserved.");
                         using (var save = new HttpRequestMessage(HttpMethod.Put, url))
                         {
-                            save.Headers.TryAddWithoutValidation("if-match", response.Headers.ETag.ToString());
+                            save.Headers.TryAddWithoutValidation("if-match", etag);
                             save.Content = new StringContent(opening.ToString(), Encoding.UTF8, "application/json");
                             using (var saved = await FirebaseConfig.Client.SendAsync(save).ConfigureAwait(false))
                             {

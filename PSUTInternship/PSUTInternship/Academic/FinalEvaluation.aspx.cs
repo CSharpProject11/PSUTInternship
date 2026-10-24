@@ -58,16 +58,21 @@ namespace PSUTInternship.Academic
             return new HashSet<string>((await PSUTInternship.Shared.PortalRepository.Collection("students")).Keys, StringComparer.Ordinal);
         }
 
-        protected void Opportunity_Changed(object sender, EventArgs e) { RegisterAsyncTask(new PageAsyncTask(async () => {
-            try {
-                var placements = await PSUTInternship.Shared.PortalRepository.Collection("internships");
-                var ids = new HashSet<string>(placements.Values.Where(x => (string)x["opportunityId"] == Opportunity.SelectedValue && (string)x["academicSupervisorId"] == SupervisorId).Select(x => (string)x["studentId"]));
-                var students = await PSUTInternship.Shared.PortalRepository.Collection("students");
-                ddlStudent.Items.Clear(); ddlStudent.Items.Add(new ListItem("Select assigned student", ""));
-                foreach (var student in students.Where(x => ids.Contains(x.Key))) ddlStudent.Items.Add(new ListItem(Val(student.Value, "fullName", student.Key), student.Key));
-                pnlReport.Visible = false;
-            } catch (Exception ex) { HandleFailure(ex); }
-        })); }
+        protected void Opportunity_Changed(object sender, EventArgs e)
+        {
+            RegisterAsyncTask(new PageAsyncTask(async () => {
+                try
+                {
+                    var placements = await PSUTInternship.Shared.PortalRepository.Collection("internships");
+                    var ids = new HashSet<string>(placements.Values.Where(x => (string)x["opportunityId"] == Opportunity.SelectedValue && (string)x["academicSupervisorId"] == SupervisorId).Select(x => (string)x["studentId"]));
+                    var students = await PSUTInternship.Shared.PortalRepository.Collection("students");
+                    ddlStudent.Items.Clear(); ddlStudent.Items.Add(new ListItem("Select assigned student", ""));
+                    foreach (var student in students.Where(x => ids.Contains(x.Key))) ddlStudent.Items.Add(new ListItem(Val(student.Value, "fullName", student.Key), student.Key));
+                    pnlReport.Visible = false;
+                }
+                catch (Exception ex) { HandleFailure(ex); }
+            }));
+        }
         protected void ddlStudent_SelectedIndexChanged(object sender, EventArgs e)
         {
             RegisterAsyncTask(new PageAsyncTask(LoadSelectedAsync));
@@ -101,8 +106,9 @@ namespace PSUTInternship.Academic
             var tasksTask = ReadAsync("tasks");
             var submissionsTask = ReadAsync("submissions");
             var evaluationsTask = ReadAsync("evaluations");
+            var trainingHoursTask = ReadAsync("trainingHours");
             var reportsTask = Task.FromResult<JToken>(null);
-            await Task.WhenAll(iTask, companyTask, tasksTask, submissionsTask, evaluationsTask, reportsTask);
+            await Task.WhenAll(iTask, companyTask, tasksTask, submissionsTask, evaluationsTask, trainingHoursTask, reportsTask);
 
             var internship = Children(iTask.Result)
                 .Where(x => Val(x.Value, "studentId") == studentId && Val(x.Value, "academicSupervisorId") == SupervisorId && Val(x.Value, "opportunityId") == Opportunity.SelectedValue)
@@ -114,7 +120,8 @@ namespace PSUTInternship.Academic
                 StudentName = Val(student, "fullName", "Unknown"),
                 StudentNumber = Val(student, "studentNumber", "Not recorded"),
                 InternshipId = internship.Key,
-                ApprovedHours = Number(internship.Value, "approvedHours"),
+                ApprovedHours = internship.Value == null ? 0 : (double)PSUTInternship.Shared.CoordinatorData.ApprovedHours(
+                    trainingHoursTask.Result as JObject ?? new JObject(), internship.Key, studentId),
                 RequiredHours = Number(internship.Value, "requiredHours")
             };
             if (report.RequiredHours <= 0) report.RequiredHours = Number(student, "requiredHours");
