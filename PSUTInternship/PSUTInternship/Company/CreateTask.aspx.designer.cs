@@ -1,5 +1,7 @@
 namespace PSUTInternship.Company {
     public partial class CreateTask {
+        protected global::System.Web.UI.WebControls.TextBox TrainingHours;
+        protected global::System.Web.UI.WebControls.Label TrainingHoursError;
         protected global::System.Web.UI.WebControls.Label PageMessage;
         protected global::System.Web.UI.WebControls.Label ErrorTitel;
         protected global::System.Web.UI.WebControls.DropDownList Opportunity;

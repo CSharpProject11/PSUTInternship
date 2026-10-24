@@ -14,5 +14,6 @@
   document.getElementById('opportunityCount').textContent=count+' '+(count===1?'opportunity':'opportunities')+' found';
   document.getElementById('opportunityNoMatches').hidden=count!==0||cards.length===0;
  }
+ document.getElementById('opportunityReset')?.addEventListener('click',()=>{search.value='';work.value='';status.value='open';applied.value='';filter();search.focus();});
  search.addEventListener('input',filter);[work,status,applied].forEach(control=>control.addEventListener('change',filter));filter();
 })();

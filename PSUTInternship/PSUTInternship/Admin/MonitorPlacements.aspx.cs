@@ -30,6 +30,8 @@ public partial class MonitorPlacements : PortalPage
     {
         public string Id { get; set; }
         public string Student { get; set; }
+        public string StudentNumber { get; set; }
+        public string Email { get; set; }
         public string Company { get; set; }
         public string Supervisor { get; set; }
         public decimal Hours { get; set; }
@@ -51,6 +53,7 @@ public partial class MonitorPlacements : PortalPage
     private async Task LoadFirebase()
     {
         CoordinatorData.RequireCoordinator();
+        await OpportunityCapacity.Synchronize();
         var internships = await CoordinatorData.Read("internships");
         var users = await CoordinatorData.Read("users");
         var students = await CoordinatorData.Read("students");
@@ -79,7 +82,7 @@ public partial class MonitorPlacements : PortalPage
             var hourLogs=CoordinatorData.Items(hours).Select(x=>x.Value).Where(x=>CoordinatorData.BelongsTo(x,item.Key,studentId)).OrderByDescending(x=>CoordinatorData.Str(x,"date")).Select(x=>new HourLog { Date=CoordinatorData.Str(x,"date"),Hours=CoordinatorData.Number(x,"hours"),Description=CoordinatorData.Str(x,"description"),Status=CoordinatorData.Str(x,"status") }).ToList();
             string internshipStatus=CoordinatorData.Str(i,"status");
             string displayStatus=internshipStatus=="completed" ? "Completed" : (required>0 && approved<required && !string.IsNullOrEmpty(CoordinatorData.Str(i,"endDate")) && string.CompareOrdinal(CoordinatorData.Str(i,"endDate"),TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow,"Jordan Standard Time").ToString("yyyy-MM-dd"))<0 ? "At Risk" : "On Track");
-            Data.Add(new Placement { Id=item.Key, Student=CoordinatorData.Str(st,"fullName","Unknown student"), Company=CoordinatorData.Str(company,"name",CoordinatorData.Str(st,"company","Unassigned")), Supervisor=CoordinatorData.Str(supervisor,"fullName",CoordinatorData.Str(st,"academicSupervisorName","Unassigned")), Hours=approved,Required=required,Status=displayStatus, EvaluationStatus=CoordinatorData.EvaluationStatus(ev),AcademicEvaluation=CoordinatorData.EvaluationStatus(ev),AcademicFeedback=CoordinatorData.Str(ev,"comments"),CompanyEvaluation=CoordinatorData.EvaluationStatus(companyEvaluation),CompanyFeedback=CoordinatorData.Str(companyEvaluation,"comments"),CompanyScore=Score(companyEvaluation),AcademicScore=Score(ev),HourLogs=hourLogs,Tasks=taskModels });
+            Data.Add(new Placement { Id=item.Key, StudentNumber=CoordinatorData.Str(st,"studentNumber",studentId),Email=CoordinatorData.Str(st,"email",CoordinatorData.Str(CoordinatorData.Get(users,studentId),"email")), Student=CoordinatorData.Str(st,"fullName","Unknown student"), Company=CoordinatorData.Str(company,"name",CoordinatorData.Str(st,"company","Unassigned")), Supervisor=CoordinatorData.Str(supervisor,"fullName",CoordinatorData.Str(st,"academicSupervisorName","Unassigned")), Hours=approved,Required=required,Status=displayStatus, EvaluationStatus=CoordinatorData.EvaluationStatus(ev),AcademicEvaluation=CoordinatorData.AcademicResult(ev),AcademicFeedback=CoordinatorData.Str(ev,"comments"),CompanyEvaluation=CoordinatorData.EvaluationStatus(companyEvaluation),CompanyFeedback=CoordinatorData.Str(companyEvaluation,"comments"),CompanyScore=Score(companyEvaluation),AcademicScore=CoordinatorData.AcademicResult(ev),HourLogs=hourLogs,Tasks=taskModels });
         }
     }
 
@@ -88,6 +91,7 @@ public partial class MonitorPlacements : PortalPage
     protected string Status = "All";
     protected string ViewMode = "";
 
+    protected int VisibleCount { get { return Data.Count(x => (Status == "All" || x.Status == Status) && (x.Student.IndexOf(Search, StringComparison.OrdinalIgnoreCase) >= 0 || x.Company.IndexOf(Search, StringComparison.OrdinalIgnoreCase) >= 0)); } }
     protected int Total = 0;
     protected int OnTrack = 0;
     protected int AtRisk = 0;
@@ -110,7 +114,12 @@ public partial class MonitorPlacements : PortalPage
 
         CoordinatorData.RequireCoordinator();
         try { await LoadFirebase(); }
-        catch(Exception ex) { FirebaseError = ex.Message; }
+        catch(Exception ex) { Data.Clear(); FirebaseError = ex.Message; }
+        if (Request.QueryString["export"] == "xlsx" && string.IsNullOrEmpty(FirebaseError))
+        {
+            ExportAllPlacements();
+            return;
+        }
         Total = Data.Count;
         OnTrack = Data.Count(x => x.Status == "On Track");
         AtRisk = Data.Count(x => x.Status == "At Risk");
@@ -142,6 +151,33 @@ public partial class MonitorPlacements : PortalPage
 
 
         }
+    }
+
+    private bool exporting;
+    private void ExportAllPlacements()
+    {
+        CoordinatorData.RequireCoordinator();
+        string[] headers = { "University ID", "Student", "Email", "Company", "Academic supervisor", "Placement ID", "Assigned tasks", "Reviewed tasks", "Approved hours", "Required hours", "Progress (%)", "Placement status", "Company evaluation", "Company score", "Academic result" };
+        var records = Data.OrderBy(x => x.Student, StringComparer.OrdinalIgnoreCase).ThenBy(x => x.Id).Select(x => new object[] {
+            x.StudentNumber, x.Student, x.Email, x.Company, x.Supervisor, x.Id,
+            x.Tasks == null ? 0 : x.Tasks.Count, x.Tasks == null ? 0 : x.Tasks.Count(t => t.Status == "Reviewed"),
+            x.Hours, x.Required, x.Required > 0 ? (object)GetProgress(x) : "Target not set", x.Status,
+            x.CompanyEvaluation, x.CompanyScore, x.AcademicEvaluation
+        });
+        byte[] workbook = SpreadsheetExport.Create(headers, records);
+        Response.Clear();
+        Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+        Response.Cache.SetCacheability(HttpCacheability.NoCache);
+        Response.Cache.SetNoStore();
+        Response.AddHeader("Content-Disposition", "attachment; filename=PSUT-Student-Placements-" + TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Jordan Standard Time").ToString("yyyy-MM-dd") + ".xlsx");
+        Response.AddHeader("X-Content-Type-Options", "nosniff");
+        Response.BinaryWrite(workbook);
+        exporting = true;
+        Context.ApplicationInstance.CompleteRequest();
+    }
+    protected override void Render(HtmlTextWriter writer)
+    {
+        if (!exporting) base.Render(writer);
     }
 
     private static string Score(JObject evaluation)
@@ -215,8 +251,8 @@ public partial class MonitorPlacements : PortalPage
 
         if (filteredStudents.Count == 0)
         {
-            return "<tr><td colspan='8' class='empty-cell'>" +
-                   H(string.IsNullOrEmpty(FirebaseError) ? "No internship records found." : FirebaseError) +
+            return "<tr><td colspan='5' class='empty-cell'>" +
+                   H(string.IsNullOrEmpty(FirebaseError) ? (Total > 0 ? "No placements match these filters. Try another name or reset the filters." : "No placements yet. Confirmed internships will appear here.") : FirebaseError) +
                    "</td></tr>";
         }
 
@@ -230,48 +266,18 @@ public partial class MonitorPlacements : PortalPage
 
             string statusClass =
                 student.Status == "At Risk" ? "bad" :
-                student.Status == "Completed" ? "ok" : "warn";
+                student.Status == "Completed" ? "ok" : "neutral";
 
-            string progressHtml =
-                "<div class='progress-cell'>" +
-                    "<span class='progress-number'>" +
-                        progress + "%" +
-                    "</span>" +
-                    "<div class='progress-bar'>" +
-                        "<div class='progress-fill' style='width:" +
-                            progress + "%'></div>" +
-                    "</div>" +
-                "</div>";
-
-            string actions =
-                "<div class='student-actions'>" +
-
-                    "<a class='btn secondary' href='MonitorPlacements.aspx?id=" +
-                        HttpUtility.UrlEncode(student.Id) +
-                        "&amp;view=tasks'>" +
-                        "View Tasks" +
-                    "</a>" +
-
-                    "<a class='btn' href='MonitorPlacements.aspx?id=" +
-                        HttpUtility.UrlEncode(student.Id) +
-                        "&amp;view=evaluation'>" +
-                        "View Evaluations" +
-                    "</a>" +
-                "</div>";
-
-            return
-                "<tr>" +
-                    "<td>" + H(student.Student) + "</td>" +
-                    "<td>" + H(student.Company) + "</td>" +
-                    "<td>" + H(student.Supervisor) + "</td>" +
-                    "<td class='task-count'>" + totalTasks + " Tasks</td>" +
-                    "<td>" + student.Hours + " / " +
-                        student.Required + " hrs</td>" +
-                    "<td>" + progressHtml + "</td>" +
-                    "<td><span class='tag " + statusClass + "'>" +
-                        H(student.Status) + "</span></td>" +
-                    "<td>" + actions + "</td>" +
-                "</tr>";
+            string query = "&amp;search=" + HttpUtility.UrlEncode(Search) + "&amp;status=" + HttpUtility.UrlEncode(Status);
+            string link = "MonitorPlacements.aspx?id=" + HttpUtility.UrlEncode(student.Id) + query;
+            string progressHtml = "<div class='placement-hours'><strong>" + student.Hours + "</strong> / " + student.Required + " hrs</div>" +
+                "<div class='progress-cell'><div class='progress-bar'><div class='progress-fill' style='width:" + progress + "%'></div></div><span>" + (student.Required > 0 ? progress + "%" : "Target not set") + "</span></div>";
+            return "<tr>" +
+                "<td data-label='Student'><strong class='placement-student'>" + H(student.Student) + "</strong><span class='placement-company'>" + H(student.Company) + "</span></td>" +
+                "<td data-label='Academic supervisor'>" + H(student.Supervisor) + "</td>" +
+                "<td data-label='Training progress'>" + progressHtml + "</td>" +
+                "<td data-label='Status'><span class='tag " + statusClass + "'>" + H(student.Status) + "</span></td>" +
+                "<td data-label='Review'><div class='placement-actions'><a class='btn placement-task-button' href='" + link + "&amp;view=tasks'>Tasks <span>" + totalTasks + "</span></a><a class='btn placement-evaluation-button' href='" + link + "&amp;view=evaluation'>Evaluations</a></div></td></tr>";
         }));
     }
 

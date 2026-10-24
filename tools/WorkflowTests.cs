@@ -17,6 +17,10 @@ using PSUTInternship.Shared;
 
 public static class WorkflowTests
 {
+    private sealed class BlockedRequestContext : SynchronizationContext
+    {
+        public override void Post(SendOrPostCallback callback, object state) { /* Request thread is synchronously waiting, like Web Forms. */ }
+    }
     private static int passed;
     static void Assert(bool condition, string description)
     { if (!condition) throw new Exception(description); passed++; Console.WriteLine("PASS " + description); }
@@ -52,6 +56,28 @@ public static class WorkflowTests
     }
     private static async Task Run(string output)
     {
+        byte[] workbook = SpreadsheetExport.Create(new[] { "Student ID", "Student", "Hours" }, new[] { new object[] { "00123", "مرحبا & <student>", 2.5m }, new object[] { "=1+1", "Example", 0 } });
+        using (var archive = new System.IO.Compression.ZipArchive(new MemoryStream(workbook), System.IO.Compression.ZipArchiveMode.Read))
+        {
+            Assert(archive.GetEntry("[Content_Types].xml") != null && archive.GetEntry("xl/workbook.xml") != null, "placement export is a real XLSX package");
+            var sheet = System.Xml.Linq.XDocument.Load(archive.GetEntry("xl/worksheets/sheet1.xml").Open());
+            System.Xml.Linq.XNamespace sheetNs = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+            Assert(sheet.Descendants(sheetNs + "row").Count() == 3 && sheet.Descendants(sheetNs + "v").Any(x => x.Value == "2.5"), "Excel export preserves all rows and fractional hours as numbers");
+            Assert(sheet.Descendants(sheetNs + "t").Any(x => x.Value == "00123") && sheet.Descendants(sheetNs + "t").Any(x => x.Value == "مرحبا & <student>") && !sheet.Descendants(sheetNs + "f").Any(), "Excel export preserves IDs and Unicode while treating formula-looking input as text");
+            Assert((string)sheet.Descendants(sheetNs + "autoFilter").Single().Attribute("ref") == "A1:C3" && (string)sheet.Descendants(sheetNs + "pane").Single().Attribute("state") == "frozen", "Excel export has complete filters and a frozen header");
+        }
+        File.WriteAllBytes(Path.Combine(output, "placements-export-fixture.xlsx"), workbook);
+        string draft = ContactReplyMailer.DraftUri("student+intern@example.com", "Hours & progress? #1", "Hello & welcome\r\nمرحبا");
+        Assert(draft.StartsWith("https://mail.google.com/mail/?view=cm&fs=1&to=student%2Bintern%40example.com&su="), "contact reply recipient comes from the stored email and preserves plus addressing");
+        var draftQuery = HttpUtility.ParseQueryString(draft.Substring(draft.IndexOf('?') + 1));
+        Assert(draftQuery["su"] == "Re: Hours & progress? #1" && draftQuery["body"] == "Hello & welcome\r\nمرحبا" && draftQuery.Count == 5, "Gmail draft escapes subject, multiline Unicode body and header-like punctuation");
+        bool invalidEmail = false;
+        try { ContactReplyMailer.DraftUri("person@example.com\r\nBcc:other@example.com", "Subject", "Body"); } catch (FormatException) { invalidEmail = true; }
+        Assert(invalidEmail, "Gmail draft rejects a recipient containing injected headers");
+        Assert(ContactReplyMailer.ResolveSetting("mail-test", (name, scope) => scope == EnvironmentVariableTarget.User ? "saved-user-value" : null) == "saved-user-value", "SMTP reads saved user settings when the server inherited an empty environment");
+        Assert(ContactReplyMailer.ResolveSetting("mail-test", (name, scope) => scope == EnvironmentVariableTarget.Process ? "process-override" : "saved-value") == "process-override", "explicit server SMTP settings take priority over saved settings");
+        Assert(ContactReplyMailer.ResolveSetting("mail-test", (name, scope) => scope == EnvironmentVariableTarget.Machine ? "machine-value" : " ") == "machine-value", "SMTP supports machine configuration when other scopes are empty");
+        Assert(ContactReplyMailer.ResolveSetting("mail-test", (name, scope) => null) == null, "SMTP still reports missing configuration instead of inventing credentials");
         Assert(PortalRoles.Normalize("Academic Supervisor") == "academic" && PortalRoles.Normalize("coordinator") == "admin", "legacy role names use the same authorization roles");
         Identity("coordinator-check", "coordinator");
         CoordinatorData.RequireCoordinator();
@@ -60,6 +86,11 @@ public static class WorkflowTests
         Assert(!CoordinatorData.BelongsTo(JObject.Parse("{'internshipId':'old','studentId':'s'}"), "current", "s"), "a student match cannot override an explicit different placement");
         Assert(CoordinatorData.TaskStatus(JObject.Parse("{'status':'reviewed'}")) == "Reviewed", "monitor displays the actual reviewed task state");
         Assert(CoordinatorData.EvaluationStatus(JObject.Parse("{'status':'draft','overallScore':100,'totalMaximum':100}")) == "Pending", "draft evaluations cannot appear as passing");
+        Assert(CoordinatorData.AcademicResult(null) == "—", "a missing academic review is not presented as a failure");
+        Assert(CoordinatorData.AcademicResult(JObject.Parse("{'status':'draft','recommendation':'Pass'}")) == "—", "a draft recommendation is not a final academic result");
+        Assert(CoordinatorData.AcademicResult(JObject.Parse("{'status':'submitted','recommendation':'Pass','overallScore':85}")) == "Pass", "academic display uses the submitted Pass recommendation");
+        Assert(CoordinatorData.AcademicResult(JObject.Parse("{'status':'submitted','recommendation':'Not Pass','overallScore':85}")) == "Fail", "legacy Not Pass recommendations display consistently as Fail");
+        Assert(CoordinatorData.AcademicResult(JObject.Parse("{'status':'submitted','recommendation':'More information required'}")) == "—", "an undecided legacy review is not relabeled as Fail");
         Identity("student-check", "student");
         await Reject(() => Task.Run(() => CoordinatorData.RequireCoordinator()), "coordinator data rejects student access");
         await Task.Run(async () =>
@@ -76,6 +107,23 @@ public static class WorkflowTests
             Assert(PortalRepository.ProfileId == "async-profile" && PortalRepository.CompanyId == "async-company" && PortalRepository.Token == "offline-test-token", "async collection callers retain profile, company and token without HttpContext.Current");
             HttpContext.Current = new HttpContext(new HttpRequest("", "http://localhost/", ""), new HttpResponse(new StringWriter()));
             Assert(PortalRepository.ProfileId == "async-profile", "a sessionless ambient context does not override the bound request session");
+        });
+        await Task.Run(async () =>
+        {
+            var originalData = FirebaseRestClient.Data;
+            try
+            {
+                Identity("download-student", "student");
+                FirebaseRestClient.Data = JObject.Parse("{'internships':{'download-placement':{'studentId':'download-student','status':'completed'}},'completionReports':{'download-report':{'studentId':'download-student','internshipId':'download-placement','status':'approved','approvedByCoordinator':true}}}");
+                PortalRepository.Bind(null);
+                var lookup = PortalRepository.CompletionForStudent("download-student");
+                // The page callback can lose its ambient HttpContext after starting an async lookup.
+                HttpContext.Current = null;
+                Assert(PortalRepository.Token == "offline-test-token", "certificate lookup binds the signed-in session in the caller before async work");
+                var approvedReport = await lookup.ConfigureAwait(false);
+                Assert(DatabaseSchema.ReportApproved(approvedReport), "certificate lookup returns the approved report using the retained session");
+            }
+            finally { FirebaseRestClient.Data = originalData; }
         });
         await Task.WhenAll(new[] { "parallel-a", "parallel-b" }.Select(uid => Task.Run(async () =>
         {
@@ -122,6 +170,58 @@ public static class WorkflowTests
         Assert(AcademicCatalog.MatchesSupervisor("Software Engineering","Department of Software Engineering","Software Engineering"),"supervisor filtering accepts canonical department and specialization matches");
         Assert(!AcademicCatalog.MatchesSupervisor("Software Engineering","Software Engineering","Cyber Security"),"supervisor filtering excludes unrelated specializations");
         Assert(!AcademicCatalog.MatchesSupervisor("Software Engineering","","Software Engineering"),"supervisor filtering excludes missing departments");
+        var beforeLoginData = FirebaseRestClient.Data;
+        FirebaseRestClient.Data = JObject.Parse("{'opportunities':{'login-opening':{'companyId':'login-company','title':'Intern','availableSeats':5,'status':true}},'applications':{},'internships':{}}");
+        FirebaseConfig.DelayResponses = true;
+        var companyDashboardLoad = Task.Run(() => {
+            Identity("login-company", "company", "login-company");
+            SynchronizationContext.SetSynchronizationContext(new BlockedRequestContext());
+            try { OpportunityCapacity.Synchronize().GetAwaiter().GetResult(); }
+            finally { SynchronizationContext.SetSynchronizationContext(null); }
+        });
+        Assert(await Task.WhenAny(companyDashboardLoad, Task.Delay(2000)) == companyDashboardLoad, "company dashboard capacity loading completes without deadlocking its Web Forms request context");
+        await companyDashboardLoad;
+        var companyApproval = Task.Run(() => {
+            Identity("login-company", "company", "login-company");
+            Set("applications/login-app",new {companyId="login-company",studentId="login-student",opportunityId="login-opening",status="Pending"});
+            SynchronizationContext.SetSynchronizationContext(new BlockedRequestContext());
+            try { OpportunityCapacity.Reserve("login-app").GetAwaiter().GetResult(); }
+            finally { SynchronizationContext.SetSynchronizationContext(null); }
+        });
+        Assert(await Task.WhenAny(companyApproval, Task.Delay(2000)) == companyApproval, "company approval completes without deadlocking its Web Forms request context");
+        await companyApproval;
+        FirebaseConfig.DelayResponses = false;
+        FirebaseRestClient.Data = beforeLoginData;
+        var capacityData = FirebaseRestClient.Data;
+        Identity("seat-company", "company", "seat-company");
+        FirebaseRestClient.Data = JObject.Parse("{'opportunities':{'seat-opening':{'companyId':'seat-company','title':'Intern','availableSeats':1,'status':true}},'applications':{'seat-one':{'studentId':'one','companyId':'seat-company','opportunityId':'seat-opening','status':'Pending'},'seat-two':{'studentId':'two','companyId':'seat-company','opportunityId':'seat-opening','status':'Pending'}}}");
+        await OpportunityCapacity.Reserve("seat-one");
+        Assert((int)FirebaseRestClient.Data["opportunities"]["seat-opening"]["occupiedSeats"] == 1 && !(bool)FirebaseRestClient.Data["opportunities"]["seat-opening"]["status"], "the final seat closes the opportunity immediately");
+        await OpportunityCapacity.Reserve("seat-one");
+        Assert((int)FirebaseRestClient.Data["opportunities"]["seat-opening"]["occupiedSeats"] == 1, "retrying the same approval does not allocate another seat");
+        await Reject(() => OpportunityCapacity.Reserve("seat-two"), "approval cannot exceed the opportunity seat limit");
+        var fullOpening = FirebaseRestClient.Data["opportunities"]["seat-opening"].ToObject<Opportunity>();
+        Assert(fullOpening.IsFull && !fullOpening.IsAccepting && fullOpening.SeatsLabel == "0 of 1 seats available", "student details show full capacity and disable applications");
+        Assert(JsonConvert.DeserializeObject<Opportunity>("{'status':true,'availableSeats':0}").IsFull && !JsonConvert.DeserializeObject<Opportunity>("{'status':true}").IsFull, "explicit zero seats closes applications while missing legacy capacity remains unspecified");
+        Set("opportunities/seat-opening", new { companyId="seat-company",title="Intern",availableSeats=2,status=true });
+        Set("applications/seat-one/status", "Approved");
+        await OpportunityCapacity.Reserve("seat-two");
+        Assert((int)FirebaseRestClient.Data["opportunities"]["seat-opening"]["occupiedSeats"] == 2 && !(bool)FirebaseRestClient.Data["opportunities"]["seat-opening"]["status"], "seat allocation accounts for pre-existing approved applications before reserving the last seat");
+        FirebaseRestClient.Data = JObject.Parse("{'opportunities':{'orange':{'companyId':'seat-company','title':'Android Training','availableSeats':5,'status':true}},'applications':{'older-app':{'studentId':'one','companyId':'seat-company','opportunityId':'orange','status':'Approved'}},'internships':{'first':{'studentId':'one','companyId':'seat-company','opportunityId':'orange','applicationId':'older-app','status':'active'},'second':{'studentId':'two','companyId':'seat-company','opportunityId':'orange','status':'active'},'third':{'studentId':'three','companyId':'seat-company','opportunityId':'orange','status':'active'}}}");
+        await OpportunityCapacity.Synchronize();
+        var reconciledOpening = FirebaseRestClient.Data["opportunities"]["orange"].ToObject<Opportunity>();
+        Assert(reconciledOpening.OccupiedSeats == 3 && reconciledOpening.SeatsLabel == "2 of 5 seats available", "legacy placements backfill three occupied seats without double-counting their approved application");
+        await OpportunityCapacity.Synchronize();
+        Assert((int)FirebaseRestClient.Data["opportunities"]["orange"]["occupiedSeats"] == 3, "repeated reconciliation does not inflate the existing student count");
+        ((JObject)FirebaseRestClient.Data["opportunities"]["orange"]).Remove("occupiedSeats");
+        ((JObject)FirebaseRestClient.Data["opportunities"]["orange"]).Remove("seatReservations");
+        Identity("seat-student", "student");
+        var liveCountOpening=FirebaseRestClient.Data["opportunities"]["orange"].ToObject<Opportunity>(); liveCountOpening.Id="orange";
+        await OpportunityPresentation.Populate(new[]{liveCountOpening});
+        Assert(liveCountOpening.SeatsLabel=="2 of 5 seats available", "student view derives the real seat count even when the saved counter is missing");
+        Assert(new Opportunity {Status=true,AvailableSeats=5,CapacityUnavailable=true}.SeatsLabel=="Availability unavailable", "unverified capacity never renders a fabricated five free seats");
+        await Reject(() => OpportunityCapacity.Synchronize(), "students cannot read other students or write opportunity capacity");
+        FirebaseRestClient.Data = capacityData;
         var previousData = FirebaseRestClient.Data;
         Identity("preview-student", "student");
         FirebaseRestClient.Data = JObject.Parse(@"{ 'companies': { 'acme': { 'name': 'Acme', 'location': 'Amman' } }, 'applications': { 'legacy-random-id': { 'studentId': 'preview-student', 'opportunityId': 'one' } } }");
@@ -136,6 +236,13 @@ public static class WorkflowTests
         Assert(previews[1].CompanyName == "Company not specified", "missing company data never displays a database ID");
         Assert(previews[0].IsAccepting && !previews[1].IsAccepting && !previews[2].IsAccepting, "expired and explicitly closed opportunities cannot accept applications");
         Assert(JsonConvert.DeserializeObject<Opportunity>(@"{ 'workType': 'Remote' }").WorkModeDisplay == "Remote", "legacy work type is shown in student opportunities");
+        Assert(!previews.Any(x => x.HasConfirmedInternship), "an application without student confirmation does not lock further applications");
+        Set("internshipConfirmations/preview-student", new { applicationId = "legacy-random-id", opportunityId = "one" });
+        await OpportunityPresentation.Populate(previews);
+        Assert(previews.All(x => x.HasConfirmedInternship), "immutable internship confirmation locks every opportunity before opening an application form");
+        FirebaseRestClient.Data.Remove("internshipConfirmations");
+        Set("internships/confirmed-placement", new { studentId = "preview-student", status = "active" });
+        Assert(await OpportunityPresentation.HasConfirmedInternship("preview-student"), "existing active placements also disable new applications");
         FirebaseRestClient.Data = previousData;
         var opportunity = new CompanyOpportunity { Title = "Software internship", IsOpen = true, Deadline = "2026-11-30", Seats = 2, Specialization = "Software Engineering" };
         var studentOpportunity = JsonConvert.DeserializeObject<Opportunity>(JsonConvert.SerializeObject(opportunity));
@@ -177,6 +284,20 @@ public static class WorkflowTests
         await TaskWorkflow.Review(taskId, "Reviewed", "Complete and correct", 18);
         Assert((int)FirebaseRestClient.Data["tasks"][taskId]["score"] == 18 && ((JObject)FirebaseRestClient.Data["reviewHistory"][taskId]).Count == 2, "grading stores the score and preserves review history");
         Assert((int)FirebaseRestClient.Data["internships"]["student-a"]["approvedHours"] == 4, "task completion does not approve training hours");
+        FirebaseRestClient.Data["tasks"][taskId]["trainingHours"] = 30;
+        await TaskWorkflow.Review(taskId, "Reviewed", "Training complete", 18);
+        Assert((decimal)FirebaseRestClient.Data["internships"]["student-a"]["approvedHours"] == 30, "completed task credits 30 training hours");
+        await TaskWorkflow.Review(taskId, "Reviewed", "Training complete again", 18);
+        Assert((decimal)FirebaseRestClient.Data["internships"]["student-a"]["approvedHours"] == 30, "repeated task completion does not double count training hours");
+        await TaskWorkflow.Review(taskId, "Revision Requested", "Further work required", null, TaskWorkflow.Today.AddDays(3));
+        Assert((decimal)FirebaseRestClient.Data["internships"]["student-a"]["approvedHours"] == 0, "reopening a task removes its completion hours");
+        FirebaseRestClient.Data["tasks"][taskId]["trainingHours"] = 130.5m;
+        await TaskWorkflow.Review(taskId, "Reviewed", "All work complete", 18);
+        Assert((decimal)FirebaseRestClient.Data["internships"]["student-a"]["approvedHours"] == 130.5m, "task training credits permit fractional hours and exceed daily log limits");
+        ((JObject)FirebaseRestClient.Data["trainingHours"]).Remove("task_" + taskId);
+        FirebaseRestClient.Data["tasks"][taskId]["trainingHours"] = 0;
+        Set("internships/student-a/approvedHours", 4);
+
         Identity("company-b", "Company Supervisor");
         await Reject(() => TaskWorkflow.Review(taskId, "Reviewed", "Foreign access", 10), "another company cannot review the task");
 
@@ -359,17 +480,19 @@ namespace PSUTInternship.Shared
     public static class FirebaseConfig
     {
         public static string DatabaseUrl = "https://offline.invalid/";
+        public static bool DelayResponses;
         public static HttpClient Client = new HttpClient(new MemoryHttp());
         private class MemoryHttp : HttpMessageHandler
         {
-            protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellation)
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellation)
             {
+                if (DelayResponses) await Task.Delay(10).ConfigureAwait(false);
                 string path = request.RequestUri.AbsolutePath.Trim('/').Replace(".json", "");
                 if (request.Method == HttpMethod.Put) FirebaseRestClient.Set(path, JToken.Parse(request.Content.ReadAsStringAsync().GetAwaiter().GetResult()));
                 var value = FirebaseRestClient.GetAsync<JToken>(path, "test").GetAwaiter().GetResult();
                 var response = new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(value == null ? "null" : value.ToString(Formatting.None)) };
                 response.Headers.ETag = new System.Net.Http.Headers.EntityTagHeaderValue("\"test-etag\"");
-                return Task.FromResult(response);
+                return response;
             }
         }
     }

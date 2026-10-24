@@ -56,6 +56,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
@@ -761,6 +762,8 @@
     <Compile Include="Shared\TaskWorkflow.cs" />
     <Compile Include="Shared\TaskFileStore.cs" />
     <Compile Include="Shared\PercentageRules.cs" />
+    <Compile Include="Shared\SpreadsheetExport.cs" />
+    <Compile Include="Shared\OpportunityCapacity.cs" />
     <Compile Include="Shared\ContactReplyMailer.cs" />
     <Compile Include="Shared\AcademicCatalog.cs" />
     <Compile Include="TaskSolution.aspx.cs">

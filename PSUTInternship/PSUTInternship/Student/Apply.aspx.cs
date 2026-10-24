@@ -71,8 +71,7 @@ namespace PSUTInternship.Student
         {
             var values = new Dictionary<string, string>
             {
-                { "studentEmail", Convert.ToString(Session["userEmail"]) },
-                { "applicationDate", TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Jordan Standard Time").ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) }
+                { "studentEmail", Convert.ToString(Session["userEmail"]) }
             };
             try
             {
@@ -134,16 +133,14 @@ namespace PSUTInternship.Student
                     throw new ArgumentException("Only student accounts can submit applications.");
 
                 string[] required = { "faculty", "department", "program", "semester", "academicYear",
-                    "applicationDate", "studentName", "universityId", "completedCreditHours", "studentPhone",
+                    "studentName", "universityId", "completedCreditHours", "studentPhone",
                     "studentEmail",
                     "applicationReason" };
                 foreach (string name in required)
                     if (string.IsNullOrWhiteSpace(Field(name)) || Field(name).Length > 10000)
                         throw new ArgumentException("Complete all required fields. Each response must be under 10,000 characters.");
 
-                DateTime applicationDate;
-                if (!DateTime.TryParseExact(Field("applicationDate"), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out applicationDate))
-                    throw new ArgumentException("Enter a valid application date.");
+                DateTime applicationDate = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Jordan Standard Time").Date;
                 int credits;
                 if (!int.TryParse(Field("completedCreditHours"), out credits) || credits < 0)
                     throw new ArgumentException("Completed credit hours must be a non-negative whole number.");
@@ -165,7 +162,7 @@ namespace PSUTInternship.Student
                 {
                     response.EnsureSuccessStatusCode();
                     var opportunity = JsonConvert.DeserializeObject<Opportunity>(await response.Content.ReadAsStringAsync());
-                    if (opportunity == null || !opportunity.Status || (opportunity.DeadLine != DateTime.MinValue && opportunity.DeadLine.Date < DateTime.UtcNow.Date))
+                    if (opportunity == null || !opportunity.IsAccepting)
                         throw new ArgumentException("This opportunity is closed or its application deadline has passed.");
                 }
 
@@ -257,8 +254,8 @@ namespace PSUTInternship.Student
 
                 opportunity.Id = id;
                 await OpportunityPresentation.Populate(new[] { opportunity });
-                CanApply = opportunity.IsAccepting && !opportunity.HasApplied;
-                ApplicationAvailability = opportunity.HasApplied ? "You have already applied to this opportunity." : !opportunity.IsAccepting ? "Applications are closed for this opportunity." : "";
+                CanApply = opportunity.IsAccepting && !opportunity.HasApplied && !opportunity.HasConfirmedInternship;
+                ApplicationAvailability = opportunity.HasConfirmedInternship ? "You have already confirmed an internship. Further applications are disabled." : opportunity.CapacityUnavailable ? "Seat availability could not be verified. Please check again shortly." : opportunity.IsFull ? "All seats have been filled. This opportunity is closed." : opportunity.HasApplied ? "You have already applied to this opportunity." : !opportunity.IsAccepting ? "Applications are closed for this opportunity." : "";
 
 
                 OpportunityDetails.DataSource =

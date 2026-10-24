@@ -38,16 +38,18 @@ namespace PSUTInternship.Company
         protected async void CreateTask_Click(object sender, EventArgs e)
         {
             DateTime deadline;
-            ErrorTitel.Text = TaskWorkflow.ValidText(Titelinput.Value, 3, 150) ? "" : "Enter a title of 3–150 characters without control characters.";
-            ErorrDescreption.Text = TaskWorkflow.ValidText(Descriptioniput.Value, 10, 5000) ? "" : "Enter a description of 10–5,000 characters.";
-            ErorrEvaluation.Text = TaskWorkflow.ValidText(EvaluationCriteriainput.Value, 5, 3000) ? "" : "Enter criteria of 5–3,000 characters.";
+            decimal trainingHours;
+            TrainingHoursError.Text = decimal.TryParse(TrainingHours.Text, NumberStyles.Number, CultureInfo.InvariantCulture, out trainingHours) && trainingHours > 0 ? "" : "Enter a positive number of training hours.";
+            ErrorTitel.Text = TaskWorkflow.ValidText(Titelinput.Value, 3, 150) ? "" : "Enter a title of 3â€“150 characters without control characters.";
+            ErorrDescreption.Text = TaskWorkflow.ValidText(Descriptioniput.Value, 10, 5000) ? "" : "Enter a description of 10â€“5,000 characters.";
+            ErorrEvaluation.Text = TaskWorkflow.ValidText(EvaluationCriteriainput.Value, 5, 3000) ? "" : "Enter criteria of 5â€“3,000 characters.";
             OpportunityError.Text = string.IsNullOrEmpty(Opportunity.SelectedValue) ? "Select a training opportunity." : "";
             var ids = cblStudents.Items.Cast<ListItem>().Where(x => x.Selected).Select(x => x.Value).ToList();
             ErorrAssign.Text = ids.Count == 0 ? "Select at least one trainee from this opportunity." : "";
             ErorrDeadline.Text = DateTime.TryParseExact(Deadlineinput.Text, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out deadline) && deadline.Date > TaskWorkflow.Today ? "" : "Choose a future deadline.";
-            if (new[] { ErrorTitel, ErorrDescreption, ErorrEvaluation, OpportunityError, ErorrAssign, ErorrDeadline }.Any(x => x.Text.Length > 0)) return;
+            if (new[] { ErrorTitel, ErorrDescreption, ErorrEvaluation, OpportunityError, ErorrAssign, ErorrDeadline, TrainingHoursError }.Any(x => x.Text.Length > 0)) return;
             try {
-                await TaskWorkflow.Create(Titelinput.Value, Descriptioniput.Value, EvaluationCriteriainput.Value, prorityinput.SelectedValue, deadline, ids, Opportunity.SelectedValue);
+                await TaskWorkflow.Create(Titelinput.Value, Descriptioniput.Value, EvaluationCriteriainput.Value, prorityinput.SelectedValue, 0, deadline, ids, Opportunity.SelectedValue, trainingHours);
                 Response.Redirect("Tasks.aspx", false); Context.ApplicationInstance.CompleteRequest();
             } catch (Exception ex) { PageMessage.Text = Server.HtmlEncode(ex.Message); }
         }

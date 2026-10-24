@@ -78,8 +78,8 @@ public partial class ContactMessages : PortalPage
             SubmittedReply = SelectedMessage == null ? "" : SelectedMessage.Reply;
         }
 
-        // Handle Send Reply using C#
-        string sendReplyValue = Request.Form["sendReply"];
+        // Resolution is explicit; opening an email draft does not confirm delivery.
+        string sendReplyValue = Request.Form["markResolved"];
 
         if (IsPostBack &&
             !string.IsNullOrEmpty(sendReplyValue))
@@ -87,7 +87,7 @@ public partial class ContactMessages : PortalPage
             string replyMessageId = sendReplyValue;
             if (!string.IsNullOrEmpty(replyMessageId))
             {
-                await HandleSendReply(replyMessageId);
+                await HandleResolve(replyMessageId);
             }
         }
     }
@@ -96,7 +96,7 @@ public partial class ContactMessages : PortalPage
     // Send Reply Logic
     // ==========================================
 
-    private async Task HandleSendReply(string messageId)
+    private async Task HandleResolve(string messageId)
     {
         ContactMessage message =
             Messages.FirstOrDefault(m => m.Id == messageId);
@@ -121,7 +121,7 @@ public partial class ContactMessages : PortalPage
         if (string.IsNullOrWhiteSpace(ReplyText))
         {
             ReplyError =
-                "Please enter your reply before sending.";
+                "Please enter your reply before marking this message resolved.";
             return;
         }
 
@@ -132,26 +132,25 @@ public partial class ContactMessages : PortalPage
             return;
         }
 
-        bool delivered = false;
         try
         {
             CoordinatorData.RequireCoordinator();
-            await ContactReplyMailer.Send(message.Email, message.Subject, ReplyText);
-            delivered = true;
-            // Record delivery only after the SMTP provider accepts the message.
+            // The coordinator confirms resolution after sending from Gmail.
             await PortalRepository.Patch("contactMessages/" + PortalRepository.Key(message.Id), new {
                 reply = ReplyText,
                 repliedAt = DateTime.UtcNow.ToString("o"),
                 repliedBy = PortalRepository.UserId,
-                status = "resolved"
+                status = "resolved",
+                replyMethod = "gmail",
+                deliveryStatus = "coordinator-confirmed"
             });
             SubmittedReply = ReplyText;
             message.Reply = ReplyText;
             ResolvedThisRequestId = message.Id;
             message.Status = "Resolved";
-            Notice = "Reply sent to " + message.Email + " and saved. Message marked Resolved.";
+            Notice = "Your reply was saved and this inquiry is now resolved.";
         }
-        catch(Exception ex) { ReplyError = delivered ? "The email provider accepted your reply, but its portal record could not be saved. Contact the administrator before resending." : ex.Message; return; }
+        catch(Exception ex) { ReplyError = ex.Message; return; }
 
         ReplyText = "";
     }
@@ -159,6 +158,16 @@ public partial class ContactMessages : PortalPage
     // ==========================================
     // Temporary Status
     // ==========================================
+
+    protected string ReplyDraftUrl
+    {
+        get
+        {
+            if (SelectedMessage == null) return "";
+            try { return ContactReplyMailer.DraftUri(SelectedMessage.Email, SelectedMessage.Subject, ""); }
+            catch (FormatException) { return ""; }
+        }
+    }
 
     protected string EffectiveStatus(ContactMessage message)
     {

@@ -176,7 +176,7 @@ namespace PSUTInternship.Academic
             lblCompanyScore.Text = H(Val(report.CompanyEvaluation, "overallScore", "Not recorded") + " / " + Val(report.CompanyEvaluation, "totalMaximum", "—"));
             lblCompanyFeedback.Text = H(report.CompanyFeedback);
             lblCompanyRecommendation.Text = H(Val(report.CompanyEvaluation, "recommendation", "Not recorded"));
-            lblAcademicStatus.Text = H(Val(report.AcademicEvaluation, "status", "Not submitted"));
+            lblAcademicStatus.Text = H(PSUTInternship.Shared.CoordinatorData.AcademicResult(report.AcademicEvaluation as JObject));
             gvTasks.DataSource = report.Tasks;
             gvTasks.DataBind();
             Uri uri;
@@ -213,7 +213,7 @@ namespace PSUTInternship.Academic
             if (string.IsNullOrEmpty(studentId)) { Message("Please select a student.", true); return; }
             PercentageError.Text = PSUTInternship.Shared.PercentageRules.TryParse(txtScore.Text, out score) ? "" : "Enter a percentage from 0–100 with at most two decimals.";
             CommentsError.Text = PSUTInternship.Shared.TaskWorkflow.ValidText(comments, 10, 3000) ? "" : "Enter feedback of 10–3,000 characters.";
-            RecommendationError.Text = string.IsNullOrWhiteSpace(recommendation) ? "Select a recommendation." : "";
+            RecommendationError.Text = recommendation != "Pass" && recommendation != "Fail" ? "Select Pass or Fail." : "";
             if (PercentageError.Text.Length + CommentsError.Text.Length + RecommendationError.Text.Length > 0) return;
             try
             {

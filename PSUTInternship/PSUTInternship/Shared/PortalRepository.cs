@@ -107,7 +107,14 @@ namespace PSUTInternship.Shared
                 .OrderByDescending(x => string.Equals((string)x["status"], "submitted", StringComparison.OrdinalIgnoreCase))
                 .ThenByDescending(x => (string)x["submittedAt"]).FirstOrDefault();
         }
-        public static async Task<JObject> CompletionForStudent(string uid)
+        public static Task<JObject> CompletionForStudent(string uid)
+        {
+            // Capture in the caller before entering an async child scope. A binding
+            // created by PlacementForStudent does not flow back after its await.
+            var session = RequestSession;
+            return CompletionForStudentCore(uid);
+        }
+        private static async Task<JObject> CompletionForStudentCore(string uid)
         {
             var placement = await PlacementForStudent(uid).ConfigureAwait(false);
             if (placement == null) return null;

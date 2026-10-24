@@ -1,4 +1,4 @@
-﻿using PSUTInternship.Models;
+using PSUTInternship.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -260,9 +260,9 @@ namespace PSUTInternship.Academic
                 lblEvaluationCompany.Text = HttpUtility.HtmlEncode(student.Company);
                 lblEvaluationSupervisor.Text = HttpUtility.HtmlEncode(SupervisorName);
                 lblEvaluationHours.Text = student.ApprovedHours + " / " + student.RequiredHours + " hrs";
-                lblEvaluationRecommendation.Text = HttpUtility.HtmlEncode(S(evaluation, "recommendation", "No evaluation available").Replace('_', ' '));
+                lblEvaluationRecommendation.Text = HttpUtility.HtmlEncode(PSUTInternship.Shared.CoordinatorData.AcademicResult(evaluation));
                 lblEvaluationComments.Text = HttpUtility.HtmlEncode(S(evaluation, "comments", "No academic evaluation recorded."));
-                lblEvaluationScore.Text = HttpUtility.HtmlEncode(S(evaluation, "overallScore", "Not finalized"));
+                lblEvaluationScore.Text = HttpUtility.HtmlEncode(PSUTInternship.Shared.CoordinatorData.AcademicResult(evaluation));
                 lblEvaluationDate.Text = HttpUtility.HtmlEncode(S(evaluation, "submittedAt", "Not submitted"));
                 string state = S(evaluation, "status", "Not available");
                 lblEvaluationStatus.Text = HttpUtility.HtmlEncode(state);

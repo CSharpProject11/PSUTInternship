@@ -11,9 +11,9 @@
     <script>try { if (localStorage.getItem('psut.sidebar.collapsed') === 'true') document.documentElement.classList.add('portal-rail-collapsed'); } catch (e) { }</script>
     <% if (PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "company") { %><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" /><% } %>
     <asp:ContentPlaceHolder ID="PortalHead" runat="server" />
-    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/portal-workspace.css?v=review32") %>" />
-<% if (PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "student") { %><link rel="stylesheet" href="<%= ResolveUrl("~/Content/student-workspace.css?v=4") %>" /><% } %>
-    <script src="<%= ResolveUrl("~/Scripts/portal-ui.js?v=18") %>" defer></script>
+    <link rel="stylesheet" href="<%= ResolveUrl("~/Content/portal-workspace.css?v=review33") %>" />
+<% if (PortalRoles.Normalize(Convert.ToString(Session["userRole"])) == "student") { %><link rel="stylesheet" href="<%= ResolveUrl("~/Content/student-workspace.css?v=9") %>" /><% } %>
+    <script src="<%= ResolveUrl("~/Scripts/portal-ui.js?v=21") %>" defer></script>
 </head>
 <body class="portal-app" data-role="<%: PortalRoles.Normalize(Convert.ToString(Session["userRole"])) %>">
 <a class="portal-skip" href="#portal-main">Skip to content</a>

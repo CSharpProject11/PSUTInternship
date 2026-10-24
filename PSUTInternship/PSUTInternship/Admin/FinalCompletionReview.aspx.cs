@@ -37,6 +37,7 @@ public partial class FinalCompletionReview : PortalPage
 
         public string CompanyEvaluation { get; set; }
         public string AcademicEvaluation { get; set; }
+        public string AcademicResult { get; set; }
 
         // Company evaluation details
         public string TechnicalPerformance { get; set; }
@@ -99,7 +100,7 @@ public partial class FinalCompletionReview : PortalPage
             try { passingGrade=EvaluationPolicy.FinalGrade(CoordinatorData.Number(ce,"overallScore",-1),CoordinatorData.Number(ce,"totalMaximum"),CoordinatorData.Number(ae,"overallScore",-1))>=EvaluationPolicy.PassGrade; }
             catch(InvalidOperationException) { }
             // Eligibility requires both passing evaluations AND verified training hours.
-            Data.Add(new FinalStudent {Id=row.Key,UserId=sid,ReviewId=review.Key,Approved=DatabaseSchema.ReportApproved(report),ReadyForApproval=review.Key!=null && passingGrade && tasksReviewed && required>0 && approved>=required && CoordinatorData.Str(ce,"status")=="submitted" && CoordinatorData.Str(ae,"status")=="submitted" && CoordinatorData.Str(ae,"recommendation")=="Pass" && CoordinatorData.Str(ae,"evaluatorId")==CoordinatorData.Str(i,"academicSupervisorId"),StudentId=CoordinatorData.Str(st,"studentNumber",sid),Name=CoordinatorData.Str(st,"fullName","Unknown student"),University=CoordinatorData.Str(st,"university","Princess Sumaya University for Technology"),Major=CoordinatorData.Str(st,"major"),Company=CoordinatorData.Str(company,"name",CoordinatorData.Str(st,"company")),TrainingField=CoordinatorData.Str(st,"major"),CompanySupervisor=CoordinatorData.Str(cs,"fullName"),AcademicSupervisor=CoordinatorData.Str(ac,"fullName",CoordinatorData.Str(st,"academicSupervisorName")),StartDate=CoordinatorData.Str(i,"startDate"),EndDate=CoordinatorData.Str(i,"endDate"),CompletedHours=approved,RequiredHours=required,CompanyEvaluation=ceStatus,AcademicEvaluation=aeStatus,TechnicalPerformance=CoordinatorData.Str(ce,"technicalPerformance","Pending"),WorkCommitment=CoordinatorData.Str(ce,"workCommitment","Pending"),ProfessionalConduct=CoordinatorData.Str(ce,"professionalConduct","Pending"),TaskPerformance=CoordinatorData.Str(ce,"taskPerformance","Pending"),CompanyFeedback=CoordinatorData.Str(ce,"comments"),ReportAssessment=CoordinatorData.Str(ae,"reportAssessment","Pending"),AcademicFollowup=CoordinatorData.Str(ae,"academicFollowup","Pending"),LearningObjectives=CoordinatorData.Str(ae,"learningObjectives","Pending"),AcademicRequirements=CoordinatorData.Str(ae,"academicRequirements","Pending"),AcademicFeedback=CoordinatorData.Str(ae,"comments"),RequirementsMet=required>0 && approved>=required && tasksReviewed,GainedSkills=CoordinatorData.Str(report,"gainedSkills")});
+            Data.Add(new FinalStudent {Id=row.Key,UserId=sid,ReviewId=review.Key,Approved=DatabaseSchema.ReportApproved(report),ReadyForApproval=review.Key!=null && passingGrade && tasksReviewed && required>0 && approved>=required && CoordinatorData.Str(ce,"status")=="submitted" && CoordinatorData.Str(ae,"status")=="submitted" && CoordinatorData.Str(ae,"recommendation")=="Pass" && CoordinatorData.Str(ae,"evaluatorId")==CoordinatorData.Str(i,"academicSupervisorId"),StudentId=CoordinatorData.Str(st,"studentNumber",sid),Name=CoordinatorData.Str(st,"fullName","Unknown student"),University=CoordinatorData.Str(st,"university","Princess Sumaya University for Technology"),Major=CoordinatorData.Str(st,"major"),Company=CoordinatorData.Str(company,"name",CoordinatorData.Str(st,"company")),TrainingField=CoordinatorData.Str(st,"major"),CompanySupervisor=CoordinatorData.Str(cs,"fullName"),AcademicSupervisor=CoordinatorData.Str(ac,"fullName",CoordinatorData.Str(st,"academicSupervisorName")),StartDate=CoordinatorData.Str(i,"startDate"),EndDate=CoordinatorData.Str(i,"endDate"),CompletedHours=approved,RequiredHours=required,CompanyEvaluation=ceStatus,AcademicEvaluation=aeStatus,AcademicResult=CoordinatorData.AcademicResult(ae),TechnicalPerformance=CoordinatorData.Str(ce,"technicalPerformance","Pending"),WorkCommitment=CoordinatorData.Str(ce,"workCommitment","Pending"),ProfessionalConduct=CoordinatorData.Str(ce,"professionalConduct","Pending"),TaskPerformance=CoordinatorData.Str(ce,"taskPerformance","Pending"),CompanyFeedback=CoordinatorData.Str(ce,"comments"),ReportAssessment=CoordinatorData.Str(ae,"reportAssessment","Pending"),AcademicFollowup=CoordinatorData.Str(ae,"academicFollowup","Pending"),LearningObjectives=CoordinatorData.Str(ae,"learningObjectives","Pending"),AcademicRequirements=CoordinatorData.Str(ae,"academicRequirements","Pending"),AcademicFeedback=CoordinatorData.Str(ae,"comments"),RequirementsMet=required>0 && approved>=required && tasksReviewed,GainedSkills=CoordinatorData.Str(report,"gainedSkills")});
         }
     }
 
@@ -338,7 +339,7 @@ public partial class FinalCompletionReview : PortalPage
         {
             css = "ok";
         }
-        else if (status == "Not Pass" || status == "Failed")
+        else if (status == "Not Pass" || status == "Failed" || status == "Fail")
         {
             css = "bad";
         }
@@ -449,7 +450,7 @@ public partial class FinalCompletionReview : PortalPage
                     "</td>" +
 
                     "<td>" +
-                    Badge(student.AcademicEvaluation) +
+                    Badge(student.AcademicResult) +
                     "</td>" +
 
                     "<td>" + hours + "</td>" +

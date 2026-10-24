@@ -65,10 +65,10 @@ namespace PSUTInternship.Shared
         {
             return Create(title, description, criteria, priority, 0, deadline, students, opportunityId);
         }
-        public static async Task Create(string title, string description, string criteria, string priority, decimal maximum, DateTime deadline, IEnumerable<string> students, string opportunityId = null)
+        public static async Task Create(string title, string description, string criteria, string priority, decimal maximum, DateTime deadline, IEnumerable<string> students, string opportunityId = null, decimal trainingHours = 0)
         {
             var ids = students.Distinct().ToList();
-            if (!ValidText(title, 3, 150) || !ValidText(description, 10, 5000) || !ValidText(criteria, 5, 3000) || maximum < 0 || deadline.Date <= Today || ids.Count == 0)
+            if (!ValidText(title, 3, 150) || !ValidText(description, 10, 5000) || !ValidText(criteria, 5, 3000) || maximum < 0 || trainingHours < 0 || deadline.Date <= Today || ids.Count == 0)
                 throw new ArgumentException("Enter valid task details, a future deadline and at least one trainee.");
             if (!new[] { "Low", "Medium", "High", "Normal" }.Contains(priority)) throw new ArgumentException("Choose a valid priority.");
             if (opportunityId != null) PortalRepository.Key(opportunityId);
@@ -83,7 +83,7 @@ namespace PSUTInternship.Shared
                 changes["tasks/" + id] = new
                 {
                     taskId = id, title = title.Trim(), description = description.Trim(), evaluationCriteria = criteria.Trim(),
-                    priority = priority, maximumScore = maximum > 0 ? (decimal?)maximum : null, dueAt = new DateTimeOffset(deadline.Date.AddDays(1), TimeSpan.FromHours(3)).ToUnixTimeMilliseconds() - 1, opportunityId = (string)placement["opportunityId"], dueDate = deadline.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                    trainingHours = trainingHours, priority = priority, maximumScore = maximum > 0 ? (decimal?)maximum : null, dueAt = new DateTimeOffset(deadline.Date.AddDays(1), TimeSpan.FromHours(3)).ToUnixTimeMilliseconds() - 1, opportunityId = (string)placement["opportunityId"], dueDate = deadline.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                     studentId = studentId, companyId = PortalRepository.CompanyId, assignedBy = PortalRepository.UserId,
                     academicSupervisorId = (string)placement["academicSupervisorId"], internshipId = DatabaseSchema.Id(placement), companySupervisorId = PortalRepository.ProfileId,
                     status = "Pending", active = true, createdAt = DateTime.UtcNow.ToString("o")
@@ -104,7 +104,7 @@ namespace PSUTInternship.Shared
             if (state == "Revision Requested" && (!newDeadline.HasValue || newDeadline.Value.Date <= Today)) throw new ArgumentException("Set a future deadline for resubmission.");
             if (score.HasValue && max <= 0) throw new InvalidOperationException("Set a positive maximum score for this task before grading it.");
             string submissionId = DatabaseSchema.Id(submission);
-            if (!ValidText(feedback, 1, 3000)) throw new ArgumentException("Enter feedback of 1–3,000 characters.");
+            if (!ValidText(feedback, 1, 3000)) throw new ArgumentException("Enter feedback of 1â€“3,000 characters.");
             if (score.HasValue && (score < 0 || score > max)) throw new ArgumentException("The awarded score must be within this task's maximum.");
             string now = DateTime.UtcNow.ToString("o");
             var review = new
@@ -120,6 +120,16 @@ namespace PSUTInternship.Shared
                 { "submissions/" + submissionId + "/feedback", feedback.Trim() }, { "submissions/" + submissionId + "/reviewedAt", now },
                 { "reviewHistory/" + id + "/" + Guid.NewGuid().ToString("N"), review }
             };
+            decimal trainingHours = (decimal?)task["trainingHours"] ?? 0;
+            if (trainingHours > 0) {
+                // One deterministic credit per task: repeated reviews replace it, never append hours.
+                changes["trainingHours/task_" + PortalRepository.Key(id)] = new {
+                    taskId = id, studentId = (string)task["studentId"], internshipId = (string)task["internshipId"],
+                    companyId = (string)placement["companyId"], academicSupervisorId = (string)placement["academicSupervisorId"],
+                    hours = trainingHours, description = "Completed task: " + (string)task["title"],
+                    date = Today.ToString("yyyy-MM-dd"), status = state == "Reviewed" ? "Approved" : "Rejected",
+                    reviewedBy = PortalRepository.UserId, reviewedAt = now, source = "task" };
+            }
             if (state == "Revision Requested") {
                 changes["tasks/" + id + "/dueDate"] = newDeadline.Value.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
                 changes["tasks/" + id + "/dueAt"] = new DateTimeOffset(newDeadline.Value.Date.AddDays(1),TimeSpan.FromHours(3)).ToUnixTimeMilliseconds() - 1;
@@ -127,6 +137,7 @@ namespace PSUTInternship.Shared
             if (max <= 0) changes["tasks/" + id + "/maximumScore"] = null;
             changes["tasks/" + id + "/updatedAt"] = now;
             await PortalRepository.Patch("", changes);
+            if (trainingHours > 0) await TrainingHoursWorkflow.Recalculate((string)task["studentId"]);
         }
     }
 }

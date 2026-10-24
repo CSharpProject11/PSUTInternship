@@ -66,6 +66,16 @@ namespace PSUTInternship.Shared
                 .OrderByDescending(x => string.Equals(Str(x, "status"), "submitted", StringComparison.OrdinalIgnoreCase))
                 .ThenByDescending(x => Str(x, "submittedAt")).FirstOrDefault();
         }
+        // Presentation only: an unsubmitted or undecided review is not a failed review.
+        public static string AcademicResult(JObject evaluation)
+        {
+            if (!string.Equals(Str(evaluation, "status"), "submitted", StringComparison.OrdinalIgnoreCase)) return "—";
+            string result = Str(evaluation, "recommendation");
+            if (result.Equals("Pass", StringComparison.OrdinalIgnoreCase)) return "Pass";
+            if (result.Equals("Fail", StringComparison.OrdinalIgnoreCase) || result.Equals("Not Pass", StringComparison.OrdinalIgnoreCase)) return "Fail";
+            return "—";
+        }
+
         public static string EvaluationStatus(JObject evaluation)
         {
             if (!string.Equals(Str(evaluation, "status"), "submitted", StringComparison.OrdinalIgnoreCase)) return "Pending";

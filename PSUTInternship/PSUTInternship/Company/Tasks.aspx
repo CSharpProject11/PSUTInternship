@@ -2,7 +2,12 @@
 <%@ Page MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="Tasks.aspx.cs" Inherits="PSUTInternship.Company.Tasks" %>
 <asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
 <link rel="stylesheet" href="../Content/company-tasks.css?v=1" />
-</asp:Content>
+<style>body.portal-app .portal-content .portal-task-stats>div>p:nth-child(2),body.portal-app .portal-content .portal-task-stats>div>p:nth-child(2) span{color:#003e73!important;font-size:32px!important;font-weight:750!important;opacity:1!important}</style><style>body.portal-app .portal-content #taskReviewDialog{width:min(760px,calc(100vw - 28px))!important;height:min(690px,90dvh)!important;max-height:90dvh!important;padding:0!important;border:0!important;border-radius:14px!important;overflow:hidden!important;background:#fff!important}body.portal-app .portal-content #taskReviewDialog[open]{display:flex!important;flex-direction:column!important}#taskReviewDialog .review-dialog-heading{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:22px 24px;border-bottom:1px solid #e3ebf0;flex-shrink:0}#taskReviewDialog .review-dialog-heading h2{font-size:20px!important;margin:0 0 6px!important}#taskReviewDialog .review-dialog-heading p{font-size:12px!important;font-weight:400!important;color:#607587;margin:0!important}body.portal-app .portal-content #taskReviewDialog .review-dialog-close{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:34px!important;min-height:34px!important;height:34px!important;padding:0!important;border:1px solid #dce6ed!important;border-radius:7px!important;background:#fff!important;color:#526b7d!important;font-size:23px!important;line-height:1!important}body.portal-app .portal-content #taskReviewDialog iframe{display:block;width:100%!important;flex:1!important;min-height:0!important;height:100%!important;border:0!important;margin:0!important}#taskReviewDialog::backdrop{background:#0a1e3080}</style><style>
+body.portal-app .portal-content #taskReviewDialog .review-dialog-close{display:grid!important;place-items:center!important;width:36px!important;height:36px!important;min-height:36px!important;padding:0!important;background:#f5f8fa!important;border:1px solid transparent!important;border-radius:8px!important;color:#607587!important;box-shadow:none!important;outline:none!important;transform:none!important}
+body.portal-app .portal-content #taskReviewDialog .review-dialog-close svg{display:block;width:18px;height:18px;pointer-events:none}
+body.portal-app .portal-content #taskReviewDialog .review-dialog-close:hover{background:#eaf0f5!important;color:#19394f!important}
+body.portal-app .portal-content #taskReviewDialog .review-dialog-close:focus-visible{outline:2px solid #0078b5!important;outline-offset:3px!important}
+</style></asp:Content>
 <asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
 <div class="company-task-page"><h1>Tasks &amp; submissions</h1>
         <div>
@@ -74,8 +79,8 @@
             <tbody id="TaskTablebody" runat="server"></tbody>
         </table></div>
         </section>
-</div><dialog id="taskReviewDialog" class="task-review-dialog"><button type="button" class="btn" onclick="this.closest('dialog').close()">Close review</button><iframe title="Review task" id="taskReviewFrame"></iframe></dialog>
+</div><dialog id="taskReviewDialog" class="task-review-dialog"><header class="review-dialog-heading"><div><h2>Review task</h2><p>Give clear feedback and set the next step.</p></div><button type="button" class="review-dialog-close" onclick="this.closest('dialog').close()" aria-label="Close task review"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6"/></svg></button></header><iframe title="Review task" id="taskReviewFrame"></iframe></dialog>
 <script>
-document.addEventListener('click',function(event){var link=event.target.closest('[data-task-review]');if(!link)return;event.preventDefault();document.getElementById('taskReviewFrame').src=link.href;document.getElementById('taskReviewDialog').showModal();});
+document.addEventListener('click',function(event){var link=event.target.closest('[data-task-review]');if(!link)return;event.preventDefault();var reviewUrl=new URL(link.href,location.href);reviewUrl.searchParams.set('embedded','1');document.getElementById('taskReviewFrame').src=reviewUrl.href;document.getElementById('taskReviewDialog').showModal();});
 </script>
 </asp:Content>

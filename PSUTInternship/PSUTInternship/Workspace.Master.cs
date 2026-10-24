@@ -72,7 +72,7 @@ namespace PSUTInternship
                 case "academic":
                     RoleName = "Academic supervisor"; Heading = "Academic dashboard";
                     Description = "A clear view of your students and their placement journey.";
-                    FocusTitle = "Follow your students’ progress";
+                    FocusTitle = "Follow your studentsâ€™ progress";
                     FocusText = "Follow your assigned students, their applications and their progress toward a placement."; WorkLabel = "My students"; break;
                 case "admin":
                     RoleName = "Internship coordinator"; Heading = "Coordinator dashboard";
@@ -179,7 +179,7 @@ namespace PSUTInternship
                     if (item == null) continue;
                     string role = Value(item, "role");
 
-                    if (PortalRoles.Normalize(role) != "student") continue;
+                    if (!string.IsNullOrWhiteSpace(role) && PortalRoles.Normalize(role) != "student") continue;
                     assignedStudentIds.Add(person.Name);
                     string studentUid = Value(item, "uid", "userId");
                     if (studentUid != "") assignedStudentIds.Add(studentUid);
@@ -223,17 +223,17 @@ namespace PSUTInternship
             Rows = Rows.OrderByDescending(r => r.SortDate).ToList();
             if (Role == "student")
             {
-                Metrics.Add(new WorkspaceMetric("Applications", ApplicationsAvailable ? Rows.Count.ToString() : "—", "Your submitted placements"));
-                Metrics.Add(new WorkspaceMetric("Awaiting review", ApplicationsAvailable ? PendingCount.ToString() : "—", "Applications with a pending decision"));
-                Metrics.Add(new WorkspaceMetric("Offers received", ApplicationsAvailable ? ApprovedCount.ToString() : "—", "Review offers in My applications"));
-                Metrics.Add(new WorkspaceMetric("Open opportunities", opportunities == null ? "—" : Openings.Count.ToString(), "Explore your next step"));
+                Metrics.Add(new WorkspaceMetric("Applications", ApplicationsAvailable ? Rows.Count.ToString() : "â€”", "Your submitted placements"));
+                Metrics.Add(new WorkspaceMetric("Awaiting review", ApplicationsAvailable ? PendingCount.ToString() : "â€”", "Applications with a pending decision"));
+                Metrics.Add(new WorkspaceMetric("Offers received", ApplicationsAvailable ? ApprovedCount.ToString() : "â€”", "Review offers in My applications"));
+                Metrics.Add(new WorkspaceMetric("Open opportunities", opportunities == null ? "â€”" : Openings.Count.ToString(), "Explore your next step"));
             }
             else
             {
-                Metrics.Add(new WorkspaceMetric(Role == "company" ? "My opportunities" : "Students", (Role == "company" ? opportunities != null : people != null) ? (Role == "company" ? opportunityCount : studentCount).ToString() : "—", Role == "academic" ? "Assigned to your supervision" : "Connected to your workspace"));
-                Metrics.Add(new WorkspaceMetric("Applications", ApplicationsAvailable ? Rows.Count.ToString() : "—", "Placement applications in your scope"));
-                Metrics.Add(new WorkspaceMetric("Awaiting review", ApplicationsAvailable ? PendingCount.ToString() : "—", "Pending application decisions"));
-                Metrics.Add(new WorkspaceMetric(Role == "admin" ? "Supervisors" : "Approved placements", Role == "admin" ? (people == null ? "—" : supervisorCount.ToString()) : (ApplicationsAvailable ? ApprovedCount.ToString() : "—"), Role == "admin" ? "Company and academic accounts" : "Applications marked approved"));
+                Metrics.Add(new WorkspaceMetric(Role == "company" ? "My opportunities" : "Students", (Role == "company" ? opportunities != null : people != null) ? (Role == "company" ? opportunityCount : studentCount).ToString() : "â€”", Role == "academic" ? "Assigned to your supervision" : "Connected to your workspace"));
+                Metrics.Add(new WorkspaceMetric("Applications", ApplicationsAvailable ? Rows.Count.ToString() : "â€”", "Placement applications in your scope"));
+                Metrics.Add(new WorkspaceMetric("Pending applications", ApplicationsAvailable ? PendingCount.ToString() : "â€”", "Awaiting a company decision"));
+                Metrics.Add(new WorkspaceMetric(Role == "admin" ? "Supervisors" : Role == "academic" ? "Approved applications" : "Approved placements", Role == "admin" ? (people == null ? "â€”" : supervisorCount.ToString()) : (ApplicationsAvailable ? ApprovedCount.ToString() : "â€”"), Role == "admin" ? "Company and academic accounts" : "Applications marked approved"));
             }
         }
 

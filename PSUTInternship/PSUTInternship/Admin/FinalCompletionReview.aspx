@@ -273,26 +273,7 @@
                             <h4>Academic Evaluation</h4>
                             <p><%= H(SelectedStudent.AcademicSupervisor) %></p>
                         </div>
-                        <%= Badge(SelectedStudent.AcademicEvaluation) %>
-                    </div>
-
-                    <div class="fcr-evaluation-criteria">
-                        <div>
-                            <span>Training Reports</span>
-                            <strong><%= H(SelectedStudent.ReportAssessment) %></strong>
-                        </div>
-                        <div>
-                            <span>Academic Follow-up</span>
-                            <strong><%= H(SelectedStudent.AcademicFollowup) %></strong>
-                        </div>
-                        <div>
-                            <span>Learning Objectives</span>
-                            <strong><%= H(SelectedStudent.LearningObjectives) %></strong>
-                        </div>
-                        <div>
-                            <span>Academic Requirements</span>
-                            <strong><%= H(SelectedStudent.AcademicRequirements) %></strong>
-                        </div>
+                        <%= Badge(SelectedStudent.AcademicResult) %>
                     </div>
 
                     <div class="fcr-feedback">
@@ -311,25 +292,12 @@
                 </div>
             </div>
 
-            <div class="fcr-requirements">
-                <div>
-                    <span>Required training hours completed</span>
-                    <%= RequirementBadge(
-                        SelectedStudent.CompletedHours >= SelectedStudent.RequiredHours) %>
-                </div>
-                <div>
-                    <span>Company final evaluation passed</span>
-                    <%= RequirementBadge(SelectedStudent.CompanyEvaluation == "Pass") %>
-                </div>
-                <div>
-                    <span>Academic final evaluation passed</span>
-                    <%= RequirementBadge(SelectedStudent.AcademicEvaluation == "Pass") %>
-                </div>
-                <div>
-                    <span>University documents and requirements verified</span>
-                    <%= RequirementBadge(SelectedStudent.RequirementsMet) %>
-                </div>
-            </div>
+            <div class="tablewrap fcr-requirements-table"><table><thead><tr><th scope="col">Completion requirement</th><th scope="col">Result</th></tr></thead><tbody>
+<tr><th scope="row">Required training hours completed</th><td><%= RequirementBadge(SelectedStudent.RequiredHours > 0 && SelectedStudent.CompletedHours >= SelectedStudent.RequiredHours) %></td></tr>
+<tr><th scope="row">Company final evaluation passed</th><td><%= RequirementBadge(SelectedStudent.CompanyEvaluation == "Pass") %></td></tr>
+<tr><th scope="row">Academic final evaluation passed</th><td><%= RequirementBadge(SelectedStudent.AcademicEvaluation == "Pass") %></td></tr>
+<tr><th scope="row">University documents and requirements verified</th><td><%= RequirementBadge(SelectedStudent.RequirementsMet) %></td></tr>
+</tbody></table></div>
 
             <% if (HasFailedEvaluation(SelectedStudent)) { %>
                 <div class="fcr-alert fcr-alert-danger">

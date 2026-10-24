@@ -9,6 +9,7 @@ namespace PSUTInternship.Student
 {
     public partial class MyTasks : PortalPage
     {
+        protected int TaskTotal, TaskSubmitted, TaskRevisions, TaskReviewed;
         protected void Page_Load(object sender, EventArgs e)
         { if (Form != null) Form.Enctype = "multipart/form-data"; if (!IsPostBack) RegisterAsyncTask(new PageAsyncTask(LoadTasks)); }
         protected void Filter_Changed(object sender, EventArgs e) { RegisterAsyncTask(new PageAsyncTask(LoadTasks)); }
@@ -20,6 +21,9 @@ namespace PSUTInternship.Student
                 var submissions = await PortalRepository.Collection("submissions");
                 DateTime today = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time")).Date;
                 var placement = await PortalRepository.PlacementForStudent(PortalRepository.UserId);
+                var currentTasks = tasks.Where(x => placement != null && (string)x.Value["internshipId"] == DatabaseSchema.Id(placement)).ToDictionary(x => x.Key, x => x.Value);
+                var taskSummary = TaskProgressSummary.Calculate(PortalRepository.UserId, currentTasks, submissions.Values);
+                TaskTotal=taskSummary.Total; TaskSubmitted=taskSummary.Submitted; TaskRevisions=taskSummary.Revisions; TaskReviewed=taskSummary.Reviewed;
                 var rows = tasks.Select(item =>
                 {
                     var task = item.Value.ToObject<StudentTask>(); task.TaskId = item.Key;
@@ -37,7 +41,7 @@ namespace PSUTInternship.Student
                 }).Where(x => x.Active && x.StudentId == PortalRepository.UserId && placement != null && x.InternshipId == DatabaseSchema.Id(placement))
                     .Where(x => string.IsNullOrEmpty(StatusFilter.SelectedValue) || x.Status == StatusFilter.SelectedValue)
                     .Where(x => ((x.Title ?? "") + " " + (x.Description ?? "")).IndexOf(Search.Text.Trim(), StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-                EmptyTasks.Text = rows.Count == 0 ? "<tr><td colspan='4'>No new tasks available yet.</td></tr>" : "";
+                EmptyTasks.Text = rows.Count == 0 ? "<p class='student-task-empty'>No tasks match this view.</p>" : "";
                 rptTasks.DataSource = rows; rptTasks.DataBind();
             }
             catch (Exception ex) { lblMessage.Text = Server.HtmlEncode(ex.Message); }

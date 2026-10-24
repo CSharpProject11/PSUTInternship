@@ -5,7 +5,7 @@
 <%@ Register Src="~/Shared/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
 <asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
 <link href="../Content/bootstrap.min.css" rel="stylesheet" />
-    <link href="../Content/student-workspace.css?v=20261023-opps2" rel="stylesheet" />
+    <link href="../Content/student-workspace.css?v=20261024-opps4" rel="stylesheet" />
 </asp:Content>
 <asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
 <div class="student-shell">
@@ -23,11 +23,7 @@
                 runat="server" CssClass="w-100">
                 <ItemTemplate>
                     <article class="card sd-card sd-apply-card">
-                    <asp:Image runat="server"
-                        CssClass="img-fluid w-100"
-                        ImageUrl='<%# ApplicationImage(Eval("ImageUrl")) %>'
-                        AlternateText='<%# Eval("Title") %>'
-                         />
+                    <div class="opportunity-detail-banner"><span class="opportunity-company-mark" aria-hidden="true"><%#: string.IsNullOrWhiteSpace(Convert.ToString(Eval("CompanyName"))) ? "P" : Convert.ToString(Eval("CompanyName")).Substring(0,1).ToUpperInvariant() %></span><div><strong><%#: Eval("CompanyName") %></strong><span><%#: Eval("Specialization") %></span></div><span class="opportunity-banner-label">Field training</span></div>
                     <div class="card-body p-3 p-md-4">
                     <h2 class="h2 text-break mb-3"><%#: Eval("Title") %></h2>
                     <span class='<%# "sd-opening-status " + (Convert.ToBoolean(Eval("IsAccepting")) ? "is-open" : "is-closed") %>'><%#: Eval("StatusLabel") %></span>
@@ -37,6 +33,7 @@
                         <div class="col-12 col-md-6"><dt class="text-muted small">Created at</dt><dd class="text-break"><%#: FormatCreatedDate(Eval("CreatedAt")) %></dd></div>
                         <div class="col-12 col-md-6"><dt class="text-muted small">Location</dt><dd class="text-break"><%#: Eval("LocationDisplay") %></dd></div>
                         <div class="col-12 col-md-6"><dt class="text-muted small">Work type</dt><dd class="text-break"><%#: Eval("WorkModeDisplay") %></dd></div>
+                        <div class="col-12 col-md-6"><dt class="text-muted small">Available seats</dt><dd class="text-break"><%#: Eval("SeatsLabel") %></dd></div>
                         <div class="col-12 col-md-6"><dt class="text-muted small">Duration</dt><dd class="text-break"><%#: Eval("DurationDisplay") %></dd></div>
                         <div class="col-12 col-md-6"><dt class="text-muted small">Application deadline</dt><dd class="text-break"><%#: Convert.ToDateTime(Eval("DeadLine")) == DateTime.MinValue ? "Not specified" : string.Format("{0:dd MMM yyyy}", Eval("DeadLine")) %></dd></div>
                     </dl>
@@ -74,7 +71,7 @@
 <div class="col-12 col-md-6"><label class="form-label" for="program">Program</label><input class="form-control" id="program" name="program" readonly="readonly" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="semester">Semester</label><input class="form-control" id="semester" name="semester" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="academicYear">Academic Year</label><input class="form-control" id="academicYear" name="academicYear" type="text" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="applicationDate">Application Date</label><input class="form-control" id="applicationDate" name="applicationDate" type="date" required="required" /></div>
+
 </div></fieldset>
 <fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">Student Information</legend><div class="row g-3">
 <div class="col-12 col-md-6"><label class="form-label" for="studentName">Student Name</label><input class="form-control" id="studentName" name="studentName" readonly="readonly" type="text" required="required" /></div>

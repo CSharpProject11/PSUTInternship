@@ -8,6 +8,7 @@ namespace PSUTInternship.Models
 {
     public class StudentTask
     {
+        [JsonProperty("trainingHours")] public decimal TrainingHours { get; set; }
         [JsonProperty("companyId")] public string CompanyId { get; set; }
         [JsonProperty("academicSupervisorId")] public string AcademicSupervisorId { get; set; }
         [JsonProperty("internshipId")] public string InternshipId { get; set; }

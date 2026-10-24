@@ -119,6 +119,8 @@ namespace PSUTInternship.Shared
             var existing = FirebaseRestClient.GetAsync<CompanyApplication>("applications/" + PortalRepository.Key(id), IdToken).GetAwaiter().GetResult();
             if (existing == null || existing.CompanyId != CompanyId || !string.Equals(existing.Status, "Pending", StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("Only pending applications belonging to your company can be reviewed.");
+            if (status.Equals("Accepted", StringComparison.OrdinalIgnoreCase))
+                OpportunityCapacity.Reserve(id).GetAwaiter().GetResult();
             var update = new Dictionary<string, object>
             {
                 { "status", status.Equals("Accepted", StringComparison.OrdinalIgnoreCase) ? "Approved" : "Rejected" }, { "rejectionReason", rejectionReason ?? "" }

@@ -22,12 +22,13 @@
     buildDialog();
     active = queue.shift();
     active.previous = document.activeElement;
+    dialog.classList.toggle('is-success', !active.confirmation && active.kind !== 'error');
     dialog.querySelector('h2').textContent = active.title || (active.confirmation ? 'Confirm your action' : 'Workspace message');
     dialog.querySelector('p').textContent = active.message;
-    dialog.querySelector('.portal-popup-mark').innerHTML = active.confirmation || active.kind === 'error' ? '<svg viewBox="0 0 24 24"><path d="M12 5v9m0 4h.01"/></svg>' : '<svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg>';
+    dialog.querySelector('.portal-popup-mark').innerHTML = active.confirmation || active.kind === 'error' ? '<svg viewBox="0 0 24 24"><path d="M12 5v9m0 4h.01"/></svg>' : '<svg class="portal-success-check" viewBox="0 0 64 64" fill="none"><circle class="portal-success-ring" cx="32" cy="32" r="27" pathLength="1"/><path class="portal-success-tick" d="m20 32 8 8 17-18" pathLength="1"/></svg>';
     const cancel = dialog.querySelector('[data-popup-cancel]');
     cancel.hidden = !active.confirmation;
-    dialog.querySelector('[data-popup-accept]').textContent = active.confirmation ? (active.acceptLabel || 'Confirm') : 'Got it';
+    dialog.querySelector('[data-popup-accept]').textContent = active.confirmation ? (active.acceptLabel || 'Confirm') : (active.acceptLabel || 'Done');
     dialog.showModal();
     (active.confirmation ? cancel : dialog.querySelector('[data-popup-accept]')).focus();
   }
@@ -135,7 +136,7 @@
     animateCards();
     // Server-rendered outcomes remain inline and also receive a dismissible popup.
     const messages = new WeakMap();
-    const selector = '[data-popup-message],.message,.reply-notice,.error-banner,.msg-error,.msg-ok,.notice.error,.notice.ok,.form-feedback,[id$="MessageLabel"],[id$="messageLabel"],[id$="lblMessage"],[id$="PageMessage"],[id$="notice"],.wd-notice,.sd-status,.notice[role="status"],[role="status"]:not([aria-live])';
+    const selector = '[data-popup-message],[data-popup-kind],.alert-success,.success-message,.notice.success,.form-feedback.success,.success:not(.tag):not(.status):not(.badge):not(tr):not(td),.alert-danger,.alert-error,.message,.reply-notice,.error-banner,.msg-error,.msg-ok,.notice.error,.notice.ok,.form-feedback,[id$="MessageLabel"],[id$="messageLabel"],[id$="lblMessage"],[id$="PageMessage"],[id$="notice"],.wd-notice,.sd-status,.notice[role="status"],[role="status"]:not([aria-live])';
     function scanMessages() {
       document.querySelectorAll('.portal-content ' + selector.split(',').join(',.portal-content ')).forEach(node => {
         const text = node.textContent.trim();
@@ -143,8 +144,10 @@
         messages.set(node, text);
         // Nested role=status and message classes should announce the same outcome only once.
         if (node.parentElement.closest(selector)) return;
-        const error = node.matches('.error,.error-banner,.msg-error') || /unable|could not|couldn't|cannot|failed|please enter|invalid|must |not match|expired/i.test(text);
-        window.PortalUI.message(text, { title: error ? 'Please check this' : 'Workspace update', kind: error ? 'error' : 'success' });
+        const explicitKind = node.dataset.popupKind;
+        const success = explicitKind === 'success' || node.matches('.success,.alert-success,.success-message,.msg-ok,.notice.ok,.notice.success');
+        const error = explicitKind === 'error' || (!success && (node.matches('.error,.error-banner,.msg-error,.alert-danger,.alert-error') || /unable|could not|couldn't|cannot|failed|please enter|invalid|must |not match|expired|denied|not configured|not found|not allowed|not available|unavailable|error|not sent/i.test(text)));
+        window.PortalUI.message(text, { title: error ? 'Please check this' : (node.dataset.popupTitle || 'Updated successfully'), kind: error ? 'error' : 'success', acceptLabel: node.dataset.popupAccept || 'Done' });
       });
     }
     scanMessages();
@@ -172,6 +175,6 @@ function warm(){if(window.parent!==window)return;const link=Array.from(document.
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',warm);else warm();
 document.addEventListener('pointerover',function(event){prepare(event.target.closest('a[href]'));});
 document.addEventListener('focusin',function(event){prepare(event.target.closest('a[href]'));});
-document.addEventListener('click',function(event){const link=event.target.closest('a[href]');if(!passwordLink(link))return;event.preventDefault();const dialog=prepare(link);if(!dialog.open)dialog.showModal();});
-window.addEventListener('message',function(event){if(event.origin!==location.origin)return;const dialog=document.getElementById('accountPasswordOverlay');if(!dialog||event.source!==dialog.querySelector('iframe').contentWindow)return;if(event.data&&event.data.type==='password-settings-height'&&Number.isFinite(event.data.height)){dialog.style.height=Math.min(event.data.height,window.innerHeight*0.94)+'px';}if(event.data==='close-password-settings')dialog.close();});
+document.addEventListener('click',function(event){const link=event.target.closest('a[href]');if(!passwordLink(link))return;event.preventDefault();const dialog=prepare(link);if(!dialog.open)dialog.showModal();dialog.querySelector('iframe').contentWindow.postMessage('measure-password-settings',location.origin);});
+window.addEventListener('message',function(event){if(event.origin!==location.origin)return;const dialog=document.getElementById('accountPasswordOverlay');if(!dialog||event.source!==dialog.querySelector('iframe').contentWindow)return;if(event.data&&event.data.type==='password-settings-height'&&Number.isFinite(event.data.height)&&event.data.height>=200){dialog.style.height=Math.min(Math.max(360,event.data.height),window.innerHeight*0.94)+'px';}if(event.data==='close-password-settings')dialog.close();});
 })();

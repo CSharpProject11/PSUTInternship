@@ -435,3 +435,24 @@ body.portal-app{--navy:var(--portal-ink);--blue:var(--portal-accent);--cyan:var(
 #accountPasswordOverlay::backdrop{background:rgba(8,28,45,.62)}
 #accountPasswordOverlay iframe{display:block;width:100%;height:100%;border:0;background:#fff}
 #accountPasswordOverlay{width:min(500px,calc(100vw - 24px));height:min(540px,94dvh);border-radius:14px}
+
+/* A single drawn check acknowledges completed actions; errors and confirmations keep their own hierarchy. */
+.portal-popup.is-success{width:min(400px,calc(100% - 32px));border-radius:18px;text-align:center}
+.portal-popup.is-success .portal-popup-body{padding:32px 30px 24px}
+.portal-popup.is-success .portal-popup-mark{width:80px;height:80px;margin:0 auto 20px;background:#edf7f1;color:#24734e;border-radius:50%}
+.portal-popup.is-success .portal-success-check{width:64px;height:64px;overflow:visible;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.portal-popup.is-success .portal-success-ring{stroke:#a5d3b9;stroke-width:2}
+.portal-popup.is-success .portal-success-tick{stroke-width:4}
+.portal-popup.is-success h2{font-size:23px;font-weight:750;letter-spacing:-.03em;margin:0 0 10px}
+.portal-popup.is-success p{font-size:14px;line-height:1.7;font-weight:400;max-width:32ch;margin:0 auto}
+.portal-popup.is-success .portal-popup-actions{background:#fff;padding:0 30px 28px;justify-content:center}
+.portal-popup.is-success .portal-popup-actions [data-popup-accept]{width:100%;min-height:44px;border-radius:8px;background:#003e73;border-color:#003e73}
+.portal-popup.is-success .portal-popup-actions [data-popup-accept]:hover{background:#00568e;border-color:#00568e}
+.portal-popup.is-success[open]{animation:portal-success-arrive .28s cubic-bezier(.16,1,.3,1)}
+.portal-popup.is-success[open] .portal-success-ring{animation:portal-success-draw .45s ease-out both}
+.portal-popup.is-success[open] .portal-success-tick{animation:portal-success-draw .32s .2s ease-out both}
+.portal-popup.is-success[open] .portal-popup-mark{animation:portal-success-settle .5s cubic-bezier(.16,1,.3,1)}
+@keyframes portal-success-arrive{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes portal-success-settle{from{transform:scale(.85)}to{transform:scale(1)}}
+@keyframes portal-success-draw{from{stroke-dasharray:1;stroke-dashoffset:1}to{stroke-dasharray:1;stroke-dashoffset:0}}
+@media(prefers-reduced-motion:reduce){.portal-popup.is-success[open],.portal-popup.is-success[open] .portal-popup-mark,.portal-popup.is-success[open] .portal-success-ring,.portal-popup.is-success[open] .portal-success-tick{animation:none!important}}

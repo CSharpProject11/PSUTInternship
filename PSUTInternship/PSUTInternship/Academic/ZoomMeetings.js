@@ -1,8 +1,12 @@
 "use strict";
 const F = window.MeetingFirebase;
 const $ = id => document.getElementById(id);
+const invitationDialog = $('invitationDialog');
+$('openInvitation').addEventListener('click', () => invitationDialog.showModal());
+document.querySelectorAll('[data-close-invitation]').forEach(button => button.addEventListener('click', () => invitationDialog.close()));
+invitationDialog.addEventListener('close', () => $('openInvitation').focus());
 let roster = [], all = [];
-function message(s, ok = false) { const e = $('formMessage'); e.textContent = s; e.className = 'form-feedback ' + (ok ? 'success' : 'error'); }
+function message(s, ok = false) { const e = invitationDialog.open ? $('formMessage') : $('meetingPageMessage'); e.hidden = false; e.textContent = s; e.className = 'form-feedback ' + (ok ? 'success' : 'error'); }
 async function loadStudents() { roster = await F.students(); $('studentSelect').innerHTML = '<option value="">Select Student</option>' + roster.map(s => `<option value="${F.safe(s.id)}">${F.safe(s.name)} — ${F.safe(s.studentNumber)}</option>`).join(''); if (!roster.length) message('No assigned students found for ' + F.supervisorName + '. Check Firebase data and read permissions.'); }
 function render() {
     $('totalCount').textContent = all.length;
@@ -28,7 +32,7 @@ $('portalForm').addEventListener('submit', async event => {
     btn.disabled = true;
     try {
         await F.create({ studentId: student.id, studentName: student.name, supervisorId: F.supervisorId, supervisorName: F.supervisorName, title, purpose, date, time, duration, notes, status: 'Pending', roomName, createdAt: new Date().toISOString() });
-        $('portalForm').reset(); await refresh(); message('Meeting invitation saved to Firebase.', true);
+        $('portalForm').reset(); await refresh(); invitationDialog.close(); message('Meeting invitation sent. Waiting for the student to respond.', true); PortalUI.message('Your meeting invitation is ready for the student to review.', { title: 'Invitation sent' });
     } catch (e) { message(e.message); } finally { btn.disabled = false; }
 });
 document.addEventListener('click', async e => { const b = e.target.closest('[data-cancel]'); if (!b) return; e.preventDefault(); const m = all.find(x => x.id === b.dataset.cancel); if (!m || !await PortalUI.confirm('Cancel this meeting invitation?', { acceptLabel: 'Cancel invitation' })) return; b.disabled = true; try { await F.setStatus(m.id, m.status, 'Cancelled'); await refresh(); } catch (err) { message(err.message); } finally { b.disabled = false; } });

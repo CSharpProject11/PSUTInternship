@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json.Linq;
 using PSUTInternship.Shared;
 namespace PSUTInternship
@@ -7,6 +7,8 @@ namespace PSUTInternship
     {
         protected async void Page_Load(object sender,EventArgs e)
         {
+            // Async Web Forms callbacks may run outside the PreInit execution context.
+            PortalRepository.Bind(Context);
             string role=PortalRoles.Normalize(Convert.ToString(Session["userRole"]));
             string uid=role=="admin"?PortalRepository.Key(Request.QueryString["studentId"]):PortalRepository.UserId;
             if(role!="admin"&&role!="student")throw new System.Web.HttpException(403,"Report access denied.");

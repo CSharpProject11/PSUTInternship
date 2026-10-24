@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +11,19 @@ namespace PSUTInternship.Models
         public string Id { get; set; }
         [JsonProperty("specialization")] public string Specialization { get; set; }
         [JsonProperty("college")] public string College { get; set; }
-        [JsonProperty("availableSeats")] public int AvailableSeats { get; set; }
+        [JsonProperty("availableSeats")] public int? AvailableSeats { get; set; }
+        private int occupiedSeats;
+        [JsonIgnore] public bool HasStoredSeatCount { get; private set; }
+        [JsonIgnore] public bool CapacityUnavailable { get; set; }
+        [JsonProperty("occupiedSeats")] public int OccupiedSeats { get { return occupiedSeats; } set { occupiedSeats = value; HasStoredSeatCount = true; } }
+        [JsonIgnore] public int? RemainingSeats { get { return AvailableSeats.HasValue ? (int?)Math.Max(0, AvailableSeats.Value - Math.Max(0, OccupiedSeats)) : null; } }
+        [JsonIgnore] public bool IsFull { get { return RemainingSeats.HasValue && RemainingSeats.Value == 0; } }
+        [JsonIgnore] public string SeatsLabel { get { return CapacityUnavailable ? "Availability unavailable" : RemainingSeats.HasValue ? RemainingSeats.Value + " of " + AvailableSeats.Value + " seats available" : "Not specified"; } }
         [JsonProperty("companyName")] public string CompanyName { get; set; }
         [JsonIgnore] public bool HasApplied { get; set; }
-        [JsonIgnore] public bool IsAccepting { get { return Status && (DeadLine == DateTime.MinValue || DeadLine.Date >= DateTime.UtcNow.Date); } }
-        [JsonIgnore] public string StatusLabel { get { return IsAccepting ? "Open" : "Closed"; } }
+        [JsonIgnore] public bool HasConfirmedInternship { get; set; }
+        [JsonIgnore] public bool IsAccepting { get { return Status && !CapacityUnavailable && !IsFull && (DeadLine == DateTime.MinValue || DeadLine.Date >= DateTime.UtcNow.Date); } }
+        [JsonIgnore] public string StatusLabel { get { return IsFull ? "Full · Closed" : IsAccepting ? "Open" : "Closed"; } }
         [JsonIgnore] public string LocationDisplay { get { return string.IsNullOrWhiteSpace(Location) ? "Location not specified" : Location; } }
         [JsonIgnore] public string WorkModeDisplay { get { return string.IsNullOrWhiteSpace(WorkMode) ? "Work type not specified" : WorkMode; } }
         public Opportunity() { }
