@@ -13,17 +13,6 @@ namespace PSUTInternship.Academic
 
     public partial class FinalEvaluation
     {
-        protected global::System.Web.UI.WebControls.DropDownList Opportunity;
-        protected global::System.Web.UI.WebControls.Label PercentageError, CommentsError, RecommendationError;
-
-        /// <summary>
-        /// form1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlForm form1;
 
         /// <summary>
         /// lblInitials control.
@@ -51,6 +40,15 @@ namespace PSUTInternship.Academic
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblMessage;
+
+        /// <summary>
+        /// Opportunity control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList Opportunity;
 
         /// <summary>
         /// ddlStudent control.
@@ -224,6 +222,15 @@ namespace PSUTInternship.Academic
         protected global::System.Web.UI.WebControls.TextBox txtScore;
 
         /// <summary>
+        /// PercentageError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label PercentageError;
+
+        /// <summary>
         /// ddlRecommendation control.
         /// </summary>
         /// <remarks>
@@ -233,6 +240,15 @@ namespace PSUTInternship.Academic
         protected global::System.Web.UI.WebControls.DropDownList ddlRecommendation;
 
         /// <summary>
+        /// RecommendationError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label RecommendationError;
+
+        /// <summary>
         /// txtComments control.
         /// </summary>
         /// <remarks>
@@ -240,6 +256,15 @@ namespace PSUTInternship.Academic
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtComments;
+
+        /// <summary>
+        /// CommentsError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label CommentsError;
 
         /// <summary>
         /// lblSupervisorPrint control.
