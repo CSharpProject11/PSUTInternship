@@ -1,0 +1,46 @@
+@font-face{font-family:Manrope;src:url('../Assets/manrope-variable.ttf') format('truetype');font-weight:200 800;font-display:swap}
+body,.loginBox h2,button,input{font-family:Manrope,Arial,sans-serif}
+body{margin:0}
+.topBar{padding:18px 4%}
+.topLogo{padding:8px 12px}
+.topLogo img{height:auto;width:210px}
+.page{min-height:100svh;padding:104px 20px 24px}
+.loginBox{max-width:410px;padding:24px 30px 20px}
+.cardLogo{height:52px;width:auto;animation:none}
+.loginBox h2{font-size:34px;line-height:1.15;font-weight:800;letter-spacing:-.03em;margin:10px 0}
+.subText{font-size:14px;line-height:1.6;margin-bottom:20px}
+.field{min-height:48px;padding:4px 12px;margin-bottom:12px;gap:10px}
+.textBox{min-width:0;font-size:14px;line-height:1.5;padding:10px 0}
+.field>i{font-size:20px;line-height:1;flex-shrink:0}
+.lockIcon{display:block;flex:0 0 20px;width:20px;height:20px;fill:none;stroke:var(--gray);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.eyeBtn{min-width:40px;min-height:40px;padding:8px}
+.eyeBtn i{font-size:18px;line-height:1}
+.optionsRow{font-size:13px;margin:0 2px 16px;min-height:30px}
+.loginButton{font-size:15px;min-height:48px;padding:12px}
+.cardFooter{font-size:11px;line-height:1.65;margin-top:16px}
+.message:empty{display:none}
+@media(max-height:700px){
+ .topBar{padding-block:12px}
+ .topLogo img{width:180px}
+ .page{padding-top:88px;padding-bottom:16px}
+ .loginBox{padding:18px 28px 16px;max-width:390px}
+ .cardLogo{height:42px}
+ .loginBox h2{font-size:30px;margin:8px 0}
+ .subText{font-size:13px;margin-bottom:16px}
+ .field{margin-bottom:10px;min-height:44px;padding-block:2px}
+ .optionsRow{margin-bottom:12px}
+ .cardFooter{margin-top:12px}
+}
+@media(max-width:700px){.topBar{justify-content:flex-start}.page{padding-inline:18px}.loginBox{padding-inline:24px}.loginBox h2{font-size:32px}}
+
+/* Keep browser autofill the same color as the complete input field. */
+.loginBox .field,.loginBox .field:hover,.loginBox .field:focus-within{background:#f7f9fc}
+.loginBox .textBox{background:transparent;color:var(--text)}
+.loginBox .textBox:-webkit-autofill,
+.loginBox .textBox:-webkit-autofill:hover,
+.loginBox .textBox:-webkit-autofill:focus{
+ -webkit-box-shadow:0 0 0 1000px #f7f9fc inset;
+ -webkit-text-fill-color:var(--text);
+ caret-color:var(--text);
+}
+.loginBox .textBox:autofill{background:#f7f9fc;color:var(--text)}

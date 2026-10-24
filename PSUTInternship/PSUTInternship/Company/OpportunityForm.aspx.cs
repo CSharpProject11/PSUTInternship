@@ -1,3 +1,4 @@
+using PSUTInternship.Shared;
 using System;
 using System.Linq;
 using PSUTInternship.Models;
@@ -19,14 +20,18 @@ namespace PSUTInternship.Company
         {
             string title = PostedValue("title").Trim();
             int seats = PostedNumber("seats");
-            if (title.Length == 0 || seats < 0) return;
+            DateTime deadline;
             CompanyOpportunity row = Opportunity ?? new CompanyOpportunity();
+            row.Title = title; row.Specialization = PostedValue("specialization").Trim(); row.Description = PostedValue("description").Trim(); row.Requirements = PostedValue("requirements").Trim(); row.Seats = seats; row.Deadline = PostedValue("deadline"); Opportunity = row;
+            if (string.IsNullOrWhiteSpace(row.Specialization) || row.Description.Trim().Length < 10 || title.Length < 3 || seats < 1 || !DateTime.TryParse(PostedValue("deadline"), out deadline) || deadline.Date < DateTime.Today)
+            { FirebaseError = "Enter a title, at least one seat and a valid application deadline."; return; }
             row.Title = title;
             row.Specialization = PostedValue("specialization").Trim();
             row.Description = PostedValue("description").Trim();
             row.Requirements = PostedValue("requirements").Trim();
             row.Seats = seats;
-            row.Deadline = PostedValue("deadline").Trim();
+            row.Deadline = deadline.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+            row.CreatedAt = row.CreatedAt ?? DateTime.UtcNow.ToString("o");
             row.IsOpen = true;
             bool saved = TryFirebase(() => { if (IsEdit) UpdateOpportunity(row); else CreateOpportunity(row); });
             if (saved) GoTo("Opportunities.aspx");

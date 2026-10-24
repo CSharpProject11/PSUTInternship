@@ -47,3 +47,18 @@ The public ProgressSoft, Umniah and Mawdoo3 placements are existing illustrative
 ## Validation
 
 The .NET Framework project builds; the pre-existing `Create_task.IsValid` hiding warning remains unrelated to this homepage. IIS Express returns HTTP 200 for `Default.aspx` and `Login.aspx`. Browser interaction checks cover tabs, card arrows and mouse dragging, sample search, film opening, Escape and focus restoration. Responsive inspection and visual critique are recorded under the repository's `.taste-skill/` directory and in `design-qa.md`.
+
+
+## Opportunity preview deck, 23 October 2026
+
+The homepage has one six-slot opportunity deck in place of the old search block and static fact cards. It displays at most six open, unexpired opportunities from the `opportunities` collection, ordered by deadline then record ID. Unfilled slots say “Coming soon.” Fetch failures are explicitly shown as unavailable rather than being reported as a database with no records. All full-detail and application links lead through sign-in.
+
+`PublicData.aspx` projects only ID, title, company display name, specialization, available seats and deadline. Descriptions, requirements, application records and database credentials are never included. The endpoint does not read `publicOpportunities` or change Firebase permissions.
+
+The configured Firebase database rejects anonymous reads (HTTP 401). The previous endpoint also returned `[]` immediately when a visitor had no login session, which concealed that restriction. To serve summaries anonymously, provision a server-managed Firebase credential authorized to read the source and set `FIREBASE_PREVIEW_READ_TOKEN` in the hosting process environment, or `FirebasePreviewReadToken` in protected server configuration. Never put it in JavaScript or commit it. This is a Firebase authentication/database token, not the web API key; expiring tokens must be refreshed by the hosting environment. A normal active signed-in session continues to use its existing scoped repository access. Deployment has not been provisioned with a preview credential by this change, so live anonymous previews remain unavailable until the server credential is configured. Full detail/application pages retain their existing authentication checks.
+
+Validation: Web Forms project build, `node tools/verify-public.mjs`, and browser fixtures with 0, 2, 8 records and an HTTP error at 1440px and 390px. Fixtures verify exactly six cards, placeholders, truncation, escaping, sign-in destinations, carousel controls, load-error copy and no horizontal page overflow.
+
+The ASP.NET homepage now loads the same preview projection during its asynchronous page lifecycle and renders the six cards on the server. JavaScript preserves these cards without issuing a duplicate request. Anonymous reads use the public `opportunities` collection without a preview token. Deploy `Firebase/database.rules.example.json` to enable these reads. Opportunity listings are publicly readable; applications, profiles and opportunity writes retain authentication requirements.
+
+The opportunity cards follow the supplied October 23 video: a viewport-triggered rise into a circular fan, an upright middle card, and a round mouse-following Drag cursor. The rail starts on its second card so both neighbors are visible; native horizontal scrolling drives the geometry using stable layout coordinates. Mouse dragging includes inertia; touch panning, arrow controls, Arrow keys and Home/End remain available. Reduced motion removes the entrance and arc. Preview QA uses illustrative records intercepted only in the test browser, never production fallback data.

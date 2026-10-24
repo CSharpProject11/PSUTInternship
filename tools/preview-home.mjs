@@ -2,11 +2,19 @@ import {createServer} from 'node:http';
 import {readFileSync, statSync, createReadStream} from 'node:fs';
 import {resolve, extname, join} from 'node:path';
 const root=resolve('PSUTInternship/PSUTInternship');
+// Render the presentation equivalents for the lightweight preview only.
+// ASP.NET/IIS remains authoritative for server control parsing and behavior.
+function renderServerControls(html){
+ return html.replace(/<asp:HyperLink\b([^>]*)>/gi,(_,attrs)=>'<a'+attrs.replace(/NavigateUrl=/gi,'href=').replace(/CssClass=/gi,'class=')+'>')
+  .replace(/<\/asp:HyperLink>/gi,'</a>')
+  .replace(/<asp:Image\b([^>]*?)\s*\/>/gi,(_,attrs)=>'<img'+attrs.replace(/ImageUrl=/gi,'src=').replace(/AlternateText=/gi,'alt=').replace(/CssClass=/gi,'class=')+'>')
+  .replace(/((?:href|src)=")~\//gi,'$1/');
+}
 export function renderHome(){
  let master=readFileSync(join(root,'Public.Master'),'utf8');
  let page=readFileSync(join(root,'Default.aspx'),'utf8').replace(/<%@[^%]*%>/g,'').replace(/<\/?asp:Content\b[^>]*>/g,'');
  let dialogs=readFileSync(join(root,'Shared/Dialogs.ascx'),'utf8').replace(/<%@[^%]*%>/g,'');
- return master.replace(/<%@[^%]*%>/g,'').replace(/<asp:ContentPlaceHolder[^>]*\/>/,page).replace(/<psut:Dialogs[^>]*\/>/,dialogs).replace(/<%=\s*ResolveUrl\("~\/([^"\n]*)"\)\s*%>/g,'/$1').replace(/ runat="server"/g,'');
+ return renderServerControls(master.replace(/<%@[^%]*%>/g,'').replace(/<asp:ContentPlaceHolder[^>]*\/>/,page).replace(/<psut:Dialogs[^>]*\/>/,dialogs).replace(/<%=\s*ResolveUrl\("~\/([^"\n]*)"\)\s*%>/g,'/$1').replace(/ runat="server"/g,''));
 }
 if(process.argv.includes('--export')){
  const {writeFileSync}=await import('node:fs');

@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using PSUTInternship.Student;
 using System;
 
 namespace PSUTInternship.Models
@@ -24,8 +23,14 @@ namespace PSUTInternship.Models
         [JsonProperty("studentId")]
         public string StudentId { get; set; }
 
-        [JsonProperty("reason")]
+        [JsonProperty("companyId")] public string CompanyId { get; set; }
+        [JsonProperty("academicSupervisorId")] public string AcademicSupervisorId { get; set; }
+        [JsonProperty("rejectionReason")] public string RejectionReason { get; set; }
+        [JsonProperty("coverLetter")]
         public string Reason { get; set; }
+        [JsonProperty("reason")] private string LegacyReason { set { if (string.IsNullOrEmpty(Reason)) Reason = value; } }
+        [JsonProperty("cvUrl")] public string CvUrl { get; set; }
+        [JsonProperty("isOfferConfirmed")] public bool IsOfferConfirmed { get; set; }
 
         [JsonProperty("studentResponse", NullValueHandling = NullValueHandling.Ignore)]
         public StudentOfferResponse StudentResponse { get; set; }
@@ -42,6 +47,7 @@ namespace PSUTInternship.Models
 
     public class TrainingApplicationDetails
     {
+        [JsonProperty("university")] public string University { get; set; }
         [JsonProperty("faculty")]
         public string Faculty { get; set; }
 

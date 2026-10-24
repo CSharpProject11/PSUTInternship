@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+const scope={window:{},fetch:async()=>({ok:true,json:async()=>({token:'isolated-test-token'})}),URL};vm.createContext(scope);vm.runInContext(fs.readFileSync('PSUTInternship/PSUTInternship/Shared/meetings.js','utf8'),scope);const m=scope.window.MeetingFirebase;await m.ready;
+assert.equal(m.roomLink({status:'Pending',meetingLink:'https://meet.example.test/original'}),'');
+assert.equal(m.roomLink({status:'Accepted',meetingLink:'https://meet.example.test/original'}),'https://meet.example.test/original');
+assert.equal(m.roomLink({status:'Accepted',meetingLink:'javascript:alert(1)'}),'');
+assert.equal(m.roomLink({status:'Accepted',roomName:'UIMS-original-room'}),'https://meet.jit.si/UIMS-original-room');
+assert.ok(!m.safe('<img onerror="unsafe">').includes('<img'));
+console.log('PASS meeting link gated by acceptance, original HTTPS URL retained, unsafe links rejected, room fallback and escaping');

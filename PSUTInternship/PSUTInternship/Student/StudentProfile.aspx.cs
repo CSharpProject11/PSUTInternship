@@ -1,243 +1,67 @@
-﻿
-using Newtonsoft.Json;
 using System;
-using System.IO;
-using System.Net.Http;
-using System.Text;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Web.UI;
-
-
-namespace Student
-{
-    public partial class StudentProfile : System.Web.UI.Page
-    {
-        private readonly string url =
-            "https://teacher-124b2-default-rtdb.firebaseio.com/students/student1.json";
-
-
-        // Load student data
-        protected async void Page_Load(object sender, EventArgs e)
-        {
-            if (!IsPostBack)
-            {
-                await LoadStudentData();
-
-                ViewState["IsEditing"] = false;
-            }
+using System.Web.UI.WebControls;
+using Newtonsoft.Json.Linq;
+using PSUTInternship.Shared;
+namespace PSUTInternship.Student {
+    public partial class StudentProfile : PortalPage {
+        protected async void Page_Load(object sender, EventArgs e) { if (!IsPostBack) await LoadProfile(); }
+        private async Task LoadProfile() {
+            try {
+                var profile = await PortalRepository.Get<JObject>("students/" + PortalRepository.Key(CurrentProfileId));
+                if (profile == null) throw new InvalidOperationException("Student profile not found.");
+                assignedSupervisor.Text = Server.HtmlEncode(DatabaseSchema.FirstText(profile, "academicSupervisorName"));
+                PersonalDetails.Text = Details(profile, new[] { "Full name", "Email address", "Date of birth", "Phone number", "Gender" }, new[] { "fullName", "email", "dateOfBirth", "phone", "gender" });
+                AcademicDetails.Text = Details(profile, new[] { "Student ID", "University", "Faculty", "Major", "GPA", "Semester", "Completed credit hours", "Application date" }, new[] { "studentNumber", "university", "college", "major", "gpa", "academicSemester", "completedCreditHours", "applicationDate" });
+                ProfessionalDetails.Text = Details(profile, new[] { "GitHub", "LinkedIn", "Portfolio", "CV" }, new[] { "githubUrl", "linkedinUrl", "portfolioUrl", "cvUrl" });
+                txtDateOfBirth.Text = (string)profile["dateOfBirth"]; txtPhone.Text = DatabaseSchema.FirstText(profile, "phone", "phoneNumber");
+                string gender = (string)profile["gender"] ?? ""; if (ddlGender.Items.FindByValue(gender) != null) ddlGender.SelectedValue = gender;
+                txtGPA.Text = (string)profile["gpa"]; txtSemester.Text = (string)profile["academicSemester"]; txtCompletedHours.Text = (string)profile["completedCreditHours"]; txtApplicationDate.Text = (string)profile["applicationDate"];
+                txtGithub.Text = (string)profile["githubUrl"]; txtLinkedin.Text = (string)profile["linkedinUrl"]; txtPortfolio.Text = (string)profile["portfolioUrl"]; txtCV.Text = (string)profile["cvUrl"];
+            } catch (Exception ex) { lblMessage.Text = Server.HtmlEncode(ex.Message); }
         }
-
-
-        // Get student information from Firebase
-        private async Task LoadStudentData()
-        {
-            try
-            {
-                using (HttpClient client = new HttpClient())
-                {
-                    string json = await client.GetStringAsync(url);
-
-                    if (string.IsNullOrWhiteSpace(json))
-                    {
-                        lblMessage.Text = "Student not found.";
-                        return;
-                    }
-
-                    // Object from StudentInfo class
-                    StudentInfo student =JsonConvert.DeserializeObject<StudentInfo>(json);
-
-                    if (student == null)
-                        return;
-
-                    // Personal Information
-                    txtFullName.Text = student.FullName;
-                    txtDateOfBirth.Text = student.DateOfBirth;
-                    txtEmail.Text = student.Email;
-                    txtPhone.Text = student.PhoneNumber;
-
-                    if (ddlGender.Items.FindByValue(student.Gender) != null)
-                    {
-                        ddlGender.SelectedValue = student.Gender;
-                    }
-
-                    // Academic Information
-                    txtStudentId.Text = student.StudentNumber;
-                    txtUniversity.Text = student.University;
-                    txtFaculty.Text = student.College;
-                    txtMajor.Text = student.Major;
-                    txtGPA.Text = student.GPA;
-
-                    txtSemester.Text = student.AcademicSemester;
-
-                    txtCompletedHours.Text =
-                        student.CompletedCreditHours?.ToString() ?? "";
-
-                    txtApplicationDate.Text = student.ApplicationDate;
-
-                    // Professional Information
-                    txtGithub.Text = student.GithubUrl;
-                    txtLinkedin.Text = student.LinkedinUrl;
-                    txtPortfolio.Text = student.PortfolioLink;
-                    txtCV.Text = student.CvUrl;
-                    SetProfileLink(lnkGithub, student.GithubUrl);
-                    SetProfileLink(lnkLinkedin, student.LinkedinUrl);
-                    SetProfileLink(lnkPortfolio, student.PortfolioLink);
-
-
-                    Uri cvUri;
-
-                    bool hasCV =
-                        Uri.TryCreate(student.CvUrl, UriKind.Absolute, out cvUri)
-                        && cvUri.Scheme == Uri.UriSchemeHttps;
-
-                    lnkCV.Visible = hasCV;
-
-                    if (hasCV)
-                    {
-                        lnkCV.NavigateUrl = cvUri.AbsoluteUri;
-                    }
-
-                    // CV
-                
-                }
+        private string Details(JObject profile, string[] labels, string[] fields) {
+            string html = "<dl class='profile-details'>";
+            for (int i = 0; i < fields.Length; i++) {
+                string text = DatabaseSchema.FirstText(profile, fields[i]);
+                if (fields[i] == "phone") text = DatabaseSchema.FirstText(profile, "phone", "phoneNumber");
+                if (fields[i] == "college") text = DatabaseSchema.FirstText(profile, "college", "faculty");
+                string content = Server.HtmlEncode(string.IsNullOrWhiteSpace(text) ? "Not recorded" : text); Uri link;
+                if (fields[i].EndsWith("Url") && Uri.TryCreate(text,UriKind.Absolute,out link) && link.Scheme == "https") content = "<a href='" + System.Web.HttpUtility.HtmlAttributeEncode(link.AbsoluteUri) + "' target='_blank' rel='noopener noreferrer'>" + content + "</a>";
+                html += "<div><dt>" + Server.HtmlEncode(labels[i]) + "</dt><dd>" + content + "</dd></div>";
             }
-            catch (Exception)
-            {
-                lblMessage.Text = "Error loading student data.";
-            }
+            return html + "</dl>";
         }
-
-        private void SetProfileLink(
-            System.Web.UI.WebControls.HyperLink link,
-            string url)
-        {
-            Uri address;
-
-            bool valid = Uri.TryCreate(
-                url,
-                UriKind.Absolute,
-                out address)
-                && address.Scheme == Uri.UriSchemeHttps;
-
-            link.Visible = valid;
-
-            if (valid)
-            {
-                link.NavigateUrl = address.AbsoluteUri;
-            }
+        protected async void EditSection(object sender, CommandEventArgs e) { await LoadProfile(); PersonalEditor.Visible = e.CommandArgument.ToString() == "Personal"; AcademicEditor.Visible = e.CommandArgument.ToString() == "Academic"; ProfessionalEditor.Visible = e.CommandArgument.ToString() == "Professional"; }
+        protected void CancelSection(object sender, EventArgs e) { PersonalEditor.Visible = AcademicEditor.Visible = ProfessionalEditor.Visible = false; }
+        protected async void SaveSection(object sender, CommandEventArgs e) {
+            PersonalError.Text = AcademicError.Text = ProfessionalError.Text = "";
+            var changes = new Dictionary<string, object>();
+            try {
+                string group = e.CommandArgument.ToString();
+                if (group == "Personal") {
+                    if (!System.Text.RegularExpressions.Regex.IsMatch(txtPhone.Text.Trim(), @"\A[+0-9 ()-]{7,20}\z")) throw new ArgumentException("Enter a valid phone number of 7–20 characters.");
+                    DateTime dob;
+                    if (txtDateOfBirth.Text.Length > 0 && (!DateTime.TryParseExact(txtDateOfBirth.Text,"yyyy-MM-dd",CultureInfo.InvariantCulture,DateTimeStyles.None,out dob) || dob.Date >= TaskWorkflow.Today)) throw new ArgumentException("Enter a date of birth in the past.");
+                    changes["phone"] = txtPhone.Text.Trim(); changes["dateOfBirth"] = txtDateOfBirth.Text; changes["gender"] = ddlGender.SelectedValue;
+                } else if (group == "Academic") {
+                    decimal gpa; int credits; DateTime applied;
+                    if (!decimal.TryParse(txtGPA.Text, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out gpa) || gpa < 0 || gpa > 4) throw new ArgumentException("Enter a GPA between 0 and 4.");
+                    if (!int.TryParse(txtCompletedHours.Text,out credits) || credits < 0 || credits > 300) throw new ArgumentException("Enter completed credit hours between 0 and 300.");
+                    if (!TaskWorkflow.ValidText(txtSemester.Text,1,100)) throw new ArgumentException("Enter an academic semester of 1–100 characters.");
+                    if (!DateTime.TryParseExact(txtApplicationDate.Text,"yyyy-MM-dd",CultureInfo.InvariantCulture,DateTimeStyles.None,out applied)) throw new ArgumentException("Enter a valid application date.");
+                    changes["gpa"] = gpa; changes["completedCreditHours"] = credits; changes["academicSemester"] = txtSemester.Text.Trim(); changes["applicationDate"] = txtApplicationDate.Text;
+                } else if (group == "Professional") {
+                    var links = new Dictionary<string, TextBox> { {"githubUrl",txtGithub}, {"linkedinUrl",txtLinkedin}, {"portfolioUrl",txtPortfolio}, {"cvUrl",txtCV} };
+                    foreach (var pair in links) { Uri url; string text = pair.Value.Text.Trim(); if (text.Length > 2000 || text.Length > 0 && (!Uri.TryCreate(text,UriKind.Absolute,out url) || url.Scheme != "https")) throw new ArgumentException("Use valid HTTPS profile links of at most 2,000 characters."); changes[pair.Key] = text; }
+                } else throw new ArgumentException("Unknown profile section.");
+                // Explicit whitelist only; the six protected identity fields never enter this PATCH.
+                await PortalRepository.Patch("students/" + PortalRepository.Key(CurrentProfileId), changes);
+                CancelSection(sender, EventArgs.Empty); await LoadProfile(); lblMessage.Text = "Profile changes saved.";
+            } catch (Exception ex) { var error = e.CommandArgument.ToString() == "Personal" ? PersonalError : e.CommandArgument.ToString() == "Academic" ? AcademicError : ProfessionalError; error.Text = Server.HtmlEncode(ex.Message); }
         }
-
-
-        // Edit Profile / Save Changes
-        protected async void btnEditProfile_Click(object sender, EventArgs e)
-        {
-           
-            Uri cvUri;
-
-            bool hasCV =Uri.TryCreate(txtCV.Text.Trim(), UriKind.Absolute, out cvUri)&& cvUri.Scheme == Uri.UriSchemeHttps;
-
-            lnkCV.Visible = hasCV;
-
-            if (hasCV)
-            {
-                lnkCV.NavigateUrl = cvUri.AbsoluteUri;
-            }
-            bool isEditing =
-                (bool?)ViewState["IsEditing"] ?? false;
-
-            if (!isEditing)
-            {
-                // Enable allowed fields
-                txtPhone.Enabled = true;
-                txtGithub.Enabled = true;
-                txtLinkedin.Enabled = true;
-                txtPortfolio.Enabled = true;
-                txtCV.Enabled = true;
-                btnEditProfile.Text = "Save Changes";
-
-                ViewState["IsEditing"] = true;
-                lblMessage.Text = "";
-            }
-            else
-            {
-                try
-                {
-                    await SaveStudentData();
-
-                    // Disable fields after saving
-                    txtPhone.Enabled = false;
-                    txtGithub.Enabled = false;
-                    txtLinkedin.Enabled = false;
-                    txtPortfolio.Enabled = false;
-                    txtCV.Enabled = false;
-                   
-
-                    btnEditProfile.Text = "Edit Profile";
-
-                    ViewState["IsEditing"] = false;
-
-                    lblMessage.Text = "Profile updated successfully!";
-                    lblMessage.ForeColor =
-                        System.Drawing.Color.Green;
-                    SetProfileLink(lnkGithub, txtGithub.Text.Trim());
-                    SetProfileLink(lnkLinkedin, txtLinkedin.Text.Trim());
-                    SetProfileLink(lnkPortfolio, txtPortfolio.Text.Trim());
-                }
-                catch (Exception)
-                {
-                    lblMessage.Text =
-                        "Error saving student information.";
-
-                    lblMessage.ForeColor =
-                        System.Drawing.Color.Red;
-                }
-            }
-        }
-
-
-        // Save allowed fields to Firebase
-        private async Task SaveStudentData()
-        {
-            // Object from your StudentInfo class
-            StudentInfo info = new StudentInfo();
-
-            info.PhoneNumber = txtPhone.Text.Trim();
-            info.GithubUrl = txtGithub.Text.Trim();
-            info.LinkedinUrl = txtLinkedin.Text.Trim();
-            info.PortfolioLink = txtPortfolio.Text.Trim();
-            info.CvUrl = txtCV.Text.Trim();
-
-            // Serialize only populated properties
-            string json = JsonConvert.SerializeObject( info,
-                new JsonSerializerSettings
-                {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
-
-            using (HttpClient client = new HttpClient())
-            {
-                using (StringContent content =
-                    new StringContent(
-                        json,
-                        Encoding.UTF8,
-                        "application/json"))
-                {
-                    using (HttpRequestMessage request =
-                        new HttpRequestMessage(
-                            new HttpMethod("PATCH"), url))
-                    {
-                        request.Content = content;
-
-                        HttpResponseMessage response =
-                            await client.SendAsync(request);
-
-                        response.EnsureSuccessStatusCode();
-                    }
-                }
-            }
-        }
-      
-
     }
-    }
-
+}

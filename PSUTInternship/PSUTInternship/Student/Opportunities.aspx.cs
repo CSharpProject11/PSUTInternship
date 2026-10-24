@@ -1,4 +1,6 @@
-﻿using System;
+using PSUTInternship.Shared;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,12 +13,13 @@ using PSUTInternship.Models;
 
 namespace PSUTInternship.Student
 {
-    public partial class Opportunities : System.Web.UI.Page
+    public partial class Opportunities : PSUTInternship.Shared.PortalPage
     {
-        private const string FirebaseUrl =
-            "https://csharp-e078c-default-rtdb.firebaseio.com/";
 
-        private static readonly HttpClient Client = new HttpClient();
+        private static readonly string FirebaseUrl =
+            PSUTInternship.Shared.FirebaseConfig.DatabaseUrl.TrimEnd('/') + "/";
+
+        private static readonly HttpClient Client = PSUTInternship.Shared.FirebaseConfig.CreateClient();
         protected void Page_Load(object sender, EventArgs e)
         {
             if (Session["userId"] == null || Session["idToken"] == null || !string.Equals(Convert.ToString(Session["userRole"]), "student", StringComparison.OrdinalIgnoreCase))
@@ -33,20 +36,24 @@ namespace PSUTInternship.Student
 
         public async Task loadOpportunities()
         {
-            string json = await Client.GetStringAsync(
-                FirebaseUrl + "opportunities.json");
-
-            var records = JsonConvert.DeserializeObject<Dictionary<string, Opportunity>>(json)
-                ?? new Dictionary<string, Opportunity>();
+            var records = (await PortalRepository.Collection("opportunities"))
+                .Where(x => x.Value != null).ToDictionary(x => x.Key, x => x.Value.ToObject<Opportunity>());
 
             foreach (var record in records)
             {
-                record.Value.Id = record.Key;
+                if (record.Value != null) record.Value.Id = record.Key;
             }
 
-            OpportunitiesRepeater.DataSource = records.Values.ToList();
+            var profile = await PortalRepository.Get<JObject>("students/" + PortalRepository.ProfileId);
+            var eligible = records.Values.Where(x => x != null && OpportunityEligibility.Matches(x, profile)).ToList();
+            await OpportunityPresentation.Populate(eligible);
+            OpportunitiesRepeater.DataSource = eligible;
             OpportunitiesRepeater.DataBind();
-            EmptyMessage.Visible = records.Count == 0;
+            EmptyMessage.Visible = eligible.Count == 0;
+        }
+        protected string OpportunityImage(object value) {
+            Uri image; string text = Convert.ToString(value);
+            return Uri.TryCreate(text,UriKind.Absolute,out image) && image.Scheme == "https" ? image.AbsoluteUri : ResolveUrl("~/Assets/technology.jpg");
         }
         protected void OpportunitiesRepeater_ItemCommand(object source, RepeaterCommandEventArgs e)
         {

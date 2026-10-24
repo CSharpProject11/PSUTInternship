@@ -30,3 +30,239 @@ html{scroll-behavior:smooth;scroll-padding-top:36px}*{box-sizing:border-box}body
 
 
 
+
+/* The opening film travels into its copy area, then leaves with its parent. */
+.campus-opening{position:relative;isolation:isolate}
+.campus-opening .film-frame{position:relative;top:0;z-index:0;height:calc(100svh - 28px);min-height:0;max-height:none;transform:translate3d(0,var(--film-travel,0px),0);border-radius:0 0 var(--film-radius,clamp(64px,9vw,140px)) var(--film-radius,clamp(64px,9vw,140px))}
+.opening-copy{position:relative;z-index:1}
+/* A hard text mask tracks the footage edge, rather than a timed color fade. */
+.opening-copy h1,.opening-description p{color:var(--ink);background:linear-gradient(to bottom,var(--paper) 0 var(--film-cover,0px),var(--ink) var(--film-cover,0px) 100%);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.opening-copy .scroll-cue{color:var(--navy)}
+.film-over-copy .scroll-cue{color:var(--paper)}
+/* Keep the text boundary tied to scroll, independent of entrance transforms. */
+.opening-copy h1[data-reveal],.opening-description p[data-reveal]{animation:none;transform:none;opacity:1}
+@media(prefers-reduced-motion:reduce){
+ .campus-opening .film-frame{position:relative;transform:none;border-radius:0 0 clamp(64px,9vw,140px) clamp(64px,9vw,140px)}
+ .opening-copy h1,.opening-description p{background:none;-webkit-text-fill-color:currentColor}
+}
+
+.campus-opening .film-control{top:max(24px,calc(120px - var(--film-travel,0px)));bottom:auto}
+
+
+
+/* A staggered campus collage opens into the central panorama as you scroll. */
+.discovery-gallery{--gallery-center:34vw;--gallery-side:18.5vw;--gallery-gap:clamp(12px,1.6vw,26px);height:180svh;position:relative;overflow:clip}
+.discovery-gallery-stage{position:sticky;top:8svh;height:84svh;min-height:440px;width:100%}
+.discovery-gallery .campus-panorama{position:absolute;top:0;left:50%;width:var(--gallery-center);height:100%;margin:0;transform:translateX(-50%);border-radius:18px}
+.discovery-gallery .campus-panorama figcaption{left:24px;right:24px;bottom:24px;flex-direction:column;align-items:start;gap:8px}
+.discovery-gallery .campus-panorama figcaption>span{font-size:clamp(22px,2.3vw,34px);max-width:none}
+.discovery-photo-column{position:absolute;display:flex;flex-direction:column;gap:var(--gallery-gap);width:var(--gallery-side);top:16%;height:68%}
+.discovery-photo-column img{width:100%;height:calc(60% - var(--gallery-gap)/2);object-fit:cover;border-radius:16px;min-height:0}
+.discovery-photo-column img+img{height:calc(40% - var(--gallery-gap)/2)}
+.gallery-inner.gallery-left{right:calc(50% + var(--gallery-center)/2 + var(--gallery-gap))}
+.gallery-inner.gallery-right{left:calc(50% + var(--gallery-center)/2 + var(--gallery-gap))}
+.gallery-inner.gallery-right img:first-child{height:calc(40% - var(--gallery-gap)/2)}
+.gallery-inner.gallery-right img+img{height:calc(60% - var(--gallery-gap)/2)}
+.gallery-outer{top:24%;height:52%;width:14vw}
+.gallery-outer img{height:100%}
+.gallery-outer.gallery-left{right:calc(50% + var(--gallery-center)/2 + var(--gallery-side) + var(--gallery-gap)*2)}
+.gallery-outer.gallery-right{left:calc(50% + var(--gallery-center)/2 + var(--gallery-side) + var(--gallery-gap)*2)}
+@media(max-width:767px){
+ .discovery-gallery{--gallery-center:58vw;--gallery-side:29vw;height:160svh}
+ .discovery-gallery-stage{height:76svh;min-height:400px;top:12svh}
+ .discovery-photo-column{top:18%;height:64%}
+ .discovery-photo-column img,.discovery-gallery .campus-panorama{border-radius:12px}
+ .discovery-gallery .campus-panorama figcaption{left:18px;right:18px;bottom:22px}
+ .discovery-gallery .campus-panorama figcaption>span{font-size:23px}
+ .discovery-gallery .campus-panorama .light-link{font-size:13px;gap:10px;text-align:left}
+}
+@media(prefers-reduced-motion:reduce){
+ .discovery-gallery{height:84svh;--gallery-center:48vw!important}
+ .discovery-gallery-stage{position:relative;top:0;height:100%}
+}
+
+/* Larger, unframed university identity and clearer header navigation. */
+.campus-home .campus-brand{background:transparent;padding:0;border-radius:0}
+.campus-home .campus-brand img{width:220px;height:auto}
+.campus-nav a,.header-login{font-size:17px}
+.campus-nav{gap:26px}
+.mobile-primary a{font-size:18px}
+@media(min-width:992px) and (max-width:1199px){
+ .campus-header{gap:18px}
+ .campus-home .campus-brand img{width:180px}
+ .campus-nav{gap:16px}
+ .campus-nav a,.header-login{font-size:15px}
+ .header-login{gap:12px;padding-inline:16px}
+}
+@media(max-width:991px){.campus-home .campus-brand img{width:180px}.header-login{font-size:16px}}
+@media(max-width:480px){.campus-home .campus-brand img{width:145px}.header-login{font-size:13px;gap:8px}}
+@media(max-width:359px){.campus-home .campus-brand img{width:120px}.header-login{font-size:12px}}
+
+.opportunity-deck-section .fact-card{height:540px}
+.opportunity-deck-section .fact-card h3{font-size:clamp(25px,2.2vw,34px);overflow-wrap:anywhere}
+.opportunity-deck-section .fact-card .opportunity-card-company{font-size:16px;font-weight:700;margin-bottom:12px}
+.opportunity-deck-section .fact-card .opportunity-card-meta{font-size:15px;margin-top:16px}
+.opportunity-card-note{font-size:15px;font-weight:700}
+.opportunity-deck-status{font-size:15px;color:var(--navy)}
+@media(max-width:767px){.opportunity-deck-section .fact-card{height:510px}.opportunity-deck-section .section-heading{flex-wrap:wrap}.opportunity-deck-section .rail-controls{margin-left:auto}}
+
+/* Compact opportunity previews, preserving the rotating deck interaction. */
+.opportunity-deck-section{padding-block:52px}
+.opportunity-deck-section .section-heading{margin-bottom:20px}
+.opportunity-deck-section .section-heading h2{font-size:clamp(32px,3.2vw,46px);margin-bottom:12px}
+.opportunity-deck-section .section-heading p{font-size:16px}
+.opportunity-deck-section .fact-deck{margin-top:0;padding-block:24px 42px;gap:20px}
+.opportunity-deck-section .fact-card{flex-basis:320px;height:400px;padding:26px;border-radius:24px}
+.opportunity-deck-section .fact-mark{font-size:72px}
+.opportunity-deck-section .fact-card h3{font-size:25px;line-height:1.2}
+.opportunity-deck-section .fact-card p{font-size:16px;line-height:1.5}
+.opportunity-deck-section .fact-card .opportunity-card-company{font-size:14px;margin-bottom:8px}
+.opportunity-deck-section .fact-card .opportunity-card-meta{font-size:13px;margin-top:12px}
+.opportunity-deck-section .fact-card a,.opportunity-card-note{font-size:14px}
+.opportunity-deck-section .drag-note{margin-top:16px;font-size:14px}
+@media(max-width:767px){
+ .opportunity-deck-section{padding-block:36px}
+ .opportunity-deck-section .fact-card{flex-basis:280px;height:380px;padding:24px}
+ .opportunity-deck-section .fact-mark{font-size:64px}
+ .opportunity-deck-section .fact-card h3{font-size:23px}
+}
+
+/* The opportunity deck follows a broad circular arc, like the supplied film. */
+.opportunity-deck-section .fact-deck{
+ --opportunity-width:clamp(300px,30vw,420px);
+ position:relative;align-items:flex-start;gap:72px;
+ padding:30px max(24px,calc((100% - var(--opportunity-width))/2)) 140px;
+ scroll-padding-inline:max(24px,calc((100% - var(--opportunity-width))/2));
+ scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x pan-y;
+}
+.opportunity-deck-section .fact-deck::-webkit-scrollbar{display:none}
+.opportunity-deck-section .fact-card{
+ flex:0 0 var(--opportunity-width);height:450px;padding:30px;border-radius:18px;
+ transform-origin:50% 50%;
+ transform:translateY(var(--card-lift,0px)) rotate(var(--card-angle,0deg));
+ opacity:1;will-change:auto;transition:none;
+}
+.opportunity-deck-section .fact-mark{font-size:72px}
+.opportunity-deck-section .fact-card h3{font-size:clamp(25px,2.3vw,32px);line-height:1.15}
+.opportunity-deck-section .fact-card .opportunity-card-company{font-size:16px}
+.opportunity-deck-section .fact-card .opportunity-card-meta{font-size:15px}
+.opportunity-deck-section .fact-card a{font-size:14px;min-height:48px}
+.opportunity-deck-section .fact-card a:hover{text-decoration:underline;text-underline-offset:5px}
+.opportunity-deck-section .fact-card a:focus-visible{outline:2px solid currentColor;outline-offset:5px;border-radius:3px}
+.opportunity-deck-section .drag-note{margin-top:0}
+.opportunity-drag-cursor{
+ position:fixed;left:0;top:0;width:88px;height:88px;border-radius:50%;
+ display:grid;place-items:center;background:var(--paper);color:var(--night);
+ font:700 14px/1 Manrope,Arial,sans-serif;pointer-events:none;z-index:1000;
+ opacity:0;transform:translate3d(calc(var(--cursor-x,0px) - 50%),calc(var(--cursor-y,0px) - 50%),0) scale(.7);
+ transition:opacity .15s,scale .2s;scale:1;
+}
+.opportunity-drag-cursor.is-visible{opacity:1;transform:translate3d(calc(var(--cursor-x,0px) - 50%),calc(var(--cursor-y,0px) - 50%),0) scale(1)}
+.opportunity-drag-cursor.is-pressed{scale:.82}
+.opportunity-deck-section [data-drag-rail]{cursor:grab;user-select:none}
+.opportunity-deck-section [data-drag-rail].has-drag-cursor,
+.opportunity-deck-section [data-drag-rail].has-drag-cursor.is-dragging,
+.opportunity-deck-section [data-drag-rail].has-drag-cursor.is-dragging *{cursor:none!important}
+.opportunity-deck-section [data-drag-rail] a{cursor:pointer}
+@media(max-width:767px){
+ .opportunity-deck-section .fact-deck{--opportunity-width:min(78vw,340px);gap:40px;padding-top:26px;padding-bottom:90px}
+ .opportunity-deck-section .fact-card{height:400px;padding:26px}
+ .opportunity-deck-section .fact-card h3{font-size:23px}
+ .opportunity-deck-section .fact-mark{font-size:60px}
+}
+@media(prefers-reduced-motion:reduce){
+ .opportunity-deck-section .fact-deck{padding-block:24px 32px}
+ .opportunity-deck-section .fact-card{transform:none}
+ .opportunity-drag-cursor{transition:none}
+}
+
+/* A compact rounded footer directly follows the campus film. */
+.campus-footer{border-radius:60px 60px 0 0;overflow:hidden;padding-top:44px;margin-top:64px}
+.campus-footer .footer-top{gap:40px}
+.campus-footer .footer-top h2{font-size:clamp(28px,2.6vw,38px);margin-bottom:18px}
+.campus-footer .footer-top h3{font-size:20px;margin-bottom:16px}
+.campus-footer .footer-top p{margin-top:14px;line-height:1.6}
+.campus-footer .footer-signature{padding-top:28px;padding-bottom:24px;align-items:center}
+.campus-footer .footer-psut{font-size:clamp(72px,9vw,130px);letter-spacing:-.04em}
+.campus-footer .footer-signature>div{font-size:14px;line-height:1.6}
+.campus-footer .footer-bottom{padding-top:16px;padding-bottom:20px}
+@media(max-width:767px){
+ .campus-footer{border-radius:32px 32px 0 0;padding-top:32px;margin-top:44px}
+ .campus-footer .footer-top{gap:24px}
+ .campus-footer .footer-top h2{font-size:30px;margin-bottom:12px}
+ .campus-footer .footer-top h3{font-size:18px;margin-bottom:12px}
+ .campus-footer .footer-signature{flex-direction:row;gap:20px;padding-top:24px;padding-bottom:20px}
+ .campus-footer .footer-psut{font-size:64px}
+ .campus-footer .footer-signature>div{font-size:12px;text-align:right}
+}
+
+.life-section{padding-bottom:0}
+.campus-footer .footer-top button.plain-link{display:block;background:none;border:0;padding:0;margin-bottom:10px;min-height:44px;color:var(--paper);font:inherit;font-size:15px;line-height:1.5;text-align:left;white-space:normal}
+.campus-footer .footer-top button.plain-link:hover{color:var(--sky)}
+@media(max-width:767px){.campus-footer .footer-top button.plain-link{font-size:13px}}
+
+/* Keep the campus film chapter compact across screen sizes. */
+.life-section .section-heading{margin-bottom:28px}
+.life-section .section-heading h2{font-size:clamp(32px,3.2vw,46px);margin-bottom:12px}
+.life-section .section-heading p{font-size:16px}
+.life-section .campus-cinema{height:clamp(320px,32vw,460px)}
+.life-section .cinema-title{font-size:clamp(32px,3.5vw,48px)}
+.life-section .cinema-play{width:70px;height:70px;font-size:22px}
+@media(max-width:767px){
+ .life-section .section-heading{margin-bottom:22px;gap:10px}
+ .life-section .section-heading h2{font-size:32px}
+ .life-section .campus-cinema{height:300px}
+ .life-section .cinema-title{font-size:32px;bottom:66px}
+ .life-section .cinema-play{width:60px;height:60px;font-size:20px}
+ .life-section .cinema-caption{bottom:24px}
+}
+
+/* The location sits beside the footer links without adding another section. */
+.campus-footer .footer-top{grid-template-columns:1.15fr 1fr .8fr 1.25fr;gap:28px}
+.campus-footer .footer-top>div{min-width:0}
+.footer-map iframe{display:block;width:100%;height:180px;border:0;border-radius:14px;background:var(--pale)}
+.campus-footer .footer-map>a{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;margin-bottom:0;min-height:32px;font-size:13px}
+@media(min-width:768px) and (max-width:1100px){.campus-footer .footer-top{grid-template-columns:1fr 1fr}}
+@media(max-width:767px){
+ .campus-footer .footer-top{grid-template-columns:1fr 1fr;gap:24px}
+ .campus-footer .footer-map{grid-column:1/-1}
+ .footer-map iframe{height:180px}
+}
+
+/* Transparent university mosaic closes the footer without covering its links. */
+.campus-footer .footer-mosaic{display:block;width:100%;height:clamp(64px,8.45vw,150px);object-fit:cover;object-position:center center;pointer-events:none;user-select:none;margin-top:8px}
+@media(max-width:767px){.campus-footer .footer-mosaic{height:70px;width:100%;object-fit:cover}}
+
+.campus-home .campus-brand img{border-radius:12px}
+
+.campus-home .campus-brand img{padding:6px 10px;background:#fff}
+
+.about-psut-details{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:48px;margin-bottom:48px}
+.about-psut-details h3{font-size:24px;line-height:1.2;letter-spacing:-.02em;margin-bottom:16px;color:var(--paper)}
+.about-psut-details p{font-size:16px;line-height:1.75;color:var(--paper);max-width:42ch}
+@media(max-width:991px){.about-psut-details{gap:28px}.about-psut-details h3{font-size:21px}}
+@media(max-width:767px){.about-psut-details{grid-template-columns:1fr;gap:26px;margin-bottom:32px}.about-psut-details h3{font-size:23px;margin-bottom:10px}.about-psut-details p{max-width:60ch}}
+
+.opportunity-deck-section .fact-deck{overflow-anchor:none}
+
+.internship-process-video{display:block;width:100%;height:clamp(320px,32vw,460px);object-fit:contain;background:var(--night);border-radius:36px}
+@media(max-width:767px){.internship-process-video{height:auto;aspect-ratio:16/9;border-radius:24px}}
+/* Contact dialog: a readable, consistently sized form independent of browser defaults. */
+#actionContent:has(#contactForm){width:min(620px,calc(100vw - 32px));max-height:90dvh;overflow-y:auto;padding:32px;border-radius:20px;background:#fff;box-sizing:border-box;scrollbar-width:thin}
+#actionContent:has(#contactForm) .modalhead{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:12px}
+#actionContent:has(#contactForm) .modalhead h2{font-size:27px!important;line-height:1.25!important;letter-spacing:-.03em!important;max-width:20ch;margin:0!important;color:#163449}
+#actionContent:has(#contactForm) .close{display:grid;place-items:center;flex-shrink:0;width:36px;height:36px;min-width:36px;padding:0;border:1px solid #dce7ee;border-radius:50%;font-size:22px;background:#f2f7fa;color:#345c76;cursor:pointer}
+#actionContent:has(#contactForm)>p{font-size:13px;line-height:1.8;color:#597387;margin:0 0 10px}
+#actionContent:has(#contactForm) #contactNotice{font-size:12px;padding:0;margin:0 0 24px;color:#60798b}
+#contactForm .contact-fields{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 16px;margin-bottom:24px}
+#contactForm .contact-fields label{display:flex;flex-direction:column;gap:8px;min-width:0;font-size:12px;font-weight:600;line-height:1.5;color:#34586f;margin:0}
+#contactForm .contact-full{grid-column:1/-1}
+#contactForm .contact-fields :is(input,textarea){display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;border:1px solid #cbdbe5;border-radius:8px;background:#fbfcfd;color:#193b52;padding:12px 14px;font:400 14px/1.6 Manrope,Arial,sans-serif;outline-offset:3px;box-shadow:none}
+#contactForm .contact-fields input{min-height:46px}
+#contactForm .contact-fields textarea{min-height:130px;resize:vertical}
+#contactForm .contact-fields :is(input,textarea)::placeholder{color:#7b8e9d;opacity:1}
+#contactForm .contact-fields :is(input,textarea):focus{border-color:#0078b5;background:#fff;outline:2px solid #bfe3f4}
+#contactForm .well-pill{display:flex;align-items:center;justify-content:center;gap:14px;width:100%;min-height:48px;padding:12px 20px;border:0;border-radius:8px;background:#003e73;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+#contactForm .well-pill svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.6}
+#contactForm .well-pill:hover{background:#002f59}
+@media(max-width:550px){#actionContent:has(#contactForm){padding:24px}#contactForm .contact-fields{grid-template-columns:minmax(0,1fr);gap:16px}#actionContent:has(#contactForm) .modalhead h2{font-size:23px!important}}

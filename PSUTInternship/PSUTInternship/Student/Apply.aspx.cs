@@ -17,13 +17,13 @@ using System.Net.Mail;
 
 namespace PSUTInternship.Student
 {
-    public partial class Apply : System.Web.UI.Page
+    public partial class Apply : PSUTInternship.Shared.PortalPage
     {
-        private const string FirebaseUrl =
-            "https://csharp-e078c-default-rtdb.firebaseio.com/";
+        private static readonly string FirebaseUrl =
+            PSUTInternship.Shared.FirebaseConfig.DatabaseUrl.TrimEnd('/') + "/";
 
         private static readonly HttpClient Client =
-            new HttpClient();
+            PSUTInternship.Shared.FirebaseConfig.CreateClient();
 
         protected override void OnInit(EventArgs e)
         {
@@ -53,17 +53,25 @@ namespace PSUTInternship.Student
             RegisterAsyncTask(new PageAsyncTask(SubmitApplication));
         }
 
-        private string Field(string name)
+        protected string FormatCreatedDate(object value)
         {
-            return (Request.Form[name] ?? "").Trim();
+            DateTime date;
+            return DateTime.TryParse(Convert.ToString(value), out date) ? date.ToString("dd MMM yyyy", CultureInfo.InvariantCulture) : "Not specified";
+        }
+        protected string ApplicationImage(object value) { Uri image; return Uri.TryCreate(Convert.ToString(value),UriKind.Absolute,out image) && image.Scheme == "https" ? image.AbsoluteUri : ResolveUrl("~/Assets/technology.jpg"); }
+        private string Field(string name) {
+            string[] aliases = name == "studentName" ? new[] { "fullName" } : name == "studentEmail" ? new[] { "email" } : name == "universityId" ? new[] { "studentNumber", "studentId" } : name == "program" ? new[] { "major", "program" } : name == "faculty" ? new[] { "college", "faculty" } : name == "university" ? new[] { "university" } : null;
+            return aliases != null && AuthoritativeProfile != null ? DatabaseSchema.FirstText(AuthoritativeProfile, aliases) : (Request.Form[name] ?? "").Trim();
         }
 
+        protected bool CanApply { get; private set; }
+        protected string ApplicationAvailability { get; private set; }
+        private JObject AuthoritativeProfile;
         private async Task LoadStudentInformation()
         {
             var values = new Dictionary<string, string>
             {
-                { "studentEmail", Convert.ToString(Session["userEmail"]) },
-                { "applicationDate", TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Jordan Standard Time").ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) }
+                { "studentEmail", Convert.ToString(Session["userEmail"]) }
             };
             try
             {
@@ -80,12 +88,13 @@ namespace PSUTInternship.Student
                         { "studentName", new[] { "fullName", "studentName" } },
                         { "universityId", new[] { "studentNumber", "universityId", "studentId" } },
                         { "studentEmail", new[] { "email" } },
+                        { "university", new[] { "university" } },
                         { "studentPhone", new[] { "phone", "phoneNumber" } },
                         { "alternativePhone", new[] { "alternativePhone" } },
                         { "faculty", new[] { "college", "faculty" } },
                         { "department", new[] { "department" } },
                         { "program", new[] { "program", "major" } },
-                        { "semester", new[] { "semester" } },
+                        { "semester", new[] { "academicSemester", "semester" } },
                         { "academicYear", new[] { "academicYear" } },
                         { "completedCreditHours", new[] { "completedCreditHours" } }
                     };
@@ -101,7 +110,7 @@ namespace PSUTInternship.Student
             }
             catch (Exception ex) when (ex is HttpRequestException || ex is JsonException || ex is TaskCanceledException)
             {
-                MessageLabel.Text = "Your saved student information could not be loaded. Enter it in the application form or sign in again.";
+                MessageLabel.Text = "Your saved student information could not be loaded. Sign in again or ask the coordinator to complete your profile.";
             }
             string defaults = JsonConvert.SerializeObject(values, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml });
             ClientScript.RegisterStartupScript(GetType(), "studentInformation", "document.addEventListener('DOMContentLoaded', function () { var values = " + defaults
@@ -113,72 +122,77 @@ namespace PSUTInternship.Student
             await LoadOpportunity();
             try
             {
+                AuthoritativeProfile = await PortalRepository.Get<JObject>("students/" + PortalRepository.Key(CurrentProfileId));
+                if (AuthoritativeProfile == null) throw new ArgumentException("Your student profile could not be loaded.");
                 string id = Request.QueryString["id"];
                 string uid = Convert.ToString(Session["userId"]);
                 string token = Convert.ToString(Session["idToken"]);
                 if (!DetailsPanel.Visible) throw new ArgumentException("Choose a valid opportunity before applying.");
+                if (!CanApply) throw new ArgumentException(ApplicationAvailability ?? "This opportunity is unavailable.");
                 if (!string.Equals(Convert.ToString(Session["userRole"]), "student", StringComparison.OrdinalIgnoreCase))
                     throw new ArgumentException("Only student accounts can submit applications.");
 
                 string[] required = { "faculty", "department", "program", "semester", "academicYear",
-                    "applicationDate", "studentName", "universityId", "completedCreditHours", "studentPhone",
-                    "studentEmail", "organizationName", "organizationPhone", "mailingAddress", "organizationEmail",
-                    "trainingAddress", "trainingStartDate", "trainingEndDate", "trainingField", "applicationReason" };
+                    "studentName", "universityId", "completedCreditHours", "studentPhone",
+                    "studentEmail",
+                    "applicationReason" };
                 foreach (string name in required)
                     if (string.IsNullOrWhiteSpace(Field(name)) || Field(name).Length > 10000)
                         throw new ArgumentException("Complete all required fields. Each response must be under 10,000 characters.");
 
-                DateTime applicationDate, start, end;
-                if (!DateTime.TryParseExact(Field("applicationDate"), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out applicationDate)
-                    || !DateTime.TryParseExact(Field("trainingStartDate"), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out start)
-                    || !DateTime.TryParseExact(Field("trainingEndDate"), "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out end)
-                    || end < start)
-                    throw new ArgumentException("Enter valid dates. Training end date must be on or after its start date.");
+                DateTime applicationDate = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, "Jordan Standard Time").Date;
                 int credits;
                 if (!int.TryParse(Field("completedCreditHours"), out credits) || credits < 0)
                     throw new ArgumentException("Completed credit hours must be a non-negative whole number.");
-                foreach (string name in new[] { "studentEmail", "organizationEmail" })
+                foreach (string name in new[] { "studentEmail" })
                 {
                     MailAddress email;
                     try { email = new MailAddress(Field(name)); }
-                    catch (FormatException) { throw new ArgumentException("Enter valid student and organization email addresses."); }
+                    catch (FormatException) { throw new ArgumentException("Enter a valid student email address."); }
                     if (email.Address != Field(name)) throw new ArgumentException("Enter valid email addresses without display names.");
                 }
-                Uri website;
-                if (Field("organizationWebsite") != "" && (!Uri.TryCreate(Field("organizationWebsite"), UriKind.Absolute, out website)
-                    || (website.Scheme != "https" && website.Scheme != "http")))
-                    throw new ArgumentException("Enter a valid website URL starting with https:// or http://.");
-
+                var placement = await PortalRepository.PlacementForStudent(uid);
+                if (placement != null) throw new ArgumentException("You already have a confirmed internship.");
+                var existingApplications = await PortalRepository.Collection(PortalRepository.Query("applications", "studentId", uid));
+                if (existingApplications.Values.Any(x => (string)x["opportunityId"] == id)) throw new ArgumentException("You have already applied to this opportunity.");
+                var confirmation = await FirebaseRestClient.GetAsync<JObject>("internshipConfirmations/" + uid, token);
+                if (confirmation != null) throw new ArgumentException("You have already confirmed an internship.");
                 string auth = "?auth=" + Uri.EscapeDataString(token);
                 using (var response = await Client.GetAsync(FirebaseUrl + "opportunities/" + Uri.EscapeDataString(id) + ".json" + auth))
                 {
                     response.EnsureSuccessStatusCode();
                     var opportunity = JsonConvert.DeserializeObject<Opportunity>(await response.Content.ReadAsStringAsync());
-                    if (opportunity == null || !opportunity.Status || (opportunity.DeadLine != DateTime.MinValue && opportunity.DeadLine.Date < DateTime.UtcNow.Date))
+                    if (opportunity == null || !opportunity.IsAccepting)
                         throw new ArgumentException("This opportunity is closed or its application deadline has passed.");
                 }
 
+                var savedOpportunity = await FirebaseRestClient.GetAsync<Opportunity>("opportunities/" + id, token);
+                var studentProfile = await FirebaseRestClient.GetAsync<JObject>("students/" + PortalRepository.Key(PortalRepository.ProfileId), token);
+                if (!OpportunityEligibility.Matches(savedOpportunity, studentProfile)) throw new ArgumentException("This opportunity does not match your college or major.");
                 var application = new PSUTInternship.Models.Application
                 {
-                    Id = id, StudentId = uid, OpportunityId = id, Reason = Field("applicationReason"),
+                    CvUrl = (string)studentProfile?["cvUrl"], Id = uid + "_" + id, CompanyId = savedOpportunity.CompanyId, AcademicSupervisorId = (string)studentProfile?["academicSupervisorId"], StudentId = uid, OpportunityId = id, Reason = Field("applicationReason"),
                     Details = new TrainingApplicationDetails
                     {
-                        Faculty = Field("faculty"), Department = Field("department"), Program = Field("program"),
+                        Faculty = Field("faculty"), University = Field("university"), Department = Field("department"), Program = Field("program"),
                         Semester = Field("semester"), AcademicYear = Field("academicYear"), ApplicationDate = applicationDate,
                         StudentName = Field("studentName"), UniversityId = Field("universityId"), CompletedCreditHours = credits,
-                        StudentPhone = Field("studentPhone"), StudentEmail = Field("studentEmail"), AlternativePhone = Field("alternativePhone"),
-                        OrganizationName = Field("organizationName"), OrganizationPhone = Field("organizationPhone"),
-                        MailingAddress = Field("mailingAddress"), OrganizationEmail = Field("organizationEmail"),
-                        OrganizationWebsite = Field("organizationWebsite"), TrainingAddress = Field("trainingAddress"),
-                        TrainingStartDate = start, TrainingEndDate = end, TrainingField = Field("trainingField")
+                        StudentPhone = Field("studentPhone"), StudentEmail = Field("studentEmail"), AlternativePhone = Field("alternativePhone")
                     }
                 };
-                // One record per student/opportunity; conditional write prevents duplicate submissions and overwriting reviews.
-                string url = FirebaseUrl + "applications/" + Uri.EscapeDataString(uid) + "/" + Uri.EscapeDataString(id) + ".json" + auth;
+                // One record per student/opportunity. Database create-only rules prevent overwriting reviews.
+                string url = FirebaseUrl + "applications/" + Uri.EscapeDataString(uid + "_" + id) + ".json" + auth;
                 using (var request = new HttpRequestMessage(HttpMethod.Put, url))
                 {
-                    request.Headers.TryAddWithoutValidation("if-match", "null_etag");
-                    request.Content = new StringContent(JsonConvert.SerializeObject(application), Encoding.UTF8, "application/json");
+                    // Ownership rules cannot authorize a conditional read of a missing record.
+                    // Preserve legacy readers while omitting obsolete fields from new records.
+                    var payload = JObject.FromObject(application);
+                    var details = (JObject)payload["details"];
+                    foreach (string obsolete in new[] { "organizationName", "organizationPhone", "mailingAddress",
+                        "organizationEmail", "organizationWebsite", "trainingAddress", "trainingStartDate",
+                        "trainingEndDate", "trainingField" })
+                        details.Remove(obsolete);
+                    request.Content = new StringContent(payload.ToString(Formatting.None), Encoding.UTF8, "application/json");
                     using (var response = await Client.SendAsync(request))
                     {
                         if (response.StatusCode == HttpStatusCode.PreconditionFailed)
@@ -186,6 +200,7 @@ namespace PSUTInternship.Student
                         response.EnsureSuccessStatusCode();
                     }
                 }
+                await LoadOpportunity();
                 MessageLabel.CssClass = "alert alert-success d-block";
                 MessageLabel.Text = "Application submitted successfully. Your status is Pending.";
             }
@@ -199,8 +214,10 @@ namespace PSUTInternship.Student
         {
             MessageLabel.CssClass = "alert alert-danger d-block";
             MessageLabel.Text = HttpUtility.HtmlEncode(message);
+            if (!CanApply) return;
             var values = Request.Form.AllKeys.Where(k => k != null && !k.StartsWith("__"))
                 .ToDictionary(k => k, k => Request.Form[k]);
+            if (AuthoritativeProfile != null) foreach (string field in new[] {"studentName","studentEmail","universityId","university","faculty","program"}) values[field] = Field(field);
             string json = JsonConvert.SerializeObject(values, new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml });
             ClientScript.RegisterStartupScript(GetType(), "restoreApplication", "document.addEventListener('DOMContentLoaded', function () { var values = " + json
                 + "; Object.keys(values).forEach(function (key) { var field = document.getElementById(key); if (field && /^(INPUT|TEXTAREA)$/.test(field.tagName)) field.value = values[key]; }); new bootstrap.Modal(document.getElementById('applicationModal')).show(); });", true);
@@ -236,6 +253,10 @@ namespace PSUTInternship.Student
                 }
 
                 opportunity.Id = id;
+                await OpportunityPresentation.Populate(new[] { opportunity });
+                CanApply = opportunity.IsAccepting && !opportunity.HasApplied && !opportunity.HasConfirmedInternship;
+                ApplicationAvailability = opportunity.HasConfirmedInternship ? "You have already confirmed an internship. Further applications are disabled." : opportunity.CapacityUnavailable ? "Seat availability could not be verified. Please check again shortly." : opportunity.IsFull ? "All seats have been filled. This opportunity is closed." : opportunity.HasApplied ? "You have already applied to this opportunity." : !opportunity.IsAccepting ? "Applications are closed for this opportunity." : "";
+
 
                 OpportunityDetails.DataSource =
                     new[] { opportunity };

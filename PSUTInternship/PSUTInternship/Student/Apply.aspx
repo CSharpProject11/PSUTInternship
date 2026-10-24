@@ -1,21 +1,15 @@
-﻿<%@ Page Language="C#" Async="true"
+<%@ Page Title="Apply for an opportunity" MasterPageFile="~/Portal.Master" Language="C#" Async="true"
     AutoEventWireup="true"
     CodeBehind="Apply.aspx.cs"
     Inherits="PSUTInternship.Student.Apply" %>
-<%@ Register Src="~/Student/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
+<%@ Register Src="~/Shared/StudentNav.ascx" TagPrefix="psut" TagName="StudentNav" %>
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<link href="../Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="../Content/student-workspace.css?v=20261024-opps4" rel="stylesheet" />
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<div class="student-shell">
 
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <title>Apply for an opportunity</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="../Content/bootstrap.min.css" rel="stylesheet" />
-    <link href="../Content/student-workspace.css" rel="stylesheet" />
-</head>
-<body class="student-page">
-    <form id="form1" runat="server">
-    <div class="student-shell">
-        <psut:StudentNav runat="server" />
         <main id="student-main" class="student-main sd-apply-main" tabindex="-1">
         <a class="sd-back" href="Opportunities.aspx">← Back to opportunities</a>
         <div class="student-heading"><div><h1>Opportunity details.</h1><p>Review the placement, then submit your application.</p></div></div>
@@ -29,21 +23,18 @@
                 runat="server" CssClass="w-100">
                 <ItemTemplate>
                     <article class="card sd-card sd-apply-card">
-                    <asp:Image runat="server"
-                        CssClass="img-fluid w-100"
-                        ImageUrl='<%# Eval("ImageUrl") %>'
-                        AlternateText='<%# Eval("Title") %>'
-                        Visible='<%# !string.IsNullOrWhiteSpace(Convert.ToString(Eval("ImageUrl"))) %>' />
+                    <div class="opportunity-detail-banner"><span class="opportunity-company-mark" aria-hidden="true"><%#: string.IsNullOrWhiteSpace(Convert.ToString(Eval("CompanyName"))) ? "P" : Convert.ToString(Eval("CompanyName")).Substring(0,1).ToUpperInvariant() %></span><div><strong><%#: Eval("CompanyName") %></strong><span><%#: Eval("Specialization") %></span></div><span class="opportunity-banner-label">Field training</span></div>
                     <div class="card-body p-3 p-md-4">
-                    <h1 class="h2 text-break mb-3"><%#: Eval("Title") %></h1>
-                    <span class="badge bg-secondary"><%#: Convert.ToBoolean(Eval("Status")) ? "Open" : "Closed" %></span>
+                    <h2 class="h2 text-break mb-3"><%#: Eval("Title") %></h2>
+                    <span class='<%# "sd-opening-status " + (Convert.ToBoolean(Eval("IsAccepting")) ? "is-open" : "is-closed") %>'><%#: Eval("StatusLabel") %></span>
 
                     <dl class="row g-3 border-bottom pb-4 my-3">
-                        <div class="col-12 col-md-6"><dt class="text-muted small">Company ID</dt><dd class="text-break"><%#: Eval("CompanyId") %></dd></div>
-                        <div class="col-12 col-md-6"><dt class="text-muted small">Created at</dt><dd class="text-break"><%#: Eval("CreatedAt") %></dd></div>
-                        <div class="col-12 col-md-6"><dt class="text-muted small">Location</dt><dd class="text-break"><%#: Eval("Location") %></dd></div>
-                        <div class="col-12 col-md-6"><dt class="text-muted small">Work mode</dt><dd class="text-break"><%#: Eval("WorkMode") %></dd></div>
-                        <div class="col-12 col-md-6"><dt class="text-muted small">Duration</dt><dd class="text-break"><%#: Eval("Duration") %> Months</dd></div>
+                        <div class="col-12 col-md-6"><dt class="text-muted small">Company</dt><dd class="text-break"><%#: Eval("CompanyName") %></dd></div>
+                        <div class="col-12 col-md-6"><dt class="text-muted small">Created at</dt><dd class="text-break"><%#: FormatCreatedDate(Eval("CreatedAt")) %></dd></div>
+                        <div class="col-12 col-md-6"><dt class="text-muted small">Location</dt><dd class="text-break"><%#: Eval("LocationDisplay") %></dd></div>
+                        <div class="col-12 col-md-6"><dt class="text-muted small">Work type</dt><dd class="text-break"><%#: Eval("WorkModeDisplay") %></dd></div>
+                        <div class="col-12 col-md-6"><dt class="text-muted small">Available seats</dt><dd class="text-break"><%#: Eval("SeatsLabel") %></dd></div>
+                        <div class="col-12 col-md-6"><dt class="text-muted small">Duration</dt><dd class="text-break"><%#: Eval("DurationDisplay") %></dd></div>
                         <div class="col-12 col-md-6"><dt class="text-muted small">Application deadline</dt><dd class="text-break"><%#: Convert.ToDateTime(Eval("DeadLine")) == DateTime.MinValue ? "Not specified" : string.Format("{0:dd MMM yyyy}", Eval("DeadLine")) %></dd></div>
                     </dl>
 
@@ -54,7 +45,8 @@
                     <p class="text-break"><%#: Eval("Requirements") %></p>
 
                     <div class="mt-4">
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#applicationModal">Apply for this opportunity</button>
+                        <asp:Button ID="OpenApplication" runat="server" Text='<%# CanApply ? "Apply for this opportunity" : "Applications unavailable" %>' CssClass="btn btn-primary" Enabled='<%# CanApply %>' OnClientClick="new bootstrap.Modal(document.getElementById('applicationModal')).show(); return false;" CausesValidation="false" />
+<p class="mt-3" role="status"><%#: ApplicationAvailability %></p>
                     </div>
                     </div>
                     </article>
@@ -72,40 +64,23 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p class="text-muted">Your saved student information is filled in automatically. Review it and complete any missing academic and training organization details. All fields are required unless marked optional.</p>
-                        <fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">General Information</legend><div class="row g-3">
-<div class="col-12 col-md-6"><label class="form-label" for="faculty">Faculty</label><input class="form-control" id="faculty" name="faculty" type="text" required="required" /></div>
+                        <p class="text-muted">Your identity and program information is retrieved from your profile and cannot be edited here. Complete the remaining application details. All fields are required unless marked optional.</p>
+                        <fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">General Information</legend><div class="row g-3"><div class="col-12 col-md-6"><label class="form-label" for="university">University</label><input class="form-control" id="university" name="university" readonly="readonly" /></div>
+<div class="col-12 col-md-6"><label class="form-label" for="faculty">Faculty</label><input class="form-control" id="faculty" name="faculty" readonly="readonly" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="department">Department</label><input class="form-control" id="department" name="department" type="text" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="program">Program</label><input class="form-control" id="program" name="program" type="text" required="required" /></div>
+<div class="col-12 col-md-6"><label class="form-label" for="program">Program</label><input class="form-control" id="program" name="program" readonly="readonly" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="semester">Semester</label><input class="form-control" id="semester" name="semester" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="academicYear">Academic Year</label><input class="form-control" id="academicYear" name="academicYear" type="text" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="applicationDate">Application Date</label><input class="form-control" id="applicationDate" name="applicationDate" type="date" required="required" /></div>
+
 </div></fieldset>
 <fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">Student Information</legend><div class="row g-3">
-<div class="col-12 col-md-6"><label class="form-label" for="studentName">Student Name</label><input class="form-control" id="studentName" name="studentName" type="text" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="universityId">University ID</label><input class="form-control" id="universityId" name="universityId" type="text" required="required" /></div>
+<div class="col-12 col-md-6"><label class="form-label" for="studentName">Student Name</label><input class="form-control" id="studentName" name="studentName" readonly="readonly" type="text" required="required" /></div>
+<div class="col-12 col-md-6"><label class="form-label" for="universityId">University ID</label><input class="form-control" id="universityId" name="universityId" readonly="readonly" type="text" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="completedCreditHours">Completed Credit Hours</label><input class="form-control" id="completedCreditHours" name="completedCreditHours" type="number" required="required" min="0" step="1" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="studentPhone">Phone Number</label><input class="form-control" id="studentPhone" name="studentPhone" type="tel" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="studentEmail">Email Address</label><input class="form-control" id="studentEmail" name="studentEmail" type="email" required="required" /></div>
+<div class="col-12 col-md-6"><label class="form-label" for="studentEmail">Email Address</label><input class="form-control" id="studentEmail" name="studentEmail" readonly="readonly" type="email" required="required" /></div>
 <div class="col-12 col-md-6"><label class="form-label" for="alternativePhone">Alternative Phone Number (optional)</label><input class="form-control" id="alternativePhone" name="alternativePhone" type="tel" /></div>
 </div></fieldset>
-<fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">Training Organization Information</legend><div class="row g-3">
-<div class="col-12 col-md-6"><label class="form-label" for="organizationName">Organization Name</label><input class="form-control" id="organizationName" name="organizationName" type="text" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="organizationPhone">Phone Number</label><input class="form-control" id="organizationPhone" name="organizationPhone" type="tel" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="mailingAddress">Mailing Address</label><input class="form-control" id="mailingAddress" name="mailingAddress" type="text" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="organizationEmail">Email Address</label><input class="form-control" id="organizationEmail" name="organizationEmail" type="email" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="organizationWebsite">Website (optional)</label><input class="form-control" id="organizationWebsite" name="organizationWebsite" type="url" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="trainingAddress">Training Location Address</label><input class="form-control" id="trainingAddress" name="trainingAddress" type="text" required="required" /></div>
-</div></fieldset>
-<fieldset class="mb-4"><legend class="h5 border-bottom pb-2 mb-3">Training Period</legend><div class="row g-3">
-<div class="col-12 col-md-6"><label class="form-label" for="trainingStartDate">Training Start Date</label><input class="form-control" id="trainingStartDate" name="trainingStartDate" type="date" required="required" /></div>
-<div class="col-12 col-md-6"><label class="form-label" for="trainingEndDate">Training End Date</label><input class="form-control" id="trainingEndDate" name="trainingEndDate" type="date" required="required" /></div>
-</div></fieldset>
-                        <fieldset class="mb-0">
-                            <legend class="h5 border-bottom pb-2 mb-3">Training Field</legend>
-                            <label class="form-label" for="trainingField">Field of Training</label>
-                            <textarea class="form-control" id="trainingField" name="trainingField" rows="4" required="required"></textarea>
-                        </fieldset>
                         <div class="mt-4">
                             <label class="form-label" for="applicationReason">Why do you want to apply to this company?</label>
                             <textarea class="form-control" id="applicationReason" name="applicationReason" rows="4" required="required" aria-describedby="applicationReasonHelp"></textarea>
@@ -120,10 +95,6 @@
                 </div>
             </div>
         </div>
-    </form>
+
     <script src="../Scripts/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-
-
-
+</asp:Content>

@@ -1,3 +1,4 @@
+using PSUTInternship.Shared;
 using System;
 using System.Linq;
 using System.Web;
@@ -20,10 +21,6 @@ namespace PSUTInternship.Company
             if (action == "accept")
             {
                 if (TryFirebase(() => UpdateApplication(StudentApplication.Id, "accepted", ""))) GoTo("Applications.aspx");
-            }
-            else if (action == "confirm" && StudentApplication.Status == "Accepted")
-            {
-                if (TryFirebase(() => ConfirmStudentPlacement(StudentApplication))) GoTo("Trainees.aspx");
             }
             else if (action == "reject") GoTo("RejectApplication.aspx?id=" + HttpUtility.UrlEncode(StudentApplication.Id));
         }
