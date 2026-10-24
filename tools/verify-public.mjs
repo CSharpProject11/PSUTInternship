@@ -28,3 +28,12 @@ assert.ok(!endpoint.includes('Response.Write("[]")'));
 assert.ok(!endpoint.includes('publicOpportunities'));
 assert.ok(!/description=|requirements=|applicationUrl=/.test(endpoint));
 console.log('PASS: six-card limit, placeholders, empty/error distinction, escaping, sign-in links, private source and summary-only projection.');
+
+// Public listings must not inherit company workspace scoping or expired session tokens.
+const loader=endpoint.slice(endpoint.indexOf('internal static async'),endpoint.indexOf('protected async void Page_Load'));
+assert.match(loader,/PublicListingsClient\.GetAsync/);
+assert.ok(!/PortalRepository|Session\[|FirebaseConfig\.Client/.test(loader));
+assert.match(endpoint,/PublicListingsClient = new HttpClient/);
+assert.match(loader,/IsOpen\(x.Value\)/);
+assert.match(loader,/Take\(6\)/);
+console.log('PASS: homepage listings use an independent public transport for all session roles.');

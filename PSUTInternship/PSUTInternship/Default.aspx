@@ -17,7 +17,7 @@
         <section class="campus-opening" id="home" aria-labelledby="HomeTitle">
             <div class="film-frame">
                 <asp:Image runat="server" ID="HomeImage2" CssClass="film-poster" ImageUrl="~/Assets/psut-rooftop.jpg" AlternateText="PSUT campus in Al-Jubeiha, Amman" fetchpriority="high" /><video id="introVideo" class="campus-film" autoplay muted loop playsinline preload="metadata" poster="<%= ResolveUrl("~/Assets/psut-rooftop.jpg") %>" aria-label="A film of the Princess Sumaya University for Technology campus">
-                    <source src="<%= ResolveUrl("~/Assets/psut-campus-loop.mp4") %>" type="video/mp4"></video>
+                    <source src="<%= ResolveUrl("~/Assets/psut-hero.mp4?v=1080p-3870d717") %>" type="video/mp4"></video>
                 <div class="film-shade" aria-hidden="true"></div>
             </div>
             <div class="opening-copy page-frame">
@@ -25,26 +25,12 @@
                 <div class="opening-description">
                     <p runat="server" ID="HomeHeading2" data-reveal="">Your internship at Princess Sumaya University for Technology. Find your opportunity and follow your next chapter.</p>
                     <asp:HyperLink runat="server" ID="HomeLink11" CssClass="round-link" NavigateUrl="#opportunities" data-reveal="">Find your opportunity <span aria-hidden="true">↗</span></asp:HyperLink></div>
-                <asp:HyperLink runat="server" ID="HomeLink12" NavigateUrl="#discover" CssClass="scroll-cue" aria-label="Scroll to About PSUT"><span aria-hidden="true">↓</span></asp:HyperLink></div>
+                <asp:HyperLink runat="server" ID="HomeLink12" NavigateUrl="#discover" CssClass="scroll-cue" aria-label="Scroll to About PSUT"><span class="scroll-cue-label" aria-hidden="true">Scroll</span><svg class="scroll-cue-arrow" viewBox="0 0 32 64" aria-hidden="true"><path class="scroll-cue-trail" pathLength="100" d="M20 3 C-3 18 34 30 13 53" /><path class="scroll-cue-tip" d="M12 41 L12 55 L25 53" /></svg></asp:HyperLink></div>
         </section>
         <section class="discovery" id="discover" aria-labelledby="DiscoverTitle">
             <div class="discovery-intro page-frame">
                 <h2 runat="server" id="DiscoverTitle" data-reveal="">About PSUT.</h2>
                 <p runat="server" ID="HomeHeading4" data-reveal="">Founded in 1991 in Amman, Princess Sumaya University for Technology is the academic arm of the Royal Scientific Society, bringing education, research and technology together.</p>
-            </div>
-            <div class="about-psut-details page-frame">
-                <div data-reveal="">
-                    <h3>A foundation in technology.</h3>
-                    <p>PSUT began with a single bachelor’s degree in Computer Science. It has since grown to offer undergraduate and postgraduate study across computing, engineering and business.</p>
-                </div>
-                <div data-reveal="">
-                    <h3>Learning that looks ahead.</h3>
-                    <p>From software engineering and communications to data science, artificial intelligence and cyber security, the university’s development reflects the changing world of technology.</p>
-                </div>
-                <div data-reveal="">
-                    <h3>Knowledge with purpose.</h3>
-                    <p>As part of the Royal Scientific Society’s academic mission, PSUT connects scientific knowledge with technical skills, research and innovation, preparing graduates to contribute in Jordan and beyond.</p>
-                </div>
             </div>
             <div class="discovery-gallery" aria-label="Life at PSUT in photographs">
                 <div class="discovery-gallery-stage">
@@ -52,7 +38,7 @@
                     <div class="discovery-photo-column gallery-inner gallery-left"><asp:Image runat="server" ID="HomeImage4" ImageUrl="~/Assets/psut-walkway.jpg" AlternateText="Sunlight through the trees along the campus walkway" loading="lazy" /><asp:Image runat="server" ID="HomeImage5" ImageUrl="~/Assets/psut-entrance.jpg" AlternateText="The campus entrance illuminated at night" loading="lazy" /></div>
             <figure class="campus-panorama">
                 <asp:Image runat="server" ID="HomeImage6" ImageUrl="~/Assets/psut-aerial.jpg" AlternateText="Palm trees, gardens, and the entrance road at the PSUT campus" loading="lazy" /><figcaption><span>A campus full of possibility.</span>
-                    <asp:HyperLink runat="server" ID="AboutPanoramaLink" NavigateUrl="https://www.psut.edu.jo/en/about-psut2" target="_blank" rel="noopener" CssClass="light-link">More about PSUT <span aria-hidden="true">↗</span></asp:HyperLink></figcaption></figure>
+                    <asp:HyperLink runat="server" ID="AboutPanoramaLink" NavigateUrl="~/about.html" CssClass="light-link">More about PSUT <span aria-hidden="true">↗</span></asp:HyperLink></figcaption></figure>
                     <div class="discovery-photo-column gallery-inner gallery-right"><asp:Image runat="server" ID="HomeImage7" ImageUrl="~/Assets/learning.jpg" AlternateText="Bookshelves in the university library" loading="lazy" /><asp:Image runat="server" ID="HomeImage8" ImageUrl="~/Assets/psut-graduation.jpg" AlternateText="Graduation celebrations in the PSUT courtyard" loading="lazy" /></div>
                     <div class="discovery-photo-column gallery-outer gallery-right"><asp:Image runat="server" ID="HomeImage9" ImageUrl="~/Assets/psut-walkway.jpg" AlternateText="Green gardens and benches on campus" loading="lazy" /></div>
                 </div>
@@ -81,10 +67,11 @@
                 </div>
                 <asp:HyperLink runat="server" ID="HomeLink14" CssClass="plain-link" NavigateUrl="https://www.psut.edu.jo/ar/media" target="_blank" rel="noopener">Explore the gallery <span aria-hidden="true">↗</span></asp:HyperLink></div>
             <video class="internship-process-video" id="internshipProcessVideo" autoplay muted loop controls playsinline preload="metadata" aria-label="PSUT internship process video">
-                <source src="<%= ResolveUrl("~/Assets/psut-campus-film.mp4") %>" type="video/mp4">
-                Your browser does not support this video. <a href="<%= ResolveUrl("~/Assets/psut-campus-film.mp4") %>">Download the internship process video</a>.
+                <source src="<%= ResolveUrl("~/Assets/psut-internship-process.mp4") %>" type="video/mp4">
+                Your browser does not support this video. <a href="<%= ResolveUrl("~/Assets/psut-internship-process.mp4") %>">Download the internship process video</a>.
             </video>
         </section>
+        <section class="faq-section page-frame" id="faq" aria-labelledby="FaqTitle"><div class="faq-intro"><h2 id="FaqTitle">A few things<br>you might ask.</h2><p>Your internship journey, explained.</p></div><div class="faq-list"><details><summary>Who is the internship portal for?</summary><p>The portal connects PSUT students, company supervisors, academic supervisors and internship coordinators throughout the internship journey.</p></details><details><summary>How do I apply for an internship?</summary><p>Explore the opportunities on this page, then sign in to view full details and submit an application through your student workspace.</p></details><details><summary>Can I browse opportunities without signing in?</summary><p>Yes. Public previews show internship summaries. Sign in to see full details and apply.</p></details><details><summary>Where can I follow my application?</summary><p>Sign in to your student workspace to check your applications and follow your placement progress.</p></details><details><summary>Who can help with my internship?</summary><p>Use “Contact the internship coordinator” in the footer for the available contact options. For academic requirements, check with your academic supervisor.</p></details></div></section>
     </main>
     <footer class="campus-footer" id="contact">
         <div class="footer-top page-frame">
@@ -92,10 +79,9 @@
                 <h2 runat="server" ID="HomeHeading14">Your next chapter.<br>
                     Made at PSUT.</h2>
                 <asp:HyperLink runat="server" ID="HomeLink18" NavigateUrl="https://www.psut.edu.jo/en" target="_blank" rel="noopener">Princess Sumaya University for Technology <span aria-hidden="true">↗</span></asp:HyperLink></div>
-            <div>
+            <div id="contact-coordinator">
                 <h3 runat="server" ID="HomeHeading15">Let’s connect.</h3>
-                <asp:HyperLink runat="server" ID="HomeLink19" NavigateUrl="mailto:info@psut.edu.jo">info@psut.edu.jo</asp:HyperLink>
-                <button runat="server" ID="HomeButton6" class="plain-link" type="button" onclick="showContact()">Contact the internship coordinator</button><asp:HyperLink runat="server" ID="HomeLink20" NavigateUrl="tel:+96265359949">+962 6 535 9949</asp:HyperLink><p runat="server" ID="HomeHeading16">Khalil Saket Street, Al-Jubeiha<br>
+                <button runat="server" ID="HomeButton6" class="plain-link" type="button" onclick="showContact()">Contact the internship coordinator</button><p runat="server" ID="HomeHeading16">Khalil Saket Street, Al-Jubeiha<br>
                     Amman, Jordan</p>
             </div>
             <div>
@@ -111,7 +97,8 @@
             Learning with purpose.<br>
             Experience for what comes next.</div>
         </div>
-        <div class="footer-bottom page-frame"><span>© 2026 PSUT Internship Portal · Academic project</span><asp:HyperLink runat="server" ID="HomeLink24" NavigateUrl="https://www.psut.edu.jo/ar/media" target="_blank" rel="noopener">Photography: PSUT Media Gallery</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink25" NavigateUrl="#home">Back to top ↑</asp:HyperLink></div>
+        <div class="footer-bottom page-frame"><span>© 2026 PSUT Internship Portal · Academic project</span><asp:HyperLink runat="server" NavigateUrl="~/Team/index.html" target="_blank" rel="noopener">Powered by PSUT IT Team</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink24" NavigateUrl="https://www.psut.edu.jo/ar/media" target="_blank" rel="noopener">Photography: PSUT Media Gallery</asp:HyperLink><asp:HyperLink runat="server" ID="HomeLink25" NavigateUrl="#home">Back to top ↑</asp:HyperLink></div>
         <img class="footer-mosaic" src="<%= ResolveUrl("~/Assets/psut-footer-mosaic.png") %>" alt="" aria-hidden="true" loading="lazy" width="1893" height="160">
     </footer>
+    <a class="questions-link" href="#contact-coordinator" aria-label="Questions? Contact the internship coordinator">Questions? <span aria-hidden="true"></span></a>
 </asp:Content>

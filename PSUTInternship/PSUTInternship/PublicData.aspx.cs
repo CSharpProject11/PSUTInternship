@@ -11,6 +11,8 @@ namespace PSUTInternship
 {
     public class PublicData:PortalPage
     {
+        private static readonly HttpClient PublicListingsClient = new HttpClient { Timeout = TimeSpan.FromSeconds(25) };
+
         private static bool IsOpen(JObject item)
         {
             DateTime deadline;
@@ -18,25 +20,18 @@ namespace PSUTInternship
         }
         internal static async System.Threading.Tasks.Task<JArray> LoadOpportunityPreviewsAsync()
         {
-            // Opportunity listings are public; applications and profiles still require sign-in.
-            bool signedIn = System.Web.HttpContext.Current.Session["idToken"] != null;
+            // Use the public transport for every visitor. The workspace transport adds
+            // company ownership filters and session credentials to database requests.
             Dictionary<string, JObject> records;
-            if (signedIn) records = await PortalRepository.Collection("opportunities");
-            else
+            using (var response = await PublicListingsClient.GetAsync(FirebaseConfig.DatabaseUrl + "opportunities.json"))
             {
-                using (var response = await FirebaseConfig.Client.GetAsync(FirebaseConfig.DatabaseUrl + "opportunities.json"))
-                {
-                    response.EnsureSuccessStatusCode();
-                    records = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(await response.Content.ReadAsStringAsync())
-                        ?? new Dictionary<string, JObject>();
-                }
+                response.EnsureSuccessStatusCode();
+                records = JsonConvert.DeserializeObject<Dictionary<string, JObject>>(await response.Content.ReadAsStringAsync())
+                    ?? new Dictionary<string, JObject>();
             }
-            var companies = new Dictionary<string, JObject>();
-            if (signedIn) companies = await PortalRepository.Collection("companies");
             return JArray.FromObject(records.Where(x=>x.Value != null && IsOpen(x.Value))
                 .OrderBy(x=>(string)x.Value["deadline"]).ThenBy(x=>x.Key).Take(6).Select(x=> {
-                JObject company; companies.TryGetValue((string)x.Value["companyId"] ?? "", out company);
-                return new {id=x.Key,title=(string)x.Value["title"],company=(string)x.Value["companyName"] ?? (string)company?["name"] ?? "Company",major=(string)x.Value["specialization"],seats=(int?)x.Value["availableSeats"]??0,deadline=(string)x.Value["deadline"]};
+                return new {id=x.Key,title=(string)x.Value["title"],company=(string)x.Value["companyName"] ?? "Company",major=(string)x.Value["specialization"],seats=(int?)x.Value["availableSeats"]??0,deadline=(string)x.Value["deadline"]};
             }));
         }
         protected async void Page_Load(object sender,EventArgs e)

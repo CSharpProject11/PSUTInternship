@@ -36,8 +36,8 @@
    opening.classList.remove('film-over-copy');return;
   }
   const section=opening.getBoundingClientRect();
-  // Move the entire film down in its parent, clamping travel to the copy height.
-  const travel=Math.max(1,opening.offsetHeight-poster.offsetHeight);
+  // Extend only the film's bottom, keeping its top anchored and the copy in place.
+  const travel=Math.max(1,opening.querySelector('.opening-copy').offsetHeight);
   const target=Math.min(travel,Math.max(0,-section.top));
   // A short, frame-rate-independent catch-up makes both directions feel fluid.
   const elapsed=lastFilmTime?Math.min(64,time-lastFilmTime):16;
@@ -48,7 +48,7 @@
   const progress=filmTravel/travel;
   poster.style.setProperty('--film-travel',`${filmTravel}px`);
   poster.style.setProperty('--film-radius',`${(1-progress)*Math.min(140,innerWidth*.09)}px`);
-  poster.style.setProperty('--film-scale',(1.025+progress*.025).toFixed(3));
+  poster.style.setProperty('--film-scale','1');
   const frame=poster.getBoundingClientRect();
   // The color boundary follows the actual film edge in both scroll directions.
   filmCopy.forEach(el=>{

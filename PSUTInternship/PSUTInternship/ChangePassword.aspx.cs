@@ -17,11 +17,22 @@ namespace PSUTInternship
                 var signedIn = await FirebaseAuthClient.SignInAsync((string)user["email"], currentPassword.Text, FirebaseConfig.ApiKey);
                 if (signedIn.UserId != PortalRepository.UserId) throw new UnauthorizedAccessException("Account mismatch.");
                 var auth = await FirebaseAuthClient.ChangePasswordAsync(signedIn.IdToken, newPassword.Text);
+                if (string.IsNullOrWhiteSpace(auth.IdToken) || string.IsNullOrWhiteSpace(auth.RefreshToken))
+                    throw new InvalidOperationException("The password was updated, but your session could not be renewed. Please sign in again.");
                 Session["idToken"] = auth.IdToken;
                 Session["refreshToken"] = auth.RefreshToken;
                 Session["tokenExpiresUtc"] = DateTime.UtcNow.AddSeconds(auth.ExpiresIn > 0 ? auth.ExpiresIn : 3600);
                 await FirebaseRestClient.PatchAsync("users/" + Convert.ToString(Session["userId"]), new { mustChangePassword = false }, auth.IdToken);
                 Session["mustChangePassword"] = false;
+                if (Request.QueryString["embedded"] == "1")
+                {
+                    currentPassword.Text = newPassword.Text = confirmPassword.Text = "";
+                    passwordMessage.Text = "Password changed successfully.";
+                    savePassword.Enabled = false;
+                    ClientScript.RegisterStartupScript(GetType(), "passwordChanged",
+                        "window.parent.postMessage('password-settings-saved',location.origin);", true);
+                    return;
+                }
                 Response.Redirect(PortalRoles.Dashboard(Convert.ToString(Session["userRole"])), false);
                 Context.ApplicationInstance.CompleteRequest();
             }

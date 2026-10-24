@@ -165,9 +165,12 @@ namespace PSUTInternship.Company
             } catch (Exception ex) { ShowMessage(ex.Message); }
         }
 
-        protected void CloseEvaluation_Click(object sender, EventArgs e)
+        protected async void CloseEvaluation_Click(object sender, EventArgs e)
         {
             EvaluationModal.Visible = false; DashboardContent.Visible = true;
+            // Dynamic table rows are not restored by ViewState on a postback.
+            try { await LoadDashboard(); }
+            catch (Exception ex) { ShowMessage(ex.Message); }
         }
 
         private async System.Threading.Tasks.Task LoadOpportunityStudents() {

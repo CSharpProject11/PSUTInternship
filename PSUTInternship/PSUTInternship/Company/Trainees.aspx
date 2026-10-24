@@ -17,6 +17,7 @@ body.portal-app .portal-content .company-trainees-page .panel{background:#fff!im
                     <th>Trainee</th>
                     <th>Internship</th>
                     <th>Tasks</th>
+                    <th>Approved hours</th>
                     <th>Actions</th>
                 </tr>
                 <% foreach(var a in TraineeRows.Where(x => x.Status == "active")){ %>
@@ -29,18 +30,19 @@ body.portal-app .portal-content .company-trainees-page .panel{background:#fff!im
                     </td>
                     <td>
                     <%= a.TasksCompleted %> / <%= a.TasksTotal %></td>
+                    <td><%= a.ApprovedTrainingHours.ToString("0.##") %> hours</td>
 
                     <td>
                         <a href="Application.aspx?id=<%= H(a.ApplicationId) %>">View progress</a>
                     </td>
                 </tr>
                 <% } %>
-                <% if(!TraineeRows.Any(x => x.Status == "active")) { %><tr><td colspan="4">No confirmed active trainees yet.</td></tr><% } %>
+                <% if(!TraineeRows.Any(x => x.Status == "active")) { %><tr><td colspan="5">No confirmed active trainees yet.</td></tr><% } %>
             </table></div></section>
-        <section class="panel" style="margin-top:24px"><h2>Awaiting student confirmation</h2><p class="trainee-section-note">Accepted offers become active placements once the student confirms.</p><div class="table-wrap"><table><thead><tr><th>Student</th><th>Opportunity</th><th>Status</th><th>Action</th></tr></thead><tbody>
+        <section class="panel" style="margin-top:24px"><h2>Awaiting student confirmation</h2><p class="trainee-section-note">Accepted offers become active placements once the student confirms.</p><div class="table-wrap"><table><thead><tr><th>Student</th><th>Opportunity</th><th>Status</th><th>Approved hours</th><th>Action</th></tr></thead><tbody>
         <% var awaiting = ApplicationRows.Where(x => x.Status == "Accepted" && !TraineeRows.Any(t => t.StudentId == x.StudentId && t.OpportunityId == x.OpportunityId)).ToList(); foreach (var app in awaiting) { %>
-        <tr data-trainee><td><%= H(app.Student) %></td><td><%= H(app.Opportunity) %></td><td><span class="trainee-pending">Awaiting confirmation</span></td><td><a href="Application.aspx?id=<%= H(app.Id) %>">View application</a></td></tr><% } %>
-        <% if(awaiting.Count == 0) { %><tr><td colspan="4">No accepted students awaiting confirmation.</td></tr><% } %></tbody></table></div></section>
+        <tr data-trainee><td><%= H(app.Student) %></td><td><%= H(app.Opportunity) %></td><td><span class="trainee-pending">Awaiting confirmation</span></td><td>Not started</td><td><a href="Application.aspx?id=<%= H(app.Id) %>">View application</a></td></tr><% } %>
+        <% if(awaiting.Count == 0) { %><tr><td colspan="5">No accepted students awaiting confirmation.</td></tr><% } %></tbody></table></div></section>
 <p class="trainee-footnote">Only confirmed placements appear as active trainees. Task counts reflect active assignments and reviewed work.</p>
         </div><%= PageFooter() %>
 <script>function filterRows(){var q=document.getElementById('filter').value.toLowerCase();document.querySelectorAll('.company-trainees-page tr[data-trainee]').forEach(function(r){r.hidden=!r.innerText.toLowerCase().includes(q);});}</script>

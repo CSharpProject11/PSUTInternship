@@ -333,6 +333,7 @@ public static class WorkflowTests
         report["studentName"] = "أحمد الطالب — Unicode verification";
         byte[] pdf = CompletionReportPdf.Create(report);
         Directory.CreateDirectory(output); File.WriteAllBytes(Path.Combine(output, "completion-report.pdf"), pdf);
+        Assert(Encoding.ASCII.GetString(pdf).Contains("/MediaBox [0 0 842 595]"), "certificate uses the supplied landscape A4 layout");
         Assert(Encoding.ASCII.GetString(pdf, 0, 8).StartsWith("%PDF-1.4") && pdf.Length > 10000, "approved reports generate a printable PDF with Unicode names");
     }
     private static async Task NewTaskRequirements() {

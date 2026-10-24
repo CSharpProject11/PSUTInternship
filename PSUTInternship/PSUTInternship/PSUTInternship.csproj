@@ -153,11 +153,14 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Default.aspx" />
+    <Content Include="about.html" />
     <Content Include="Content\campus-home.css" />
     <Content Include="Scripts\campus-home.js" />
     <Content Include="Assets\psut-campus-enhanced.mp4" />
     <Content Include="Assets\psut-campus-film.mp4" />
     <Content Include="Assets\psut-campus-loop.mp4" />
+    <Content Include="Assets\psut-hero.mp4" />
+    <Content Include="Assets\psut-internship-process.mp4" />
     <Content Include="index.html" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -819,10 +822,22 @@
     <Content Include="Assets\login-emblem.png" />
     <Content Include="Assets\psut-logo-bilingual.png" />
     <Content Include="Assets\psut-footer-mosaic.png" />
+    <Content Include="Assets\psut-campus-gardens.png" />
     <Content Include="Shared\PortalNavigation.ascx" />
     <Content Include="Content\portal-workspace.css" />
     <Content Include="Scripts\portal-ui.js" />
     <Content Include="Academic\Meetings.aspx" />
     <Content Include="Student\Meetings.aspx" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Team\index.html" />
+    <Content Include="Team\team_img\Abdallah.jpg" />
+    <Content Include="Team\team_img\ahmad.JPEG" />
+    <Content Include="Team\team_img\amal.jpeg" />
+    <Content Include="Team\team_img\Lujain.jpeg" />
+    <Content Include="Team\team_img\raghad.jpg" />
+    <Content Include="Team\team_img\sara.jpeg" />
+    <Content Include="Team\team_img\taimaa.jpeg" />
+  </ItemGroup>
+  <ItemGroup><Content Include="Assets\certificate-psut-logo.png" /></ItemGroup>
 </Project>
