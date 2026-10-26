@@ -83,7 +83,8 @@
         ".write": "(auth != null && root.child('users').child(auth.uid).child('isActive').val() === true && (root.child('users').child(auth.uid).child('role').val() === 'coordinator' || root.child('users').child(auth.uid).child('role').val() === 'admin'))",
         "fullName": {
           ".write": "(auth != null && root.child('users').child(auth.uid).child('isActive').val() === true && (root.child('users').child(auth.uid).child('role').val() === 'Academic Supervisor' || root.child('users').child(auth.uid).child('role').val() === 'academicSupervisor' || root.child('users').child(auth.uid).child('role').val() === 'academic')) && auth.uid === $uid",
-          ".validate": "newData.isString() && newData.val().length <= 2000"
+          ".validate": "newData.isString() && newData.val().length <= 2000",
+          ".read": "auth != null && root.child('users').child(auth.uid).child('isActive').val() === true && (root.child('users').child(auth.uid).child('role').val() === 'Company Supervisor' || root.child('users').child(auth.uid).child('role').val() === 'companySupervisor' || root.child('users').child(auth.uid).child('role').val() === 'company')"
         },
         "phoneNumber": {
           ".write": "(auth != null && root.child('users').child(auth.uid).child('isActive').val() === true && (root.child('users').child(auth.uid).child('role').val() === 'Academic Supervisor' || root.child('users').child(auth.uid).child('role').val() === 'academicSupervisor' || root.child('users').child(auth.uid).child('role').val() === 'academic')) && auth.uid === $uid",
@@ -100,6 +101,9 @@
         "officeHours": {
           ".write": "(auth != null && root.child('users').child(auth.uid).child('isActive').val() === true && (root.child('users').child(auth.uid).child('role').val() === 'Academic Supervisor' || root.child('users').child(auth.uid).child('role').val() === 'academicSupervisor' || root.child('users').child(auth.uid).child('role').val() === 'academic')) && auth.uid === $uid",
           ".validate": "newData.isString() && newData.val().length <= 2000"
+        },
+        "email": {
+          ".read": "auth != null && root.child('users').child(auth.uid).child('isActive').val() === true && (root.child('users').child(auth.uid).child('role').val() === 'Company Supervisor' || root.child('users').child(auth.uid).child('role').val() === 'companySupervisor' || root.child('users').child(auth.uid).child('role').val() === 'company')"
         }
       }
     },

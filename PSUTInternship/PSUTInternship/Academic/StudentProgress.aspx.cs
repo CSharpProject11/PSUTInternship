@@ -123,13 +123,9 @@ namespace PSUTInternship.Academic
             foreach (string id in allowed)
             {
                 JObject student;
-                if (!students.TryGetValue(id, out student)) continue;
-                if (!string.IsNullOrWhiteSpace(S(student, "academicSupervisorId")) && S(student, "academicSupervisorId") != SupervisorId) continue;
-                if (string.Equals(S(student, "isActive"), "false", StringComparison.OrdinalIgnoreCase)) continue;
                 var placement = internships
                     .Where(x => S(x.Value, "studentId") == id && S(x.Value, "academicSupervisorId") == SupervisorId)
                     .OrderByDescending(x => S(x.Value, "startDate")).FirstOrDefault();
-                bool assignedByPlacement = placement.Value != null;
                 
                 if (!students.TryGetValue(id, out student))
                 {
@@ -141,7 +137,7 @@ namespace PSUTInternship.Academic
                     }
                 }
                 if (student == null) continue;
-                if (!assignedByPlacement && !string.IsNullOrWhiteSpace(S(student, "academicSupervisorId")) && S(student, "academicSupervisorId") != SupervisorId) continue;
+                if (!string.IsNullOrWhiteSpace(S(student, "academicSupervisorId")) && S(student, "academicSupervisorId") != SupervisorId) continue;
                 if (string.Equals(S(student, "isActive"), "false", StringComparison.OrdinalIgnoreCase)) continue;
                 JObject internship = placement.Value;
                 JObject company = null;

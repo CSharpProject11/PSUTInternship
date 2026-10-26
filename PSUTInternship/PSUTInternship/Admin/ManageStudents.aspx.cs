@@ -445,9 +445,9 @@ namespace PSUTInternship.Admin
 
         private async Task SaveStudent(string uid, Dictionary<string, object> student)
         {
-            await PSUTInternship.Shared.FirebaseRestClient.PatchAsync("", new Dictionary<string, object>
-            { { "users/" + uid, student }, { "students/" + uid, student } }, idToken);
-            await PSUTInternship.Shared.AcademicAssignments.Synchronize(uid, GetValue(student, "academicSupervisorId"));
+            await PSUTInternship.Shared.AcademicAssignments.Save(
+                new Dictionary<string,object> { { "users/"+uid,student }, { "students/"+uid,student } },
+                new Dictionary<string,string> { { uid,GetValue(student,"academicSupervisorId") } });
         }
 
 

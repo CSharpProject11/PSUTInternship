@@ -139,4 +139,10 @@ expect(allowed('write','meetings/invite','student1',{value:{...accepted,studentI
 data.meetings.invite.status='Accepted';
 expect(allowed('write','meetings/invite','student1',{value:accepted}),false,'database blocks a duplicate acceptance write');
 expect(allowed('write','meetings/invite','superA1',{value:{...accepted,status:'Cancelled'}}),true,'assigned supervisor can cancel an accepted invitation');
+expect(allowed('read','academicSupervisors/superA1/fullName','superC1'),true,'company evaluation can load the academic supervisor name');
+expect(allowed('read','academicSupervisors/superA1/email','superC1'),true,'company evaluation can load the academic supervisor email');
+expect(allowed('read','academicSupervisors/superA1','superC1'),false,'company contact lookup does not grant access to the full academic profile');
+expect(allowed('read','academicSupervisors/superA1/email',null),false,'academic email lookup requires authentication');
+data.users.superC1.isActive=false;
+expect(allowed('read','academicSupervisors/superA1/email','superC1'),false,'inactive company accounts cannot read academic contact fields');
 console.log(count+' local rule assertions passed, including meeting acceptance.');

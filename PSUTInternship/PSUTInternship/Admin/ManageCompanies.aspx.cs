@@ -305,6 +305,7 @@ namespace PSUTInternship.Admin
 
         private async Task SaveSupervisor(string uid, Dictionary<string, object> supervisor)
         {
+            supervisor = await PSUTInternship.Shared.DatabaseSchema.PreservePasswordState(uid,supervisor);
             await PSUTInternship.Shared.FirebaseRestClient.PatchAsync("", new Dictionary<string, object>
             { { "users/" + uid, supervisor }, { objectName + "/" + uid, supervisor } }, idToken);
             await PSUTInternship.Shared.FirebaseRestClient.PatchAsync("companies/" + uid, new { name = GetValue(supervisor, "companyName"), supervisorId = uid }, idToken);

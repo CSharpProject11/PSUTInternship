@@ -174,6 +174,8 @@ namespace PSUTInternship.Company
         }
 
         private async System.Threading.Tasks.Task LoadOpportunityStudents() {
+            AcademicSupervisor.Text = AcademicSupervisorEmail.Text = "";
+            SupervisorError.Text = EmailError.Text = "";
             var placements = await PortalRepository.Collection("internships");
             var ids = new HashSet<string>(placements.Values.Where(x => (string)x["companyId"] == PortalRepository.CompanyId && (string)x["status"] == "active" && (string)x["opportunityId"] == Opportunity.SelectedValue).Select(x => (string)x["studentId"]));
             LoadStudents((await PortalRepository.Collection("students")).Where(x => ids.Contains(x.Key)).ToDictionary(x => x.Key, x => x.Value));
@@ -183,8 +185,36 @@ namespace PSUTInternship.Company
             try { await LoadOpportunityStudents(); } catch (Exception ex) { ShowMessage(ex.Message); }
             RestoreCriteriaEditor(); EvaluationModal.Visible = true; DashboardContent.Visible = false;
         }
+        private async System.Threading.Tasks.Task PopulateAcademicSupervisor()
+        {
+            AcademicSupervisor.Text = AcademicSupervisorEmail.Text = "";
+            SupervisorError.Text = EmailError.Text = "";
+            if (string.IsNullOrWhiteSpace(EvaluationStudent.SelectedValue)) return;
+            var placement = await PortalRepository.PlacementForStudent(EvaluationStudent.SelectedValue);
+            if (placement == null || (string)placement["companyId"] != PortalRepository.CompanyId ||
+                (string)placement["opportunityId"] != Opportunity.SelectedValue)
+                throw new InvalidOperationException("Select a trainee from this opportunity.");
+            string supervisorId = (string)placement["academicSupervisorId"];
+            if (string.IsNullOrWhiteSpace(supervisorId))
+                throw new InvalidOperationException("This trainee has no assigned academic supervisor. Ask the coordinator to complete the assignment.");
+            string path = "academicSupervisors/" + PortalRepository.Key(supervisorId);
+            // Read contact fields only; companies do not need access to the supervisor's full profile.
+            AcademicSupervisor.Text = await PortalRepository.Get<string>(path + "/fullName") ?? "";
+            AcademicSupervisorEmail.Text = await PortalRepository.Get<string>(path + "/email") ?? "";
+            if (string.IsNullOrWhiteSpace(AcademicSupervisor.Text) || string.IsNullOrWhiteSpace(AcademicSupervisorEmail.Text))
+                throw new InvalidOperationException("The assigned academic supervisor's name or email is missing from their database profile. Ask the coordinator to complete it.");
+        }
+        protected async void EvaluationStudent_Changed(object sender, EventArgs e)
+        {
+            try { await PopulateAcademicSupervisor(); }
+            catch (Exception ex) { ShowMessage(ex.Message); }
+            SelectedStudentName.Text = EvaluationStudent.SelectedItem == null ? "" : HttpUtility.HtmlEncode(EvaluationStudent.SelectedItem.Text);
+            RestoreCriteriaEditor(); EvaluationModal.Visible = true; DashboardContent.Visible = false;
+        }
         protected async void SaveEvaluation_Click(object sender, EventArgs e) {
             EvaluationModal.Visible = true; DashboardContent.Visible = false;
+            try { await PopulateAcademicSupervisor(); }
+            catch (Exception ex) { ShowMessage(ex.Message); RestoreCriteriaEditor(); return; }
             OpportunityError.Text = string.IsNullOrEmpty(Opportunity.SelectedValue) ? "Select an opportunity." : "";
             StudentError.Text = string.IsNullOrEmpty(EvaluationStudent.SelectedValue) ? "Select a trainee from this opportunity." : "";
             PeriodError.Text = TaskWorkflow.ValidText(EvaluationPeriod.Text, 3, 100) ? "" : "Enter a period of 3–100 characters.";
@@ -257,6 +287,7 @@ namespace PSUTInternship.Company
                     EvaluationStudent.SelectedValue = studentId;
                 else { EvaluationStudent.Items.Add(new ListItem(Read(evaluation,"studentName","StudentName","studentId"),studentId)); EvaluationStudent.SelectedValue=studentId; }
                 SaveDraft.Enabled = SendEvaluation.Enabled = !IsSent(Read(evaluation,"status","Status")) && (string)placement["status"] == "active";
+                if (SaveDraft.Enabled) await PopulateAcademicSupervisor();
                 SelectedStudentName.Text = EvaluationStudent.SelectedItem == null ? "" : HttpUtility.HtmlEncode(EvaluationStudent.SelectedItem.Text);
                 EvaluationModal.Visible = true; DashboardContent.Visible = false;
 

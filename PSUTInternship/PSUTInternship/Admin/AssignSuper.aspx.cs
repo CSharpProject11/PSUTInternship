@@ -611,22 +611,24 @@ namespace PSUTInternship.Admin
             Dictionary<string, Dictionary<string, object>> students, Dictionary<string, Dictionary<string, object>> users,
             HashSet<string> changedSupervisorIds, HashSet<string> changedStudentIds)
         {
+            var changes = new Dictionary<string,object>();
+            var assignments = new Dictionary<string,string>();
             foreach (string studentId in changedStudentIds)
             {
-                await SaveRecord("students", studentId, students[studentId]);
+                changes["students/"+studentId] = students[studentId];
+                assignments[studentId] = GetValue(students[studentId],"academicSupervisorId");
                 if (users.ContainsKey(studentId))
                 {
-                    CopyAssignment(students[studentId], users[studentId]);
-                    await SaveRecord("users", studentId, users[studentId]);
+                    CopyAssignment(students[studentId],users[studentId]);
+                    changes["users/"+studentId] = users[studentId];
                 }
             }
-
             foreach (string supervisorId in changedSupervisorIds)
             {
-                await SaveRecord("academicSupervisors", supervisorId, supervisors[supervisorId]);
-                if (users.ContainsKey(supervisorId))
-                    await SaveRecord("users", supervisorId, supervisors[supervisorId]);
+                changes["academicSupervisors/"+supervisorId] = supervisors[supervisorId];
+                if(users.ContainsKey(supervisorId)) changes["users/"+supervisorId] = supervisors[supervisorId];
             }
+            await PSUTInternship.Shared.AcademicAssignments.Save(changes,assignments);
         }
 
         private void CopyAssignment(Dictionary<string, object> from, Dictionary<string, object> to)
@@ -636,20 +638,6 @@ namespace PSUTInternship.Admin
             {
                 if (from.ContainsKey(field)) to[field] = from[field];
                 else to.Remove(field);
-            }
-        }
-
-        private async Task SaveRecord(string objectName, string id, Dictionary<string, object> data)
-        {
-            string url = databaseUrl + "/" + objectName + "/" + Uri.EscapeDataString(id) + ".json?auth=" + Uri.EscapeDataString(idToken);
-            using (HttpClient client = PSUTInternship.Shared.FirebaseConfig.CreateClient())
-            using (StringContent content = new StringContent(serializer.Serialize(data), Encoding.UTF8, "application/json"))
-            {
-                HttpResponseMessage response = await client.PutAsync(url, content);
-                if (!response.IsSuccessStatusCode)
-                    throw new Exception("Could not save the group. Check Firebase Database rules.");
-                if (objectName == "students" && data.ContainsKey("academicSupervisorId"))
-                    await PSUTInternship.Shared.AcademicAssignments.Synchronize(id, Convert.ToString(data["academicSupervisorId"]));
             }
         }
 

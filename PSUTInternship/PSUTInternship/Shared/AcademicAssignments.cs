@@ -6,6 +6,24 @@ namespace PSUTInternship.Shared
 {
     public static class AcademicAssignments
     {
+        // Prepare every related update before committing one atomic Firebase root PATCH.
+        public static async Task Save(Dictionary<string,object> changes, IDictionary<string,string> assignments)
+        {
+            CoordinatorData.RequireCoordinator();
+            foreach(var path in new List<string>(changes.Keys))
+            {
+                var parts=path.Split('/');
+                if(parts.Length==2 && parts[0]=="users" && changes[path]!=null)
+                {
+                    var profile=JObject.FromObject(changes[path]).ToObject<Dictionary<string,object>>();
+                    changes[path]=await DatabaseSchema.PreservePasswordState(parts[1],profile);
+                }
+            }
+
+            foreach(var assignment in assignments)
+                await AddChanges(assignment.Key,assignment.Value,changes);
+            if(changes.Count>0) await PortalRepository.Patch("",changes);
+        }
         public static async Task Synchronize(string uid,string supervisor)
         {
             var changes=new Dictionary<string,object>();

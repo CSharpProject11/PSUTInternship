@@ -54,8 +54,62 @@ public static class WorkflowTests
         foreach (var item in (data["submissions"] as JObject ?? new JObject()).Properties()) item.Value.ToObject<TaskSubmission>();
         Assert(true, "all supplied export records deserialize using the actual application models");
     }
+    private static async Task PasswordFlagPersistence()
+    {
+        var original=FirebaseRestClient.Data;FirebaseRestClient.Data=new JObject();
+        try {
+            Identity("password-coordinator","coordinator");
+            var stale=new Dictionary<string,object>{{"role","academicSupervisor"},{"mustChangePassword",true},{"fullName","Academic"}};
+            var created=await DatabaseSchema.PreservePasswordState("new-academic",stale);
+            Assert((bool)created["mustChangePassword"],"new accounts retain the first-login password requirement");
+            Set("users/new-academic",new {role="academicSupervisor",mustChangePassword=false,isActive=true});
+            var edited=await DatabaseSchema.PreservePasswordState("new-academic",stale);
+            Assert(!(bool)edited["mustChangePassword"],"editing a stale academic profile cannot restore a completed first-login requirement");
+            await AcademicAssignments.Save(new Dictionary<string,object>{{"users/new-academic",stale}},new Dictionary<string,string>());
+            Assert((bool)FirebaseRestClient.Data["users"]["new-academic"]["mustChangePassword"]==false,"assignment saves preserve the cleared flag used on the next login");
+            Set("users/new-academic/mustChangePassword",true);
+            var pending=await DatabaseSchema.PreservePasswordState("new-academic",new Dictionary<string,object>{{"mustChangePassword",false}});
+            Assert((bool)pending["mustChangePassword"],"profile edits cannot bypass a still-required password change");
+        } finally {FirebaseRestClient.Data=original;}
+    }
+    private static async Task FirstAcademicAssignment()
+    {
+        var original = FirebaseRestClient.Data;
+        FirebaseRestClient.Data = new JObject();
+        try {
+            Identity("assignment-coordinator","coordinator");
+            Set("academicSupervisors/fresh-academic",new {fullName="New Academic",profileId="fresh-academic",role="academicSupervisor",isActive=true});
+            Set("users/fresh-academic",new {profileId="fresh-academic",role="academicSupervisor",isActive=true});
+            Set("students/fresh-student",new {fullName="New Student",isActive=true});
+            Set("users/fresh-student",new {role="student",isActive=true});
+            Func<Dictionary<string,object>> changes = ()=>new Dictionary<string,object> {
+                {"students/fresh-student/academicSupervisorId","fresh-academic"},
+                {"users/fresh-student/academicSupervisorId","fresh-academic"},
+                {"academicSupervisors/fresh-academic/groups/new-group",new {assignedStudentIds=new Dictionary<string,bool>{{"fresh-student",true}}}}
+            };
+            var assignments=new Dictionary<string,string>{{"fresh-student","fresh-academic"}};
+            int writes=FirebaseRestClient.PatchCount;
+            FirebaseRestClient.FailReadPrefix="applications";
+            await Reject(()=>AcademicAssignments.Save(changes(),assignments),"first assignment reports a failed preparation instead of saving partial records");
+            FirebaseRestClient.FailReadPrefix=null;
+            Assert(FirebaseRestClient.PatchCount==writes && FirebaseRestClient.Data["students"]["fresh-student"]["academicSupervisorId"]==null && FirebaseRestClient.Data["academicSupervisors"]["fresh-academic"]["groups"]==null,"failed first assignment leaves student and supervisor group unchanged");
+            await AcademicAssignments.Save(changes(),assignments);
+            Assert(FirebaseRestClient.PatchCount==writes+1,"first assignment commits all links in a single database update");
+            Identity("fresh-academic","Academic Supervisor");
+            var visible=await PortalRepository.Collection("students");
+            Assert(visible.ContainsKey("fresh-student"),"new academic user sees assigned student on the first read without reassignment");
+            Identity("unrelated-academic","Academic Supervisor");
+            Assert(!(await PortalRepository.Collection("students")).ContainsKey("fresh-student"),"first assignment does not expose student to a different supervisor");
+            Identity("assignment-coordinator","coordinator");
+            await AcademicAssignments.Save(changes(),assignments);
+            Identity("fresh-academic","Academic Supervisor");
+            Assert((await PortalRepository.Collection("students")).Count==1,"repeating assignment remains idempotent and does not duplicate students");
+        } finally { FirebaseRestClient.FailReadPrefix=null;FirebaseRestClient.Data=original; }
+    }
     private static async Task Run(string output)
     {
+        await FirstAcademicAssignment();
+        await PasswordFlagPersistence();
         byte[] workbook = SpreadsheetExport.Create(new[] { "Student ID", "Student", "Hours" }, new[] { new object[] { "00123", "مرحبا & <student>", 2.5m }, new object[] { "=1+1", "Example", 0 } });
         using (var archive = new System.IO.Compression.ZipArchive(new MemoryStream(workbook), System.IO.Compression.ZipArchiveMode.Read))
         {
@@ -220,6 +274,20 @@ public static class WorkflowTests
         await OpportunityPresentation.Populate(new[]{liveCountOpening});
         Assert(liveCountOpening.SeatsLabel=="2 of 5 seats available", "student view derives the real seat count even when the saved counter is missing");
         Assert(new Opportunity {Status=true,AvailableSeats=5,CapacityUnavailable=true}.SeatsLabel=="Availability unavailable", "unverified capacity never renders a fabricated five free seats");
+        var eme = JsonConvert.DeserializeObject<Opportunity>("{'title':'Eme','companyId':'seat-company','availableSeats':7,'status':'active'}");
+        eme.Id = "eme"; eme.DeadLine = DateTime.UtcNow.AddDays(4);
+        FirebaseRestClient.FailReadPrefix = PortalRepository.Query("applications", "companyId", "seat-company");
+        try {
+            await OpportunityPresentation.Populate(new[]{eme});
+            Assert(eme.CapacityUnavailable && eme.SeatsLabel == "Availability unavailable", "denied company-wide student read keeps the missing seat count explicitly unknown");
+            Assert(eme.IsAccepting && eme.StatusLabel == "Open" && !eme.HasApplied && !eme.HasConfirmedInternship, "Eme remains open and eligible to apply when student rules deny the capacity lookup");
+            eme.Status = false;
+            Assert(!eme.IsAccepting, "unavailable capacity does not reopen an explicitly closed opportunity");
+            eme.Status = true; eme.DeadLine = DateTime.UtcNow.AddDays(-1);
+            Assert(!eme.IsAccepting, "unavailable capacity does not reopen an expired opportunity");
+            eme.DeadLine = DateTime.UtcNow.AddDays(4); eme.OccupiedSeats = 7;
+            Assert(!eme.IsAccepting && eme.IsFull, "unavailable capacity does not reopen a known full opportunity");
+        } finally { FirebaseRestClient.FailReadPrefix = null; }
         await Reject(() => OpportunityCapacity.Synchronize(), "students cannot read other students or write opportunity capacity");
         FirebaseRestClient.Data = capacityData;
         var previousData = FirebaseRestClient.Data;
@@ -451,6 +519,8 @@ namespace PSUTInternship.Shared
     public static class FirebaseRestClient
     {
         public static JObject Data = new JObject();
+        public static string FailReadPrefix;
+        public static int PatchCount;
         public static void Set(string path, object value)
         {
             string[] parts = path.Trim('/').Split('/'); JObject node = Data;
@@ -459,6 +529,7 @@ namespace PSUTInternship.Shared
         }
         public static Task<T> GetAsync<T>(string path, string token)
         {
+            if(FailReadPrefix!=null && path.StartsWith(FailReadPrefix,StringComparison.Ordinal)) throw new HttpRequestException("Simulated database read failure");
             string[] split = path.Split('?'); JToken node = Data;
             foreach (string segment in split[0].Trim('/').Split('/')) if (segment.Length > 0) node = node == null ? null : node[segment];
             if (split.Length > 1 && node is JObject)
@@ -471,6 +542,7 @@ namespace PSUTInternship.Shared
         }
         public static Task PatchAsync<T>(string path, T value, string token)
         {
+            PatchCount++;
             var obj = JObject.FromObject(value);
             foreach (var item in obj.Properties()) Set((path.Length > 0 ? path.Trim('/') + "/" : "") + item.Name, item.Value);
             return Task.CompletedTask;

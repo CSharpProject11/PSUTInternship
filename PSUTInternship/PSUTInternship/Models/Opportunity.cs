@@ -22,7 +22,8 @@ namespace PSUTInternship.Models
         [JsonProperty("companyName")] public string CompanyName { get; set; }
         [JsonIgnore] public bool HasApplied { get; set; }
         [JsonIgnore] public bool HasConfirmedInternship { get; set; }
-        [JsonIgnore] public bool IsAccepting { get { return Status && !CapacityUnavailable && !IsFull && (DeadLine == DateTime.MinValue || DeadLine.Date >= DateTime.UtcNow.Date); } }
+        // A restricted capacity read is not a closure. Seats are allocated atomically on company approval.
+        [JsonIgnore] public bool IsAccepting { get { return Status && !IsFull && (DeadLine == DateTime.MinValue || DeadLine.Date >= DateTime.UtcNow.Date); } }
         [JsonIgnore] public string StatusLabel { get { return IsFull ? "Full · Closed" : IsAccepting ? "Open" : "Closed"; } }
         [JsonIgnore] public string LocationDisplay { get { return string.IsNullOrWhiteSpace(Location) ? "Location not specified" : Location; } }
         [JsonIgnore] public string WorkModeDisplay { get { return string.IsNullOrWhiteSpace(WorkMode) ? "Work type not specified" : WorkMode; } }

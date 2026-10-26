@@ -11,6 +11,15 @@ namespace PSUTInternship.Shared
     // Read the supplied Firebase schema without changing record IDs or rewriting existing data.
     public static class DatabaseSchema
     {
+        // Login policy belongs to users, not to duplicated role profile snapshots.
+        public static async Task<Dictionary<string,object>> PreservePasswordState(string uid, IDictionary<string,object> profile)
+        {
+            var account=await PortalRepository.Get<JObject>("users/"+PortalRepository.Key(uid));
+            var saved=new Dictionary<string,object>(profile);
+            if(account!=null) saved["mustChangePassword"]=(bool?)account["mustChangePassword"] ?? false;
+            return saved;
+        }
+
         private sealed class RecordIdentity { public string Id; }
         public static string Id(JObject record)
         {

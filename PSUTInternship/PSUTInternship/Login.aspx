@@ -6,6 +6,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Login</title>
+    
+    
     <link rel="icon" type="image/png" href="Assets/login-emblem.png" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="preload" href="Assets/manrope-variable.ttf" as="font" type="font/ttf" crossorigin="anonymous" />

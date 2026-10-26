@@ -255,7 +255,7 @@ namespace PSUTInternship.Student
                 opportunity.Id = id;
                 await OpportunityPresentation.Populate(new[] { opportunity });
                 CanApply = opportunity.IsAccepting && !opportunity.HasApplied && !opportunity.HasConfirmedInternship;
-                ApplicationAvailability = opportunity.HasConfirmedInternship ? "You have already confirmed an internship. Further applications are disabled." : opportunity.CapacityUnavailable ? "Seat availability could not be verified. Please check again shortly." : opportunity.IsFull ? "All seats have been filled. This opportunity is closed." : opportunity.HasApplied ? "You have already applied to this opportunity." : !opportunity.IsAccepting ? "Applications are closed for this opportunity." : "";
+                ApplicationAvailability = opportunity.HasConfirmedInternship ? "You have already confirmed an internship. Further applications are disabled." : opportunity.IsFull ? "All seats have been filled. This opportunity is closed." : opportunity.HasApplied ? "You have already applied to this opportunity." : !opportunity.IsAccepting ? "Applications are closed for this opportunity." : "";
 
 
                 OpportunityDetails.DataSource =

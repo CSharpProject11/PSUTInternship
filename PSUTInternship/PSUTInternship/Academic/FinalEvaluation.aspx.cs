@@ -42,11 +42,11 @@ namespace PSUTInternship.Academic
                 txtScore.Attributes["max"] = "100";
                 lblInitials.Text = H(Initials(name));
                 var ids = await AssignedStudentIdsAsync(supervisor);
-                var placements = await PSUTInternship.Shared.PortalRepository.Collection("internships");
-                Opportunity.Items.Clear(); Opportunity.Items.Add(new ListItem("Select opportunity", ""));
-                foreach (var group in placements.Values.Where(x => (string)x["academicSupervisorId"] == SupervisorId).Where(x => !string.IsNullOrWhiteSpace((string)x["opportunityId"])).GroupBy(x => (string)x["opportunityId"]))
-                    Opportunity.Items.Add(new ListItem(((string)group.First()["opportunityTitle"] ?? group.Key) + " (" + group.Key + ")", group.Key));
-                ddlStudent.Items.Clear(); ddlStudent.Items.Add(new ListItem("Select opportunity first", ""));
+                var students = await PSUTInternship.Shared.PortalRepository.Collection("students");
+                Major.Items.Clear(); Major.Items.Add(new ListItem("Select major", ""));
+                foreach (var major in students.Values.Select(StudentMajor).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(x => x))
+                    Major.Items.Add(new ListItem(major, major));
+                ddlStudent.Items.Clear(); ddlStudent.Items.Add(new ListItem("Select major first", ""));
                 pnlReport.Visible = false;
                 if (ids.Count == 0) Message("No students are assigned to this supervisor.", true);
             }
@@ -58,16 +58,21 @@ namespace PSUTInternship.Academic
             return new HashSet<string>((await PSUTInternship.Shared.PortalRepository.Collection("students")).Keys, StringComparer.Ordinal);
         }
 
-        protected void Opportunity_Changed(object sender, EventArgs e)
+        private static string StudentMajor(JObject student)
+        {
+            string major = PSUTInternship.Shared.DatabaseSchema.FirstText(student, "major", "program");
+            return string.IsNullOrWhiteSpace(major) ? "Major not recorded" : major.Trim();
+        }
+
+        protected void Major_Changed(object sender, EventArgs e)
         {
             RegisterAsyncTask(new PageAsyncTask(async () => {
                 try
                 {
-                    var placements = await PSUTInternship.Shared.PortalRepository.Collection("internships");
-                    var ids = new HashSet<string>(placements.Values.Where(x => (string)x["opportunityId"] == Opportunity.SelectedValue && (string)x["academicSupervisorId"] == SupervisorId).Select(x => (string)x["studentId"]));
                     var students = await PSUTInternship.Shared.PortalRepository.Collection("students");
-                    ddlStudent.Items.Clear(); ddlStudent.Items.Add(new ListItem("Select assigned student", ""));
-                    foreach (var student in students.Where(x => ids.Contains(x.Key))) ddlStudent.Items.Add(new ListItem(Val(student.Value, "fullName", student.Key), student.Key));
+                    ddlStudent.Items.Clear(); ddlStudent.Items.Add(new ListItem(string.IsNullOrEmpty(Major.SelectedValue) ? "Select major first" : "Select assigned student", ""));
+                    foreach (var student in students.Where(x => string.Equals(StudentMajor(x.Value), Major.SelectedValue, StringComparison.OrdinalIgnoreCase)).OrderBy(x => Val(x.Value, "fullName")))
+                        ddlStudent.Items.Add(new ListItem(Val(student.Value, "fullName", student.Key), student.Key));
                     pnlReport.Visible = false;
                 }
                 catch (Exception ex) { HandleFailure(ex); }
@@ -99,6 +104,8 @@ namespace PSUTInternship.Academic
                 throw new InvalidOperationException("The selected student is not assigned to this supervisor.");
             var student = await ReadAsync("students/" + Uri.EscapeDataString(studentId));
             if (student == null) throw new InvalidOperationException("Student record not found.");
+            if (!string.Equals(StudentMajor((JObject)student), Major.SelectedValue, StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Select a student from the selected major.");
 
             // Parallel independent reads; no fictitious data is inserted.
             var iTask = ReadAsync("internships");
@@ -111,8 +118,10 @@ namespace PSUTInternship.Academic
             await Task.WhenAll(iTask, companyTask, tasksTask, submissionsTask, evaluationsTask, trainingHoursTask, reportsTask);
 
             var internship = Children(iTask.Result)
-                .Where(x => Val(x.Value, "studentId") == studentId && Val(x.Value, "academicSupervisorId") == SupervisorId && Val(x.Value, "opportunityId") == Opportunity.SelectedValue)
-                .OrderByDescending(x => Val(x.Value, "startDate"))
+                .Where(x => Val(x.Value, "studentId") == studentId && Val(x.Value, "academicSupervisorId") == SupervisorId &&
+                    (string.Equals(Val(x.Value, "status"), "active", StringComparison.OrdinalIgnoreCase) || string.Equals(Val(x.Value, "status"), "completed", StringComparison.OrdinalIgnoreCase)))
+                .OrderByDescending(x => string.Equals(Val(x.Value, "status"), "active", StringComparison.OrdinalIgnoreCase))
+                .ThenByDescending(x => Val(x.Value, "startDate"))
                 .FirstOrDefault();
             var report = new AcademicReportData
             {
