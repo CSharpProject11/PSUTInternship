@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,10 +11,9 @@ using System.Web.UI.WebControls;
 
 namespace PSUTInternship.Admin
 {
-    public partial class WebForm1 : System.Web.UI.Page
+    public partial class ManageAcademic : PSUTInternship.Shared.PortalPage
     {
-        private string databaseUrl = "https://uims-database-32b4f-default-rtdb.firebaseio.com";
-        private string apiKey = "AIzaSyAC_4W_zSjHJddnRWC3_4_IgBS1VOqTUXg";
+        private string databaseUrl = PSUTInternship.Shared.FirebaseConfig.DatabaseUrl.TrimEnd('/');
         private string objectName = "academicSupervisors";
         private string roleName = "Academic Supervisor";
         private JavaScriptSerializer serializer = new JavaScriptSerializer();
@@ -98,7 +97,7 @@ namespace PSUTInternship.Admin
         private async Task<Dictionary<string, Dictionary<string, object>>> GetRecords(string objectToRead)
         {
             string url = databaseUrl + "/" + objectToRead + ".json?auth=" + Uri.EscapeDataString(idToken);
-            using (HttpClient client = new HttpClient())
+            using (HttpClient client = PSUTInternship.Shared.FirebaseConfig.CreateClient())
             {
                 HttpResponseMessage response = await client.GetAsync(url);
                 string result = await response.Content.ReadAsStringAsync();
@@ -136,9 +135,6 @@ namespace PSUTInternship.Admin
                     "<tr><th>Name</th>" +
                     "<th>Email</th>" +
                     "<th>College</th>" +
-                    "<th>Department</th>" +
-                    "<th>Specialization</th>" +
-                    "<th>Status</th>" +
                     "<th>Actions</th>" +
                     "</tr>" +
                     "</thead>" +
@@ -168,18 +164,16 @@ namespace PSUTInternship.Admin
                     table.Append("<tr><td>").Append(HttpUtility.HtmlEncode(name));
                     table.Append("</td><td>").Append(HttpUtility.HtmlEncode(email));
                     table.Append("</td><td>").Append(HttpUtility.HtmlEncode(college));
-                    table.Append("</td><td>").Append(HttpUtility.HtmlEncode(department));
-                    table.Append("</td><td>").Append(HttpUtility.HtmlEncode(specialization));
-                    table.Append("</td><td>").Append(isActive ? "Active" : "Inactive").Append("</td><td>");
+                    table.Append("</td><td>");
                     table.Append("<a class='btn light' href='ManageAcademic.aspx?view=").Append(id).Append("'>View</a> ");
                     table.Append("<a class='btn light' href='ManageAcademic.aspx?edit=").Append(id).Append("'>Edit</a> ");
                     table.Append("<a class='btn danger' href='ManageAcademic.aspx?toggle=").Append(id);
-                    table.Append("' onclick=\"return confirm('Change this account status?');\">");
+                    table.Append("' onclick=\"return portalConfirmAction(this, 'Change this account status?');\">");
                     table.Append(isActive ? "Deactivate</a></td></tr>" : "Activate</a></td></tr>");
                 }
 
-                if (total == 0) table.Append("<tr><td colspan='7'>No academic supervisors yet.</td></tr>");
-                else if (table.ToString().EndsWith("<tbody>")) table.Append("<tr><td colspan='7'>No supervisors match your search.</td></tr>");
+                if (total == 0) table.Append("<tr><td colspan='4'>No academic supervisors yet.</td></tr>");
+                else if (table.ToString().EndsWith("<tbody>")) table.Append("<tr><td colspan='4'>No supervisors match your search.</td></tr>");
                 table.Append("</tbody></table>");
 
                 tableLiteral.Text = table.ToString();
@@ -212,6 +206,7 @@ namespace PSUTInternship.Admin
             string college = collegeTextBox.Text.Trim();
             string department = departmentTextBox.Text.Trim();
             string specialization = specializationTextBox.Text.Trim();
+            if (college != PSUTInternship.Shared.AcademicCatalog.College || !PSUTInternship.Shared.AcademicCatalog.ValidProgram(department)) { messageLabel.Text = "Select a college and program from the PSUT computing catalogue."; ShowForm(); return; }
             string editId = Request.QueryString["edit"];
             bool isEditing = editId != null && editId != "";
 
@@ -302,46 +297,19 @@ namespace PSUTInternship.Admin
             }
         }
 
-        private async Task<string> CreateAccount(string email, string password)
+        private Task<string> CreateAccount(string email, string password)
         {
-            string url = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + Uri.EscapeDataString(apiKey);
-            Dictionary<string, object> account = new Dictionary<string, object>();
-            account["email"] = email;
-            account["password"] = password;
-            account["returnSecureToken"] = true;
-
-            using (HttpClient client = new HttpClient())
-            using (StringContent content = new StringContent(serializer.Serialize(account), Encoding.UTF8, "application/json"))
-            {
-                HttpResponseMessage response = await client.PostAsync(url, content);
-                string resultText = await response.Content.ReadAsStringAsync();
-                if (!response.IsSuccessStatusCode)
-                {
-                    messageLabel.Text = "Firebase could not create the account. Check the email, password, and Email/Password sign-in setting.";
-                    return null;
-                }
-                Dictionary<string, object> result = serializer.Deserialize<Dictionary<string, object>>(resultText);
-                return Convert.ToString(result["localId"]);
-            }
+            return PSUTInternship.Shared.AccountProvisioning.Create(email, password);
         }
 
         private async Task SaveSupervisor(string uid, Dictionary<string, object> supervisor)
         {
-            await SaveInObject("users", uid, supervisor);
-            await SaveInObject(objectName, uid, supervisor);
+            supervisor = await PSUTInternship.Shared.DatabaseSchema.PreservePasswordState(uid,supervisor);
+            await PSUTInternship.Shared.FirebaseRestClient.PatchAsync("", new Dictionary<string, object>
+            { { "users/" + uid, supervisor }, { objectName + "/" + uid, supervisor } }, idToken);
         }
 
-        private async Task SaveInObject(string objectToSave, string uid, Dictionary<string, object> data)
-        {
-            string url = databaseUrl + "/" + objectToSave + "/" + Uri.EscapeDataString(uid) + ".json?auth=" + Uri.EscapeDataString(idToken);
-            using (HttpClient client = new HttpClient())
-            using (StringContent content = new StringContent(serializer.Serialize(data), Encoding.UTF8, "application/json"))
-            {
-                HttpResponseMessage response = await client.PutAsync(url, content);
-                if (!response.IsSuccessStatusCode)
-                    throw new Exception("Could not save supervisor data. Check Firebase rules for users and academicSupervisors.");
-            }
-        }
+
 
         private async Task LoadSupervisorForEdit(string uid)
         {
@@ -359,9 +327,9 @@ namespace PSUTInternship.Admin
                 Dictionary<string, object> supervisor = supervisors[uid];
                 nameTextBox.Text = GetValue(supervisor, "fullName");
                 emailTextBox.Text = GetValue(supervisor, "email");
-                collegeTextBox.Text = GetValue(supervisor, "college");
-                departmentTextBox.Text = GetValue(supervisor, "department");
-                specializationTextBox.Text = GetValue(supervisor, "specialization");
+                PSUTInternship.Shared.AcademicCatalog.Select(collegeTextBox, GetValue(supervisor, "college"));
+                PSUTInternship.Shared.AcademicCatalog.Select(departmentTextBox, GetValue(supervisor, "department"));
+                PSUTInternship.Shared.AcademicCatalog.Select(specializationTextBox, GetValue(supervisor, "specialization"));
                 phoneTextBox.Text = GetValue(supervisor, "phoneNumber");
                 passwordTextBox.Enabled = false;
                 formTitleLabel.Text = "Edit academic supervisor";

@@ -160,3 +160,29 @@ Film framing is scroll linked: the full-bleed campus film contracts horizontally
 - Don't require dragging or animation to reach essential content.
 - Don't hide keyboard-focusable controls with opacity alone.
 
+
+
+## Coordinator placements, 24 October 2026
+
+`Admin/MonitorPlacements.aspx` uses a flat bordered internship register within the existing coordinator shell. Preserve Manrope and PSUT blue. Four linked status totals precede the register; unavailable totals use a dash. The five columns pair student/company identity and approved hours/progress, with outlined buttons for tasks and evaluations. Counts and filtering come from existing placement records. Under 700px, the register becomes stacked records with supervisor, hours, progress and all review actions retained. Review and close links preserve search/status. No shared shell tokens changed.
+
+Validation: Debug project build passed. Presentation fixtures with illustrative records were inspected at 1440px and 390px without document overflow; independent visual review returned ship. Authenticated Firebase interaction was not exercised by these fixtures.
+
+
+## Coordinator completion review, 24 October 2026
+
+The completion queue uses a bordered table with student identity, placement, approved hours, academic result, completion status and a review action. The existing native dialog retains certificate approval and download controls. Completion requirements are a semantic evidence/result table; narrow screens scroll the table inside its frame. Use the existing PSUT Manrope and blue palette, quiet row rules, a 30px page title, and compact status labels. The legacy final completion route also uses a requirements table.
+
+Academic result displays use the submitted recommendation as Pass or Fail, normalize legacy Not Pass to Fail, and use a dash for unavailable or undecided reviews. Numeric academic scores remain in the assessment input and internal grading policy; they are removed from result displays and the printable academic summary. Recommendation choices are Pass and Fail. Certificate eligibility rules remain unchanged.
+
+Verification: Debug build and 107 offline workflow assertions passed, including missing/draft/legacy academic result cases. The completion register and native dialog were inspected at 1440px and 390px with illustrative records; table containment, dialog open/close and all five requirements rows passed. Live Firebase certificate approval was not exercised.
+
+
+## Student opportunities, 24 October 2026
+
+Opportunity cards and details use a company-initial mark, company name and specialization rather than stock photography. Use a flat PSUT blue wash on the detail identity strip. A confirmed internship (existing active/completed placement or immutable confirmation record) disables the application entry button before opening the form; the server-side submission checks remain in place. Listings keep read-only detail access. The application modal uses a matching 900px dialog/content width and automatic horizontal margins, centered against the entire viewport, with internal body scrolling and a fixed header/footer. Verified at 1892px, 1440px and 390px; 123 offline workflow assertions passed.
+
+
+## Student progress and compact offers, 24 October 2026
+
+My applications uses compact horizontal offer rows, with company identity and status at left and Accept/Decline actions at right; phones stack actions under identity. Progress & report uses six divided task KPIs, a linear submission indicator, expandable task facts and a chronological activity timeline. Identical repeated events are deduplicated; feedback is plain readable text, with no dark history strips. My Tasks also shows assigned, submitted, needs-revision and reviewed totals scoped to the current placement. Student opportunity presentation computes a deduplicated aggregate of authorized approved applications and placements when the stored seat count is missing, without exposing other students in rendered output. If authorization prevents verification and there is no stored count, availability is explicitly unavailable. A direct live counter repair was refused by Firebase; no live write succeeded. Live read verification found three approved applications for Android Training, whose total capacity is five.

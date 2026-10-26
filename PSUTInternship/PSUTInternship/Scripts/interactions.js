@@ -4,25 +4,100 @@
     let drag = null, velocity = 0, frame = 0, suppressClick = false;
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     if (rail.classList.contains('experience-facts')) {
-      let cardFrame = 0;
+      let cardFrame = 0, entered = false, onScreen = false, positioned = false;
+      const animations = new Set();
       const updateCards = () => {
         cardFrame = 0;
-        const center = rail.getBoundingClientRect().left + rail.clientWidth / 2;
-        rail.querySelectorAll('.mosaic-card').forEach(card => {
-          const box = card.getBoundingClientRect();
-          const distance = (box.left + box.width / 2 - center) / Math.max(1, box.width);
-          const depth = Math.min(1, Math.abs(distance));
-          card.style.setProperty('--card-angle', reduced.matches ? '0deg' : `${Math.max(-14, Math.min(14, distance * 14))}deg`);
-          card.style.setProperty('--card-lift', reduced.matches ? '0px' : `${depth * 12}px`);
-          card.style.setProperty('--card-scale', reduced.matches ? '1' : String(1 - depth * .07));
-          card.style.setProperty('--card-opacity', String(1 - depth * .12));
+        // Layout coordinates stay stable while the cards themselves rotate.
+        const center = rail.scrollLeft + rail.clientWidth / 2;
+        const radius = Math.max(950, rail.clientWidth * 1.45);
+        const cards = [...rail.querySelectorAll('.mosaic-card')];
+        if (!positioned && cards.length > 1) {
+          positioned = true;
+          rail.scrollLeft = cards[1].offsetLeft + cards[1].offsetWidth / 2 - rail.clientWidth / 2;
+          queueCards();
+          return;
+        }
+        // Recycle an offscreen card at either end, preserving its screen position.
+        // Moving the actual nodes keeps a single set of links and database records.
+        if (positioned && cards.length > 2) {
+          const step = cards[1].offsetLeft - cards[0].offsetLeft;
+          const firstCenter = cards[0].offsetLeft + cards[0].offsetWidth / 2 - rail.clientWidth / 2;
+          const lastCenter = cards.at(-1).offsetLeft + cards.at(-1).offsetWidth / 2 - rail.clientWidth / 2;
+          let shift = 0;
+          if (rail.scrollLeft < firstCenter + step * .5 && !cards.at(-1).contains(document.activeElement)) {
+            rail.prepend(cards.at(-1));
+            shift = step;
+          } else if (rail.scrollLeft > lastCenter - step * .5 && !cards[0].contains(document.activeElement)) {
+            rail.append(cards[0]);
+            shift = -step;
+          }
+          if (shift) {
+            rail.scrollLeft += shift;
+            if (drag) drag.scroll += shift;
+            queueCards();
+            return;
+          }
+        }
+        cards.forEach(card => {
+          const distance = card.offsetLeft + card.offsetWidth / 2 - center;
+          const angle = Math.asin(Math.max(-.62, Math.min(.62, distance / radius)));
+          card.style.setProperty('--card-angle', reduced.matches ? '0deg' : `${angle * 180 / Math.PI}deg`);
+          card.style.setProperty('--card-lift', reduced.matches ? '0px' : `${radius * (1 - Math.cos(angle))}px`);
+          card.style.setProperty('--card-scale', '1');
+          card.style.setProperty('--card-opacity', '1');
         });
+        if (onScreen && cards.length && !entered) {
+          entered = true;
+          if (!reduced.matches) cards.forEach((card, i) => {
+            const resting = getComputedStyle(card).transform;
+            const angle = parseFloat(card.style.getPropertyValue('--card-angle'));
+            const animation = card.animate([
+              { transform: `translateY(150px) rotate(${angle * 1.65}deg) scale(.88)`, opacity: .15 },
+              { transform: resting, opacity: 1 }
+            ], { duration: 950, delay: Math.min(i * 65, 260), easing: 'cubic-bezier(.16,1,.3,1)', fill: 'backwards' });
+            animations.add(animation);
+            animation.onfinish = () => animations.delete(animation);
+          });
+        }
       };
       const queueCards = () => { if (!cardFrame) cardFrame = requestAnimationFrame(updateCards); };
+      const cancelEntrance = () => { animations.forEach(a => a.cancel()); animations.clear(); };
+      rail.addEventListener('pointerdown', cancelEntrance);
+      rail.addEventListener('keydown', cancelEntrance);
       rail.addEventListener('scroll', queueCards, { passive: true });
-      addEventListener('resize', queueCards);
-      reduced.addEventListener('change', queueCards);
+      new IntersectionObserver(entries => {
+        onScreen = entries[0].isIntersecting;
+        if (onScreen) queueCards();
+      }, { threshold: .18 }).observe(rail);
+      new MutationObserver(queueCards).observe(rail, { childList: true });
+      new ResizeObserver(queueCards).observe(rail);
+      reduced.addEventListener('change', () => { cancelEntrance(); queueCards(); });
       queueCards();
+
+      // A decorative cursor never intercepts a click or appears on touch screens.
+      const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
+      const cursor = document.createElement('div');
+      cursor.className = 'opportunity-drag-cursor';
+      cursor.textContent = 'Drag';
+      cursor.setAttribute('aria-hidden', 'true');
+      document.body.append(cursor);
+      const hideCursor = () => { cursor.classList.remove('is-visible'); rail.classList.remove('has-drag-cursor'); };
+      rail.addEventListener('pointermove', event => {
+        if (!finePointer.matches || event.pointerType === 'touch' || event.target.closest('a,button')) { hideCursor(); return; }
+        cursor.style.setProperty('--cursor-x', `${event.clientX}px`);
+        cursor.style.setProperty('--cursor-y', `${event.clientY}px`);
+        cursor.classList.add('is-visible');
+        rail.classList.add('has-drag-cursor');
+      });
+      rail.addEventListener('pointerleave', hideCursor);
+      rail.addEventListener('pointerdown', () => cursor.classList.add('is-pressed'));
+      window.addEventListener('pointerup', () => cursor.classList.remove('is-pressed'));
+      rail.addEventListener('pointercancel', () => { cursor.classList.remove('is-pressed'); hideCursor(); });
+      window.addEventListener('blur', hideCursor);
+      window.addEventListener('scroll', hideCursor, { passive: true });
+      document.addEventListener('visibilitychange', hideCursor);
+      finePointer.addEventListener('change', hideCursor);
     }
     function stop() { cancelAnimationFrame(frame); frame = 0; }
     function settle() {

@@ -1,0 +1,58 @@
+/* Scoped to the coordinator's native final review dialog. */
+.portal-content dialog.final-review-dialog{box-sizing:border-box;width:min(880px,calc(100vw - 40px));max-width:calc(100vw - 40px);max-height:90dvh;padding:0;border:0;border-radius:16px;background:#fff;color:#172f42;overflow:hidden;box-shadow:0 28px 90px #071f3240;font-size:14px;line-height:1.6}
+.portal-content dialog.final-review-dialog[open]{display:flex;flex-direction:column}
+.final-review-dialog::backdrop{background:rgba(7,24,39,.65)}
+.portal-content .final-review-dialog header{padding:22px 28px;border-bottom:1px solid #e3e9ed;flex-shrink:0;gap:20px}
+.portal-content .final-review-dialog header h2{margin:0;font-size:21px;letter-spacing:-.025em;line-height:1.3;color:#172f42}
+.portal-content .final-review-dialog header button{display:grid;place-items:center;padding:0;width:34px;height:34px;min-width:34px;border:1px solid #dce4ea;border-radius:8px;background:#fff;color:#526777;font-size:22px;cursor:pointer}
+.portal-content .final-review-dialog header button:hover{background:#edf2f6;color:#003e73}
+.portal-content .final-review-dialog .review-body{padding:24px 28px;overflow-y:auto;overflow-x:hidden;min-height:0;overscroll-behavior:contain;scrollbar-width:thin}
+.portal-content .final-review-dialog *{box-sizing:border-box;min-width:0;overflow-wrap:anywhere}
+.portal-content .final-review-dialog .review-student-banner{padding:0 0 20px;margin:0 0 20px;background:transparent;border-radius:0;border-bottom:1px solid #e3e9ed;color:#172f42}
+.portal-content .final-review-dialog .review-student-banner h3{color:#003e73;font-size:23px;line-height:1.3;margin:0 0 4px;font-weight:750}
+.portal-content .final-review-dialog .review-student-banner p{margin:0;font-size:13px;color:#526777;font-weight:400}
+.portal-content .final-review-dialog .review-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 28px;width:100%}
+.portal-content .final-review-dialog .review-detail-grid>p{padding:0;margin:0;color:#526777;font-size:12px;font-weight:500;line-height:1.7}
+.portal-content .final-review-dialog .review-detail-grid>p strong{display:inline-block;margin-top:3px;font-size:16px;font-weight:650;color:#172f42;font-variant-numeric:tabular-nums}
+.portal-content .final-review-dialog progress{display:block;width:100%;height:6px;margin:20px 0 26px;border:0;border-radius:4px;overflow:hidden;appearance:none;background:#e6edf1}
+.final-review-dialog progress::-webkit-progress-bar{background:#e6edf1;border-radius:4px}.final-review-dialog progress::-webkit-progress-value{background:#287552;border-radius:4px}.final-review-dialog progress::-moz-progress-bar{background:#287552}
+.portal-content .final-review-dialog .review-evaluation{padding:20px;border:1px solid #dfe7ed;border-radius:10px;background:#fff;min-width:0;max-width:100%}
+.portal-content .final-review-dialog .review-evaluation h3{font-size:14px;font-weight:650;color:#526777;margin:0 0 10px;line-height:1.4}
+.portal-content .final-review-dialog .review-evaluation>p:first-of-type{font-size:24px;font-weight:750;letter-spacing:-.025em;color:#003e73;margin:0 0 16px;line-height:1.3;font-variant-numeric:tabular-nums}
+.portal-content .final-review-dialog .review-comments{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font-size:14px;font-weight:400;line-height:1.75;color:#344c5e;margin:0;padding-top:14px;border-top:1px solid #e8edf1}
+.portal-content .final-review-dialog .review-requirements{margin-top:26px}.portal-content .final-review-dialog .review-requirements h3{font-size:15px;margin:0 0 12px;color:#172f42}
+.portal-content .final-review-dialog .review-requirements ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px;margin:0;padding:0;list-style:none}.portal-content .final-review-dialog .review-requirements li{padding:8px 0;border-bottom:1px solid #e8edf1;font-size:13px;font-weight:500}
+.portal-content .final-review-dialog .review-note{font-size:12px;font-weight:400;line-height:1.7;color:#526777;margin:18px 0 0}
+.portal-content .final-review-dialog .review-actions{margin:0;padding:16px 28px;background:#f7f9fa;border-top:1px solid #e3e9ed;flex-shrink:0;gap:10px}
+.portal-content .final-review-dialog .review-actions .btn{border-radius:7px;font-size:13px;padding:10px 16px;line-height:1.4;min-height:40px}.portal-content .final-review-dialog .review-actions button{background:#fff;color:#344c5e;border:1px solid #cdd8e0}
+.portal-content .final-review-dialog .certificate-create:disabled{background:#e5eaee!important;color:#657581!important;border-color:#e5eaee;cursor:not-allowed;opacity:1}
+.final-review-dialog :focus-visible{outline:3px solid #0078b5;outline-offset:3px}
+@media(max-width:600px){.portal-content dialog.final-review-dialog{width:calc(100vw - 20px);max-width:calc(100vw - 20px);max-height:94dvh}.portal-content .final-review-dialog header,.portal-content .final-review-dialog .review-body,.portal-content .final-review-dialog .review-actions{padding:18px}.portal-content .final-review-dialog .review-detail-grid,.portal-content .final-review-dialog .review-requirements ul{grid-template-columns:minmax(0,1fr)}.portal-content .final-review-dialog header h2{font-size:18px}}
+
+/* Coordinator completion register and requirement evidence tables. */
+.portal-app .portal-content .completion-review-page{--review-line:#e3e9ed;--review-muted:#526777;--review-ink:#172f42;--review-blue:#003e73}
+.portal-app .portal-content .completion-heading{margin-bottom:28px}.portal-app .portal-content .completion-heading h1{font-size:30px!important;letter-spacing:-.035em;margin:0 0 9px!important}.portal-app .portal-content .completion-heading p{font-size:14px!important;color:var(--review-muted);margin:0}
+.portal-app .portal-content .completion-register{background:#fff;border:1px solid var(--review-line);border-radius:12px;overflow:hidden}
+.portal-app .portal-content .completion-register-heading{padding:24px;border-bottom:1px solid var(--review-line)}.portal-app .portal-content .completion-register-heading h2{font-size:17px!important;margin:0 0 6px!important}.portal-app .portal-content .completion-register-heading p{font-size:13px!important;color:var(--review-muted);margin:0}
+.portal-app .portal-content .completion-table-scroll{overflow-x:auto;max-width:100%;scrollbar-width:thin}
+.portal-app .portal-content .completion-table{width:100%;min-width:840px;table-layout:auto;border-collapse:collapse}
+.portal-app .portal-content .completion-table :is(th,td){padding:18px 22px!important;vertical-align:middle!important;font-size:13px!important;border-bottom:1px solid var(--review-line);white-space:normal}
+.portal-app .portal-content .completion-table th{font-size:12px!important;font-weight:600;color:var(--review-muted)}.portal-app .portal-content .completion-table td:first-child strong{display:block;font-size:14px}.portal-app .portal-content .completion-table small{display:block;margin-top:5px;color:var(--review-muted);font-size:12px}.portal-app .portal-content .completion-table tbody tr:last-child td{border-bottom:0}
+.portal-app .portal-content .completion-hours{font-variant-numeric:tabular-nums;white-space:nowrap!important}
+.portal-app .portal-content .completion-table .btn{font-size:12px!important;min-height:40px;border-radius:7px!important;padding:9px 14px!important;background:#003e73!important;color:#fff!important;white-space:nowrap}
+.portal-app .portal-content .completion-state{font-size:12px;color:var(--review-muted)}
+.portal-app .portal-content .completion-result{display:inline-block;padding:4px 9px;border-radius:5px;background:#edf2f6;color:#526777;font-size:12px;font-weight:650;white-space:nowrap}
+.portal-app .portal-content .completion-result[data-result="Pass"]{background:#e5f2e9;color:#175b3c}.portal-app .portal-content .completion-result[data-result="Fail"]{background:#faeae7;color:#973b33}
+.portal-app .portal-content .completion-empty{display:block;padding:28px 0;color:var(--review-muted);font-size:14px}
+.portal-app .portal-content .final-review-dialog .review-evaluation{border:0!important;border-radius:0!important;background:#f5f8fa!important;padding:18px!important}.portal-app .portal-content .final-review-dialog .review-evaluation>p:first-of-type{font-size:22px!important}
+.portal-app .portal-content .final-review-dialog .requirements-table{width:100%;min-width:500px;table-layout:auto;border-collapse:collapse}
+.portal-app .portal-content .final-review-dialog .requirements-table :is(th,td){padding:12px 10px!important;font-size:12px!important;border-bottom:1px solid #e3e9ed;vertical-align:middle;line-height:1.6;white-space:normal}
+.portal-app .portal-content .final-review-dialog .requirements-table thead th{color:#526777;font-size:11px!important;font-weight:500}.portal-app .portal-content .final-review-dialog .requirements-table tbody th{font-weight:600;color:#172f42;width:32%}.portal-app .portal-content .final-review-dialog .requirements-table td:last-child{white-space:nowrap}
+.portal-app .portal-content .completion-review-page :is(button,a,input):focus-visible{outline:2px solid #0078b5;outline-offset:3px}
+@media(max-width:650px){.portal-app .portal-content .completion-register-heading{padding:18px}.portal-app .portal-content .completion-heading h1{font-size:26px!important}.portal-app .portal-content .completion-table :is(th,td){padding:14px 16px!important}.portal-app .portal-content .final-review-dialog .review-detail-grid{grid-template-columns:1fr!important}.portal-app .portal-content .final-review-dialog .review-actions{flex-wrap:wrap}}
+
+.portal-app .portal-content .completion-filters{display:flex;align-items:flex-end;flex-wrap:wrap;gap:14px;margin:0 0 20px}
+.portal-app .portal-content .completion-filters>div{display:grid;gap:7px;min-width:0}.portal-app .portal-content .completion-search-field{flex:1;min-width:220px!important}.portal-app .portal-content .completion-status-field{flex:0 1 210px}
+.portal-app .portal-content .completion-filters label{font-size:12px;font-weight:600;color:#526777}.portal-app .portal-content .completion-filters :is(input[type="search"],select){height:44px;width:100%;padding:10px 12px;border:1px solid #c9d4dd;border-radius:7px;background:#fff;color:#172f42;font-size:13px}
+.portal-app .portal-content .completion-filters .btn{min-height:44px!important;border-radius:7px!important;font-size:13px!important;padding:10px 18px!important}.portal-app .portal-content .completion-reset{padding:12px 4px;font-size:13px;color:#526777;text-underline-offset:4px}.portal-app .portal-content .completion-result-count{flex-basis:100%;font-size:12px;color:#526777}
+@media(max-width:650px){.portal-app .portal-content .completion-filters{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px}.portal-app .portal-content .completion-search-field{grid-column:1/-1;min-width:0!important}.portal-app .portal-content .completion-status-field{grid-column:1}.portal-app .portal-content .completion-reset{grid-column:2;padding:0 4px}.portal-app .portal-content .completion-result-count{grid-column:1;grid-row:3;align-self:center}}

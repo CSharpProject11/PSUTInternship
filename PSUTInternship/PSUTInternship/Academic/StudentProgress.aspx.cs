@@ -1,72 +1,27 @@
-﻿using System;
+using Newtonsoft.Json.Linq;
+using PSUTInternship.Models;
+using PSUTInternship.Shared;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Newtonsoft.Json.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
-namespace AcademicSupervisor
+namespace PSUTInternship.Academic
 {
-    public partial class StudentProgress : Page
+    public partial class StudentProgress : PSUTInternship.Shared.PortalPage
     {
         // Direct REST access through HttpClient. No extra service class.
-        private static readonly HttpClient Http = new HttpClient();
-        private const string DatabaseUrl = "https://project-d2551-default-rtdb.firebaseio.com";
-        private const string CurrentSupervisorId = "9A8jqXmuQthnfld1A9Lonba3QTI3";
+        private static readonly HttpClient Http = PSUTInternship.Shared.FirebaseConfig.CreateClient();
+        private static readonly string DatabaseUrl = PSUTInternship.Shared.FirebaseConfig.DatabaseUrl.TrimEnd('/');
+        private string CurrentSupervisorId { get { return CurrentProfileId; } }
 
         private async Task<Dictionary<string, JObject>> ReadAsync(string collection)
         {
-            if (string.IsNullOrWhiteSpace(DatabaseUrl) ||
-                !Uri.TryCreate(DatabaseUrl, UriKind.Absolute, out Uri root) ||
-                root.Scheme != Uri.UriSchemeHttps)
-                throw new InvalidOperationException("Set FirebaseDatabaseUrl in Web.config to your HTTPS Realtime Database URL.");
-            // Public REST request for local UI demo; database rules still apply.
-            string url = DatabaseUrl + "/" + Uri.EscapeDataString(collection) + ".json";
-            using (HttpResponseMessage response = await Http.GetAsync(url).ConfigureAwait(false))
-            {
-                if (!response.IsSuccessStatusCode)
-                    throw new HttpRequestException("Firebase reading " + collection +
-                        " failed (HTTP " + (int)response.StatusCode + "). Check database configuration and read permissions.");
-                string json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                if (string.IsNullOrWhiteSpace(json) || json.Trim() == "null")
-                    return new Dictionary<string, JObject>();
-                JObject result = JObject.Parse(json);
-                return result.Properties()
-                    .Where(p => p.Value is JObject)
-                    .ToDictionary(p => p.Name, p => (JObject)p.Value);
-            }
-        }
-
-        public class StudentRow
-        {
-            public string StudentId { get; set; }
-            public string StudentName { get; set; }
-            public string Company { get; set; }
-            public int ApprovedHours { get; set; }
-            public int RequiredHours { get; set; }
-            public int Progress { get; set; }
-            public string Status { get; set; }
-            public int TaskCount { get; set; }
-            public string InternshipId { get; set; }
-        }
-
-        public class StudentTask
-        {
-            public string Title { get; set; }
-            public string Description { get; set; }
-            public string CreatedAt { get; set; }
-            public string DueDate { get; set; }
-            public string Status { get; set; }
-            public string SubmissionStatus { get; set; }
-            public string SubmittedAt { get; set; }
-            public string FileName { get; set; }
-            public string FileUrl { get; set; }
-            public string SubmissionLink { get; set; }
-            public string Feedback { get; set; }
-            public string ReviewedAt { get; set; }
+            return await PSUTInternship.Shared.PortalRepository.Collection(collection).ConfigureAwait(false);
         }
 
         private static string S(JToken item, string field, string fallback = "")
@@ -90,6 +45,17 @@ namespace AcademicSupervisor
             Context.Items[key] = value;
             return value;
         }
+        private Dictionary<string, JObject> ReadOptional(string name)
+        {
+            try { return Read(name); }
+            catch (Exception ex)
+            {
+                // These collections were added for live hours and certificate readiness.
+                // A rules mismatch must not prevent the supervisor from opening the page.
+                System.Diagnostics.Trace.TraceError("Optional Firebase read failed for " + name + ": " + ex);
+                return null;
+            }
+        }
         private string SupervisorId { get { return CurrentSupervisorId; } }
         private string SupervisorName
         {
@@ -101,13 +67,16 @@ namespace AcademicSupervisor
                     ? S(record, "fullName", "Academic Supervisor") : "Academic Supervisor";
             }
         }
-        private List<StudentRow> AssignedStudents()
+        private List<AcademicStudentRow> AssignedStudents()
         {
             var people = Read("academicSupervisors");
             var students = Read("students");
             var internships = Read("internships");
             var companies = Read("companies");
             var tasks = Read("tasks");
+            var trainingHours = ReadOptional("trainingHours");
+            var trainingHourRecords = trainingHours == null ? null : Newtonsoft.Json.Linq.JObject.FromObject(trainingHours);
+            var evaluations = ReadOptional("evaluations") ?? new Dictionary<string, JObject>();
             var rootGroups = Read("studentGroups");
             JObject supervisor;
             if (!people.TryGetValue(SupervisorId, out supervisor))
@@ -143,16 +112,33 @@ namespace AcademicSupervisor
                 if (S(student.Value, "academicSupervisorId") == SupervisorId ||
                     groupKeys.Contains(S(student.Value, "groupId")))
                     allowed.Add(student.Key);
+            // A placement is also an authoritative assignment. Include its student even
+            // when the student's legacy academicSupervisorId has not been synchronized.
+            foreach (var placementRow in internships)
+                if (S(placementRow.Value, "academicSupervisorId") == SupervisorId &&
+                    !string.IsNullOrWhiteSpace(S(placementRow.Value, "studentId")))
+                    allowed.Add(S(placementRow.Value, "studentId"));
 
-            var result = new List<StudentRow>();
+            var result = new List<AcademicStudentRow>();
             foreach (string id in allowed)
             {
                 JObject student;
-                if (!students.TryGetValue(id, out student)) continue;
-                if (string.Equals(S(student, "isActive"), "false", StringComparison.OrdinalIgnoreCase)) continue;
                 var placement = internships
                     .Where(x => S(x.Value, "studentId") == id && S(x.Value, "academicSupervisorId") == SupervisorId)
                     .OrderByDescending(x => S(x.Value, "startDate")).FirstOrDefault();
+                
+                if (!students.TryGetValue(id, out student))
+                {
+                    try { student = PortalRepository.Get<JObject>("students/" + PortalRepository.Key(id)).GetAwaiter().GetResult(); }
+                    catch (Exception loadError)
+                    {
+                        System.Diagnostics.Trace.TraceError("Could not load assigned student " + id + ": " + loadError);
+                        student = null;
+                    }
+                }
+                if (student == null) continue;
+                if (!string.IsNullOrWhiteSpace(S(student, "academicSupervisorId")) && S(student, "academicSupervisorId") != SupervisorId) continue;
+                if (string.Equals(S(student, "isActive"), "false", StringComparison.OrdinalIgnoreCase)) continue;
                 JObject internship = placement.Value;
                 JObject company = null;
                 if (internship != null) companies.TryGetValue(S(internship, "companyId"), out company);
@@ -160,13 +146,30 @@ namespace AcademicSupervisor
                 int required = internship != null ? N(internship, "requiredHours") : 0;
                 if (required <= 0) required = N(student, "requiredHours");
                 if (required <= 0) required = N(student, "requiredTrainingHours");
-                int approved = N(internship, "approvedHours");
-                int progress = required > 0 ? (int)Math.Round(100.0 * approved / required) : 0;
+                // Training-hour entries are the source of truth. The cached internship total is
+                // only a projection and can lag behind a task review or a failed recalculation.
+                decimal approved = internship == null ? 0 : trainingHourRecords == null
+                    ? (decimal?)internship["approvedHours"] ?? 0
+                    : PSUTInternship.Shared.CoordinatorData.ApprovedHours(trainingHourRecords, placement.Key, id);
+                int progress = required > 0 ? (int)Math.Round(100m * approved / required) : 0;
                 progress = Math.Max(0, Math.Min(100, progress));
+                var placementTasks = internship == null ? new List<JObject>() : tasks.Values.Where(t =>
+                    S(t, "studentId") == id && S(t, "internshipId") == placement.Key && (bool?)t["active"] != false).ToList();
+                var companyEvaluation = internship == null ? null : evaluations.Values.Where(e => S(e, "studentId") == id && S(e, "internshipId") == placement.Key &&
+                    string.Equals(S(e, "evaluatorRole"), "companySupervisor", StringComparison.OrdinalIgnoreCase)).OrderByDescending(e => S(e, "submittedAt")).FirstOrDefault();
+                var academicEvaluation = internship == null ? null : evaluations.Values.Where(e => S(e, "studentId") == id && S(e, "internshipId") == placement.Key &&
+                    string.Equals(S(e, "evaluatorRole"), "academicSupervisor", StringComparison.OrdinalIgnoreCase)).OrderByDescending(e => S(e, "submittedAt")).FirstOrDefault();
+                bool tasksComplete = placementTasks.All(t => string.Equals(DatabaseSchema.WorkflowStatus(S(t, "status")), "Reviewed", StringComparison.OrdinalIgnoreCase));
+                bool evaluationsComplete = S(companyEvaluation, "status").Equals("submitted", StringComparison.OrdinalIgnoreCase) &&
+                    S(academicEvaluation, "status").Equals("submitted", StringComparison.OrdinalIgnoreCase) && S(academicEvaluation, "recommendation").Equals("Pass", StringComparison.OrdinalIgnoreCase) &&
+                    S(academicEvaluation, "evaluatorId") == S(internship, "academicSupervisorId");
+                bool readyForCertificate = required > 0 && approved >= required && tasksComplete && evaluationsComplete && PassingGrade(companyEvaluation, academicEvaluation);
                 string state = internship == null ? "Not Started" :
-                    (string.Equals(S(internship, "status"), "completed", StringComparison.OrdinalIgnoreCase)
-                        ? "Completed" : ProgressStatus(S(internship, "progressStatus")));
-                result.Add(new StudentRow
+                    (string.Equals(S(internship, "status"), "completed", StringComparison.OrdinalIgnoreCase) ? "Completed" :
+                    readyForCertificate ? "Awaiting Certificate" :
+                    (placementTasks.Any(t => DateTime.TryParse(S(t, "dueDate"), out DateTime due) && due.Date < DateTime.Today &&
+                        !string.Equals(DatabaseSchema.WorkflowStatus(S(t, "status")), "Reviewed", StringComparison.OrdinalIgnoreCase)) ? "At Risk" : "On Track"));
+                result.Add(new AcademicStudentRow
                 {
                     StudentId = id,
                     StudentName = S(student, "fullName", "Unknown student"),
@@ -192,15 +195,28 @@ namespace AcademicSupervisor
                 default: return string.IsNullOrWhiteSpace(status) ? "Not Started" : status.Replace('_', ' ');
             }
         }
-        private StudentRow FindAssignedStudent(string studentId)
+        private static bool PassingGrade(JObject company, JObject academic)
         {
-            // Only show details for students assigned to the fixed demo supervisor.
+            try
+            {
+                return PSUTInternship.Shared.EvaluationPolicy.FinalGrade((decimal?)company?["overallScore"] ?? -1,
+                    (decimal?)company?["totalMaximum"] ?? 0, (decimal?)academic?["overallScore"] ?? -1) >=
+                    PSUTInternship.Shared.EvaluationPolicy.PassGrade;
+            }
+            catch { return false; }
+        }
+        private AcademicStudentRow FindAssignedStudent(string studentId)
+        {
+            // Verify the signed-in supervisor assignment before showing student details.
             return AssignedStudents().FirstOrDefault(x => x.StudentId == studentId);
         }
         private void HandleError(Exception ex)
         {
             CloseAllModals();
+            var root = ex == null ? null : ex.GetBaseException();
+            string detail = root == null ? "Unknown error." : root.Message;
             lblPageError.Text = HttpUtility.HtmlEncode("Unable to load student data from Firebase. Check database read access.");
+            lblPageError.Text = HttpUtility.HtmlEncode("Unable to load student data: " + detail);
             lblPageError.Visible = true;
             System.Diagnostics.Trace.TraceError(ex.ToString());
         }
@@ -252,15 +268,15 @@ namespace AcademicSupervisor
                 lblTaskHours.Text = student.ApprovedHours + " / " + student.RequiredHours + " hrs";
                 var tasks = Read("tasks");
                 var submissions = Read("submissions");
-                var output = new List<StudentTask>();
+                var output = new List<AcademicTaskRow>();
                 foreach (var t in tasks.Where(t => S(t.Value, "studentId") == student.StudentId && S(t.Value, "internshipId") == student.InternshipId))
                 {
                     var matches = submissions.Values.Where(s => S(s, "studentId") == student.StudentId &&
-                        S(s, "taskId") == t.Key && S(s, "internshipId") == student.InternshipId).ToList();
+                        S(s, "taskId") == t.Key && (string.IsNullOrWhiteSpace(S(s, "internshipId")) || S(s, "internshipId") == student.InternshipId)).OrderByDescending(PSUTInternship.Shared.PortalRepository.SubmissionTime).Take(1).ToList();
                     if (matches.Count == 0) matches.Add(null);
                     foreach (var submission in matches)
                     {
-                        output.Add(new StudentTask
+                        output.Add(new AcademicTaskRow
                         {
                             Title = S(t.Value, "title"),
                             Description = S(t.Value, "description"),
@@ -269,10 +285,11 @@ namespace AcademicSupervisor
                             Status = S(t.Value, "status", "Unknown"),
                             SubmissionStatus = S(submission, "status", "Not submitted"),
                             SubmittedAt = S(submission, "submittedAt", "Not submitted"),
-                            FileName = S(submission, "fileName", "No file uploaded"),
-                            FileUrl = SafeHttps(S(submission, "fileUrl")),
-                            SubmissionLink = SafeHttps(S(submission, "submissionLink")),
-                            Feedback = S(submission, "feedback", "No feedback yet"),
+                            FileName = S(submission?["uploadedFile"] as JObject, "name", S(submission, "fileName", "Submitted work")),
+                            FileUrl = submission?["uploadedFile"] is JObject ? "../TaskSolution.aspx?taskId=" + HttpUtility.UrlEncode(t.Key) : SafeHttps(S(submission, "fileUrl")),
+                            SubmissionLink = SafeHttps(S(submission, "attachmentUrl")),
+                            Score = S(t.Value, "score", "—") + " / " + S(t.Value, "maximumScore", "—"),
+                            Feedback = S(t.Value, "feedback", S(submission, "feedback", "No feedback yet")),
                             ReviewedAt = S(submission, "reviewedAt", "Not reviewed")
                         });
                     }
@@ -304,9 +321,9 @@ namespace AcademicSupervisor
                 lblEvaluationCompany.Text = HttpUtility.HtmlEncode(student.Company);
                 lblEvaluationSupervisor.Text = HttpUtility.HtmlEncode(SupervisorName);
                 lblEvaluationHours.Text = student.ApprovedHours + " / " + student.RequiredHours + " hrs";
-                lblEvaluationRecommendation.Text = HttpUtility.HtmlEncode(S(evaluation, "recommendation", "No evaluation available").Replace('_', ' '));
+                lblEvaluationRecommendation.Text = HttpUtility.HtmlEncode(PSUTInternship.Shared.CoordinatorData.AcademicResult(evaluation));
                 lblEvaluationComments.Text = HttpUtility.HtmlEncode(S(evaluation, "comments", "No academic evaluation recorded."));
-                lblEvaluationScore.Text = HttpUtility.HtmlEncode(S(evaluation, "overallScore", "Not finalized"));
+                lblEvaluationScore.Text = HttpUtility.HtmlEncode(PSUTInternship.Shared.CoordinatorData.AcademicResult(evaluation));
                 lblEvaluationDate.Text = HttpUtility.HtmlEncode(S(evaluation, "submittedAt", "Not submitted"));
                 string state = S(evaluation, "status", "Not available");
                 lblEvaluationStatus.Text = HttpUtility.HtmlEncode(state);
@@ -323,13 +340,13 @@ namespace AcademicSupervisor
             return Uri.TryCreate(value, UriKind.Absolute, out uri) && uri.Scheme == Uri.UriSchemeHttps
                 ? uri.AbsoluteUri : "";
         }
-        protected bool HasUrl(object value) { return !string.IsNullOrEmpty(SafeHttps(Convert.ToString(value))); }
+        protected bool HasUrl(object value) { return Convert.ToString(value).StartsWith("../TaskSolution.aspx?taskId=", StringComparison.Ordinal) || !string.IsNullOrEmpty(SafeHttps(Convert.ToString(value))); }
         protected void btnCloseModal_Click(object sender, EventArgs e) { CloseAllModals(); }
         private void CloseAllModals() { pnlTasksModal.Visible = false; pnlEvaluationModal.Visible = false; }
         protected string GetStatusClass(object x)
         {
             switch (ProgressStatus(Convert.ToString(x)))
-            { case "On Track": return "ontrack"; case "At Risk": return "atrisk"; case "Completed": return "completed"; default: return "pending"; }
+            { case "On Track": return "ontrack"; case "At Risk": return "atrisk"; case "Completed": return "completed"; case "Awaiting Certificate": return "submitted"; default: return "pending"; }
         }
         protected string GetTaskStatusClass(object x)
         {

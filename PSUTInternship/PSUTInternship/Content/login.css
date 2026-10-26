@@ -1,0 +1,106 @@
+@font-face{font-family:Manrope;src:url('../Assets/manrope-variable.ttf') format('truetype');font-weight:200 800;font-display:swap}
+:root{--navy:#003e73;--night:#081f30;--sky:#76c8e8;--paper:#fff;--muted:#40586b;--line:#b7c8d6;--ease:cubic-bezier(.16,1,.3,1)}
+*{box-sizing:border-box}
+body{margin:0;color:var(--night);font-family:Manrope,Arial,sans-serif;background:var(--navy);font-size:16px;line-height:1.5}
+button,input{font:inherit}a{color:inherit;text-underline-offset:4px}button,input[type=submit],a{-webkit-tap-highlight-color:transparent}
+::selection{background:var(--sky);color:var(--night)}
+:focus-visible{outline:3px solid var(--sky);outline-offset:4px}
+.bgPhoto,.bgOverlay{position:fixed;inset:0;pointer-events:none}
+.bgPhoto{background:url('../Assets/login-campus.png') center center/cover no-repeat;z-index:-2}
+.bgOverlay{background:rgba(8,31,48,.28);z-index:-1}
+#loginForm{min-height:100svh;display:flex;flex-direction:column}
+.topBar{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:26px clamp(22px,4vw,64px)}
+.topLogo{display:block;background:var(--paper);padding:10px 14px;border-radius:16px;line-height:0}
+.topLogo img{display:block;width:242px;height:auto}
+.backHome{display:inline-flex;align-items:center;gap:10px;color:var(--paper);text-decoration:none;font-size:14px;font-weight:700;min-height:44px}
+.backHome:hover{text-decoration:underline}
+svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.page{flex:1;display:grid;place-items:center;padding:16px 22px 32px}
+.loginBox{width:100%;max-width:460px;padding:30px 38px 26px;background:rgba(255,255,255,.93);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-radius:28px;text-align:center;box-shadow:0 22px 65px rgba(8,31,48,.2);animation:card-arrive .75s var(--ease) both}
+.cardLogo{width:76px;height:66px;object-fit:contain;display:block;margin:0 auto 16px}
+h1{font-size:38px;line-height:1.12;font-weight:800;letter-spacing:-.04em;margin:0 0 12px;color:var(--navy)}
+.subText{font-size:15px;line-height:1.65;color:var(--muted);margin:0 auto 26px;max-width:34ch}
+.formFields{text-align:left}
+.formFields label{display:block;font-size:14px;font-weight:700;margin-bottom:8px}
+.field{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:0 14px;min-height:54px;margin-bottom:18px;color:var(--muted);transition:border-color .2s}
+.field:focus-within{border-color:var(--navy);outline:2px solid var(--sky);outline-offset:1px}
+.field .textBox{border:0;outline:0;background:transparent;min-width:0;width:100%;padding:15px 0;color:var(--night);font-size:15px;border-radius:0}
+.textBox::placeholder{color:var(--muted);opacity:1}
+.eyeBtn{display:grid;place-items:center;width:44px;height:44px;flex-shrink:0;background:none;border:0;color:var(--muted);padding:10px;margin-right:-8px;cursor:pointer;border-radius:8px}
+.eyeBtn:hover{background:#eaf4fa;color:var(--navy)}
+.eyeSlash{display:none}.eyeBtn[aria-pressed=true] .eyeSlash{display:block}
+.optionsRow{display:flex;justify-content:flex-end;margin:-6px 0 22px}
+.forgotLink{background:none;border:0;padding:4px 0;min-height:36px;color:var(--navy);font-size:14px;font-weight:700;cursor:pointer}
+.forgotLink:hover{text-decoration:underline;text-underline-offset:4px}
+.loginButton{width:100%;min-height:54px;border:0;border-radius:100px;background:var(--navy);color:var(--paper);font-size:16px;font-weight:700;cursor:pointer;transition:background .2s,transform .2s}
+.loginButton:hover{background:var(--night)}.loginButton:active{transform:scale(.98)}
+.message{display:block;font-size:14px;line-height:1.6;color:#a32424;margin-top:16px;text-align:left}.message:empty{display:none}
+.cardFooter{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:var(--muted);margin:22px 0 0}.cardFooter svg{width:16px;height:16px}
+.pageFooter{padding:0 22px 20px;text-align:center;color:var(--paper);font-size:12px}
+@keyframes card-arrive{from{opacity:0;transform:translateY(24px) scale(.98)}to{opacity:1;transform:none}}
+@media(min-width:1500px){.loginBox{max-width:480px;padding:36px 42px 30px}}
+@media(max-width:600px){.topBar{padding:20px 22px;gap:14px}.topLogo{padding:8px 10px;border-radius:12px}.topLogo img{width:174px}.backHome{font-size:12px;gap:6px}.backHome svg{width:18px}.page{padding:14px 18px 24px}.loginBox{padding:28px 24px 24px;border-radius:24px}h1{font-size:34px}.cardLogo{width:66px;height:58px;margin-bottom:16px}.subText{margin-bottom:24px}.bgPhoto{background-position:38% center}.pageFooter{font-size:11px}}
+@media(max-width:359px){.topLogo img{width:150px}.topBar{padding-inline:18px}.backHome{font-size:11px}.loginBox{padding-inline:20px}h1{font-size:31px}.cardFooter{font-size:11px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
+
+/* A smaller form keeps more of the campus in view. */
+.loginBox{max-width:410px;padding:24px 30px 22px}
+.cardLogo{width:62px;height:54px;margin-bottom:12px}
+h1{font-size:33px;margin-bottom:10px}
+.subText{font-size:14px;margin-bottom:20px}
+.field{min-height:48px;margin-bottom:14px}
+.field .textBox{padding:12px 0;font-size:14px}
+.optionsRow{margin-bottom:16px}
+.loginButton{min-height:48px;font-size:15px}
+.cardFooter{margin-top:18px;font-size:11px}
+@media(min-width:1500px){.loginBox{max-width:430px;padding:28px 34px 24px}}
+@media(max-width:600px){
+ .loginBox{max-width:370px;padding:24px 22px 20px}
+ .cardLogo{width:58px;height:50px}
+ h1{font-size:30px}
+ .subText{margin-bottom:20px}
+}
+
+/* Fit laptop-height windows without hiding content or disabling scrolling. */
+@media(max-height:800px) and (min-width:601px){
+ .topBar{padding-block:14px}
+ .topLogo img{width:190px}
+ .topLogo{padding:8px 12px}
+ .page{padding-block:8px 16px;min-height:0}
+ .loginBox{max-width:390px;padding:20px 28px 18px}
+ .cardLogo{width:50px;height:44px;margin-bottom:8px}
+ h1{font-size:30px;margin-bottom:8px}
+ .subText{font-size:14px;line-height:1.5;margin-bottom:16px}
+ .formFields label{font-size:13px;margin-bottom:6px}
+ .field{min-height:44px;margin-bottom:12px}
+ .field .textBox{padding-block:10px}
+ .optionsRow{margin-bottom:12px}
+ .forgotLink{min-height:30px;font-size:13px}
+ .loginButton{min-height:46px}
+ .cardFooter{margin-top:14px}
+ .pageFooter{padding-bottom:10px;font-size:11px}
+}
+@media(max-height:650px){
+ .topBar{padding-block:10px}
+ .topLogo img{width:160px}
+ .page{padding-block:6px 12px}
+ .loginBox{padding-block:16px}
+ .cardLogo{width:42px;height:36px;margin-bottom:6px}
+ h1{font-size:28px;margin-bottom:6px}
+ .subText{margin-bottom:12px;font-size:13px}
+ .field{margin-bottom:10px}
+ .cardFooter{margin-top:10px}
+}
+
+/* Frosted glass treatment from the supplied login reference. */
+.loginBox{
+ background:rgba(255,255,255,.42);
+ backdrop-filter:blur(22px) saturate(150%);
+ -webkit-backdrop-filter:blur(22px) saturate(150%);
+ box-shadow:0 22px 60px rgba(8,31,48,.25),inset 0 0 0 1px rgba(255,255,255,.72),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.field{background:rgba(255,255,255,.78);border-color:rgba(255,255,255,.82)}
+.field:hover{background:rgba(255,255,255,.9)}
+.field:focus-within{background:var(--paper);border-color:var(--navy)}
+.subText,.cardFooter{color:#233f53}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.loginBox{background:rgba(255,255,255,.94)}}

@@ -1,859 +1,98 @@
-﻿
-<%@ Page Language="C#" AutoEventWireup="true"
+<%@ Page Title="Student Progress Monitor | UIMS" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true"
     CodeBehind="StudentProgress.aspx.cs"
-    Inherits="AcademicSupervisor.StudentProgress" %>
-
-<!DOCTYPE html>
-<html lang="en">
-<head runat="server">
-    <meta charset="utf-8" />
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1" />
-
-    <title>Student Progress Monitor | UIMS</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-          rel="stylesheet" />
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-          rel="stylesheet" />
-
-    <style>
-        :root {
-            --navy: #102544;
-            --blue: #2563eb;
-            --blue-dark: #1748ad;
-            --bg: #f3f6fc;
-            --border: #e3ebf6;
-            --muted: #75849d;
-            --text: #19304f;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: 'Inter', Arial, sans-serif;
-            font-size: 13px;
-            color: var(--text);
-            background: var(--bg);
-        }
-
-        button, input, select {
-            font: inherit;
-        }
-
-        .layout {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* SIDEBAR */
-
-        .sidebar {
-            width: 270px;
-            min-width: 270px;
-            background: linear-gradient(180deg, #102544, #0b1d38);
-            padding: 30px 18px;
-            color: white;
-        }
-
-        .brand {
-            padding: 0 10px;
-            margin-bottom: 55px;
-            font-size: 26px;
-            font-weight: 800;
-        }
-
-        .brand small {
-            display: block;
-            margin-top: 7px;
-            color: #a8c5ef;
-            font-size: 10px;
-            font-weight: 500;
-            letter-spacing: 1.1px;
-        }
-
-        .nav-title {
-            margin: 25px 12px 15px;
-            color: #94b2dc;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 13px;
-            padding: 15px;
-            margin-bottom: 7px;
-            color: #dce9ff;
-            text-decoration: none;
-            border-radius: 11px;
-            font-size: 12px;
-            transition: .2s;
-        }
-
-        .nav-link i {
-            font-size: 17px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .nav-link:hover {
-            color: white;
-            background: rgba(255,255,255,.1);
-        }
-
-        .nav-link.active {
-            background: linear-gradient(110deg, #2869e8, #2053b8);
-            color: white;
-            font-weight: 700;
-        }
-
-        .sidebar-divider {
-            height: 1px;
-            margin: 25px 10px;
-            background: rgba(255,255,255,.12);
-        }
-
-        /* MAIN */
-
-        .main {
-            display: flex;
-            flex: 1;
-            flex-direction: column;
-            min-width: 0;
-        }
-
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            min-height: 75px;
-            padding: 0 36px;
-            background: white;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .topbar strong {
-            font-size: 13px;
-        }
-
-        .user-chip {
-            display: flex;
-            align-items: center;
-            gap: 9px;
-            padding: 10px 15px;
-            background: #edf4ff;
-            border-radius: 30px;
-            color: #2355ae;
-            font-size: 11px;
-        }
-
-        .content {
-            flex: 1;
-            width: 100%;
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 36px;
-        }
-
-        .eyebrow {
-            color: var(--blue);
-            font-size: 10px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        h1 {
-            margin: 13px 0;
-            font-size: 34px;
-            letter-spacing: -1px;
-            color: var(--navy);
-        }
-
-        .subtitle {
-            margin-bottom: 29px;
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.8;
-        }
-
-        /* STATISTICS */
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 18px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            display: block;
-            width: 100%;
-            min-height: 155px;
-            padding: 24px;
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            background: white;
-            box-shadow: 0 8px 24px rgba(16,37,68,.04);
-            text-align: left;
-            color: inherit;
-            text-decoration: none;
-            transition: .2s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 30px rgba(16,37,68,.08);
-        }
-
-        .stat-card.clickable {
-            cursor: pointer;
-        }
-
-        .stat-card.selected {
-            border: 2px solid var(--blue);
-            background: #f6f9ff;
-        }
-
-        .stat-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .stat-label {
-            color: #60728e;
-            font-weight: 700;
-            font-size: 12px;
-        }
-
-        .stat-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            font-size: 20px;
-        }
-
-        .icon-blue {
-            background: #e8f1ff;
-            color: #2563eb;
-        }
-
-        .icon-green {
-            background: #dcfce9;
-            color: #059669;
-        }
-
-        .icon-orange {
-            background: #fff1d6;
-            color: #e59a10;
-        }
-
-        .stat-number {
-            display: block;
-            margin: 13px 0 6px;
-            color: var(--navy);
-            font-size: 34px;
-            font-weight: 800;
-        }
-
-        .stat-note {
-            color: #8795aa;
-            font-size: 11px;
-        }
-
-        /* PANEL */
-
-        .panel {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: 19px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 8px 25px rgba(16,37,68,.035);
-        }
-
-        .panel-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .panel h2 {
-            margin: 0 0 9px;
-            font-size: 18px;
-            color: var(--navy);
-        }
-
-        .muted {
-            font-size: 11px;
-            color: var(--muted);
-        }
-
-        /* FILTER */
-
-        .filters {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: end;
-            gap: 10px;
-        }
-
-        .filter-field {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .filter-field label {
-            font-size: 11px;
-            color: #536986;
-            font-weight: 700;
-        }
-
-        .input {
-            width: 230px;
-            max-width: 100%;
-            height: 44px;
-            padding: 0 13px;
-            border: 1px solid #d7e2f0;
-            border-radius: 10px;
-            outline: none;
-            background: #fbfcff;
-            color: #293f60;
-        }
-
-        .input:focus {
-            border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            min-height: 43px;
-            padding: 10px 16px;
-            border: 1px solid var(--blue);
-            border-radius: 10px;
-            background: var(--blue);
-            color: white;
-            text-decoration: none;
-            font-size: 11px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background: var(--blue-dark);
-        }
-
-        .btn-light {
-            background: #eef4ff;
-            color: #2458b5;
-            border-color: #e3ecfc;
-        }
-
-        .btn-light:hover {
-            background: #e2edff;
-            color: #1748ad;
-        }
-
-        .btn-small {
-            min-height: 35px;
-            padding: 8px 12px;
-            font-size: 10px;
-        }
-
-        /* TABLE */
-
-        .table-wrap {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        .table {
-            width: 100%;
-            min-width: 980px;
-            border-collapse: collapse;
-            font-size: 11px;
-        }
-
-        .table th {
-            padding: 17px 13px;
-            background: #f2f6fc;
-            color: #61748f;
-            text-align: left;
-            text-transform: uppercase;
-            font-size: 9px;
-            letter-spacing: .5px;
-            white-space: nowrap;
-        }
-
-        .table td {
-            padding: 16px 13px;
-            border-bottom: 1px solid #edf2f9;
-            vertical-align: middle;
-        }
-
-        .table tbody tr:hover {
-            background: #f8fbff;
-        }
-
-        .student-cell {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            font-weight: 700;
-        }
-
-        .avatar {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 37px;
-            height: 37px;
-            border-radius: 50%;
-            background: #e8f1ff;
-            color: #215bc7;
-            font-size: 11px;
-            font-weight: 800;
-        }
-
-        .progress-flex {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .progress-bar {
-            width: 110px;
-            height: 9px;
-            border-radius: 30px;
-            background: #e7edf6;
-            overflow: hidden;
-        }
-
-        .progress-bar span {
-            display: block;
-            height: 100%;
-            background: linear-gradient(90deg, #2563eb, #60a5fa);
-            border-radius: 30px;
-        }
-
-        .status {
-            display: inline-flex;
-            align-items: center;
-            padding: 8px 12px;
-            border-radius: 30px;
-            font-size: 10px;
-            font-weight: 800;
-            white-space: nowrap;
-        }
-
-        .status.ontrack,
-        .status.completed {
-            background: #dcfce9;
-            color: #047857;
-        }
-
-        .status.atrisk,
-        .status.failed {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
-        .status.pending,
-        .status.assigned {
-            background: #fff1d6;
-            color: #a16207;
-        }
-
-        .status.submitted {
-            background: #e8f1ff;
-            color: #2458b5;
-        }
-
-        .action-cell {
-            white-space: nowrap;
-        }
-
-        .action-cell .btn {
-            margin: 2px;
-        }
-
-        /* MODAL */
-
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: rgba(15,23,42,.55);
-            backdrop-filter: blur(5px);
-        }
-
-        .modal-box {
-            display: flex;
-            flex-direction: column;
-            width: min(900px, 96vw);
-            max-height: 86vh;
-            background: white;
-            border-radius: 22px;
-            overflow: hidden;
-            box-shadow: 0 25px 75px rgba(0,0,0,.22);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 15px;
-            padding: 27px 32px 20px;
-            border-bottom: 1px solid #edf2fa;
-        }
-
-        .modal-header h2 {
-            margin: 0 0 8px;
-            font-size: 23px;
-        }
-
-        .modal-header p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .modal-close {
-            border: 0;
-            width: 41px;
-            height: 41px;
-            border-radius: 12px;
-            background: #f0f4fa;
-            color: #58708f;
-            cursor: pointer;
-            font-size: 17px;
-        }
-
-        .modal-body {
-            padding: 26px 32px;
-            overflow-y: auto;
-            min-height: 0;
-        }
-
-        .modal-footer {
-            padding: 18px 32px;
-            display: flex;
-            justify-content: flex-end;
-            border-top: 1px solid #edf2fa;
-            background: #fcfdff;
-        }
-
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 13px;
-            margin-bottom: 27px;
-        }
-
-        .summary-card {
-            padding: 17px;
-            background: #f2f6fc;
-            border-radius: 13px;
-            border: 1px solid #e8eff9;
-        }
-
-        .summary-card small {
-            display: block;
-            color: #8392a9;
-            font-size: 10px;
-            margin-bottom: 9px;
-        }
-
-        .summary-card strong {
-            font-size: 12px;
-            color: #223a5b;
-        }
-
-        .section-heading {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .section-heading h3 {
-            margin: 0;
-            font-size: 14px;
-        }
-
-        /* TASK DETAILS */
-
-        .task-card {
-            padding: 21px;
-            border: 1px solid #e3ebf6;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            background: white;
-            box-shadow: 0 4px 13px rgba(16,37,68,.035);
-        }
-
-        .task-head {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            align-items: flex-start;
-            margin-bottom: 10px;
-        }
-
-        .task-title {
-            font-weight: 800;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .task-description {
-            font-size: 12px;
-            color: #72839d;
-            line-height: 1.8;
-            margin-bottom: 13px;
-        }
-
-        .task-date {
-            font-size: 11px;
-            color: #8a99b0;
-        }
-
-        .submission-box {
-            margin-top: 18px;
-            padding: 18px;
-            border: 1px solid #dfe9f8;
-            background: #f6f9fe;
-            border-radius: 12px;
-        }
-
-        .submission-box h4 {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            margin: 0 0 15px;
-            font-size: 13px;
-            color: #1d3b66;
-        }
-
-        .detail-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 15px;
-        }
-
-        .detail-item small {
-            display: block;
-            margin-bottom: 7px;
-            color: #8292aa;
-            font-size: 10px;
-        }
-
-        .detail-item strong {
-            display: block;
-            color: #273c5d;
-            font-size: 12px;
-            font-weight: 600;
-            overflow-wrap: anywhere;
-        }
-
-        .feedback-box {
-            margin-top: 15px;
-            padding: 14px;
-            background: white;
-            border-left: 3px solid var(--blue);
-            border-radius: 9px;
-            font-size: 12px;
-            line-height: 1.8;
-            color: #536782;
-            overflow-wrap: anywhere;
-        }
-
-        .evaluation-card {
-            border: 1px solid #e2eafa;
-            border-radius: 14px;
-            padding: 23px;
-            background: #f7faff;
-        }
-
-        .evaluation-card h3 {
-            margin: 0 0 12px;
-            font-size: 17px;
-        }
-
-        .evaluation-card p {
-            color: #62748e;
-            font-size: 12px;
-            line-height: 1.9;
-        }
-
-        .empty-state {
-            padding: 28px;
-            text-align: center;
-            color: var(--muted);
-            border: 1px dashed #dce6f4;
-            border-radius: 12px;
-            background: #f8faff;
-        }
-
-        .footer {
-            padding: 18px;
-            background: white;
-            text-align: center;
-            font-size: 10px;
-            color: #8391a7;
-        }
-
-        .filter-surface { position: relative; }
-        .stat-card-hit {
-            position: absolute; inset: 0; z-index: 2;
-            width: 100%; height: 100%; opacity: 0;
-            cursor: pointer; border: 0;
-        }
-        .stat-card-hit:focus-visible { opacity: .12; outline: 3px solid #2563eb; }
-        .filter-surface:has(.stat-card-hit.selected) { border: 2px solid #2563eb; background: #f6f9ff; }
-        .error-banner { display: block; padding: 15px; margin-bottom: 20px; color: #9b1c1c; background: #fff0f0; border-radius: 10px; }
-        @media (max-width: 1150px) {
-            .cards {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 800px) {
-            .layout {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                min-width: 0;
-            }
-
-            .topbar {
-                padding: 15px;
-            }
-
-            .content {
-                padding: 22px 15px;
-            }
-
-            .summary-grid,
-            .detail-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .modal-header,
-            .modal-body,
-            .modal-footer {
-                padding-left: 18px;
-                padding-right: 18px;
-            }
-
-            .panel {
-                padding: 18px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-<form id="form1" runat="server">
-
-<div class="layout">
+    Inherits="PSUTInternship.Academic.StudentProgress" %>
+
+<asp:Content ID="PageHead" ContentPlaceHolderID="PortalHead" runat="server">
+<style>
+/* Scoped to academic progress; the portal shell owns typography and navigation. */
+body.portal-app .portal-content .academic-progress{max-width:1320px;margin:0 auto;color:#19394f}
+body.portal-app .portal-content .academic-progress h1{font-size:27px!important;letter-spacing:-.035em;margin:0 0 8px!important;line-height:1.3!important}
+body.portal-app .portal-content .academic-progress h2{font-size:17px!important;margin:0 0 6px!important}
+body.portal-app .portal-content .academic-progress .subtitle{font-size:13px!important;color:#607587;margin:0!important;line-height:1.7;font-weight:400!important}
+.academic-progress .ap-heading{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:24px}.academic-progress .ap-supervisor{color:#607587;font-size:12px;border:1px solid #dce6ed;border-radius:7px;padding:9px 12px;background:#fff}
+body.portal-app .portal-content .academic-progress .cards{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:0!important;border:1px solid #dce6ed;border-radius:12px;background:#fff;padding:20px 0;margin:0 0 24px!important}
+body.portal-app .portal-content .academic-progress .stat-card{position:relative;border:0!important;border-right:1px solid #e3ebf0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;padding:0 24px!important;min-height:0!important;grid-column:auto!important;transform:none!important;margin:0!important;outline:0!important}.academic-progress .stat-card:last-child{border-right:0!important}
+body.portal-app .portal-content .academic-progress .stat-label{font-size:12px!important;color:#607587;font-weight:600!important}.academic-progress .stat-top{display:block}.academic-progress .stat-icon{display:none!important}
+body.portal-app .portal-content .academic-progress .stat-number{display:block;font-size:30px!important;font-weight:700!important;color:#003e73!important;line-height:1.4!important;margin:6px 0!important;letter-spacing:-.025em}.academic-progress .stat-note{font-size:11px;color:#607587}
+body.portal-app .portal-content .academic-progress .stat-card-hit{position:absolute;inset:0;opacity:0;cursor:pointer;border:0!important;width:100%;height:100%}.academic-progress .stat-card:has(.stat-card-hit.selected){background:#eef6fb!important}.academic-progress .stat-card:has(.stat-card-hit:focus-visible){outline:2px solid #0078b5!important;outline-offset:3px!important}
+body.portal-app .portal-content .academic-progress .panel{border:1px solid #dce6ed!important;border-radius:12px!important;padding:0!important;box-shadow:none!important;background:#fff;margin:0!important;overflow:hidden}.academic-progress .panel-head{display:flex;flex-direction:column;align-items:stretch;gap:20px;padding:22px;margin:0}.academic-progress .muted{color:#607587;font-size:12px}
+.academic-progress .filters{display:flex;align-items:end;flex-wrap:wrap;gap:10px;padding:16px;background:#f7f9fb;border:1px solid #e5ecf1;border-radius:9px}.academic-progress .filter-field{display:flex;flex-direction:column;gap:7px;min-width:0;flex:0 1 220px}.academic-progress .filter-field:first-child{flex:1 1 260px}.academic-progress .filter-field label{font-size:11px;color:#526b7d;font-weight:600}
+body.portal-app .portal-content .academic-progress .input{height:42px!important;min-height:42px!important;width:100%!important;padding:0 12px!important;border:1px solid #cddce6!important;border-radius:7px!important;background:#fff!important;color:#19394f;font-size:12px!important;margin:0!important}
+body.portal-app .portal-content .academic-progress .btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px!important;padding:10px 16px!important;border:1px solid #003e73!important;border-radius:7px!important;background:#003e73!important;color:#fff!important;font-size:12px!important;font-weight:650!important;text-decoration:none;margin:0!important;cursor:pointer;line-height:1.4!important;box-shadow:none!important}.academic-progress .btn:hover{filter:brightness(.94)}
+body.portal-app .portal-content .academic-progress .btn-light{background:#fff!important;color:#003e73!important;border-color:#cddce6!important}.academic-progress :is(a,button,input,select,summary):focus-visible{outline:2px solid #0078b5!important;outline-offset:3px}
+.academic-progress .table-wrap{overflow-x:auto;width:100%}body.portal-app .portal-content .academic-progress .table{width:100%;min-width:850px;border-collapse:collapse!important;border:0!important;margin:0!important;text-align:left!important}.academic-progress .table th{padding:13px 22px!important;background:#fafcfd!important;font-size:11px!important;font-weight:600!important;color:#607587!important;text-transform:none!important;letter-spacing:0!important;text-align:left!important;border-top:1px solid #e5ecf1!important;border-bottom:1px solid #e5ecf1!important}.academic-progress .table td{padding:17px 22px!important;font-size:12px!important;line-height:1.6!important;border:0!important;border-bottom:1px solid #e9eff3!important;text-align:left!important;vertical-align:middle!important;background:#fff!important}.academic-progress .table tr:last-child td{border-bottom:0!important}
+.academic-progress .student-cell{display:flex;align-items:center;gap:10px;font-weight:650}.academic-progress .avatar{display:grid;place-items:center;width:34px;height:34px;flex-shrink:0;border-radius:50%;background:#e9f3f9;color:#245f84;font-size:11px}.academic-progress .student-id{display:block;font-size:10px;color:#607587;font-weight:400}.academic-progress .progress-flex{display:flex;align-items:center;gap:9px}.academic-progress .progress-bar{height:5px;width:80px;background:#e6edf2;border-radius:3px;overflow:hidden}.academic-progress .progress-bar span{display:block;height:100%;background:#0078b5!important}.academic-progress .hours-note{display:block;font-size:11px;color:#607587;margin-top:5px}.academic-progress .action-cell{display:flex;gap:7px;align-items:center}
+body.portal-app .portal-content .academic-progress .action-cell .btn{min-height:34px!important;padding:7px 10px!important;font-size:11px!important;white-space:nowrap}
+body.portal-app .portal-content .academic-progress .status{display:inline-block;padding:5px 9px!important;border-radius:5px!important;white-space:nowrap;font-size:11px!important;font-weight:600!important;background:#f0f3f6;color:#526b7d}.academic-progress .status.ontrack,.academic-progress .status.completed{background:#eaf5ef!important;color:#23714d!important}.academic-progress .status.atrisk,.academic-progress .status.failed{background:#fbeeee!important;color:#a74646!important}.academic-progress .status.pending,.academic-progress .status.assigned{background:#fff6df!important;color:#8a651c!important}.academic-progress .status.submitted{background:#eaf3fa!important;color:#24628c!important}
+.academic-progress .error-banner{display:block;padding:16px;margin-bottom:20px;border:1px solid #edcccc;color:#9b3939;background:#fff4f4;border-radius:8px}
+.academic-progress .modal-overlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,30,48,.5)}
+body.portal-app .portal-content .academic-progress .modal-box{width:min(860px,calc(100vw - 40px))!important;max-height:88dvh!important;display:flex;flex-direction:column;margin:0!important;background:#fff;border-radius:14px!important;overflow:hidden;box-shadow:0 20px 70px #09233c33!important}.academic-progress .modal-header{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid #e3ebf0;padding:22px!important}.academic-progress .modal-header p{font-size:12px!important;color:#607587;margin:0!important}.academic-progress .modal-close{display:grid;place-items:center;flex-shrink:0;width:36px;height:36px;border-radius:50%;background:#f3f6f8;color:#526b7d;text-decoration:none;font-size:22px}.academic-progress .modal-body{overflow:auto;min-height:0;padding:22px!important}.academic-progress .modal-footer{display:flex;justify-content:flex-end;padding:16px 22px!important;border-top:1px solid #e3ebf0;background:#fafcfd}
+.academic-progress .summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.academic-progress .summary-card{padding:12px!important;border:1px solid #e3ebf0!important;border-radius:7px!important;background:#fafcfd!important}.academic-progress .detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.academic-progress .detail-item strong{overflow-wrap:anywhere}.academic-progress .section-heading{display:flex;justify-content:space-between;align-items:center}.academic-progress .task-card summary{cursor:pointer;list-style:none}.academic-progress .task-card summary::-webkit-details-marker{display:none}.academic-progress .task-card summary:after{content:'Show submission +';display:block;color:#00598c;font-size:11px;margin-top:12px}.academic-progress .task-card[open] summary:after{content:'Hide submission -'}body.portal-app .portal-content .academic-progress .task-description{white-space:normal!important}.academic-progress .task-head{display:flex;justify-content:space-between;gap:16px}.academic-progress .feedback-box{padding:14px;margin-top:16px;border-left:3px solid #0078b5;background:#fff;font-size:12px;color:#526777;line-height:1.7;overflow-wrap:anywhere}.academic-progress .evaluation-card{padding:18px;border:1px solid #e3ebf0;border-radius:8px}.academic-progress .evaluation-card p{font-size:13px!important;line-height:1.7;color:#607587}.academic-progress .empty-state{padding:25px;text-align:center;color:#607587}
+@media(max-width:700px){.academic-progress .ap-heading{flex-direction:column;align-items:flex-start;gap:12px}.academic-progress .ap-supervisor{display:none}.academic-progress .cards{padding:14px 0!important}.academic-progress .stat-card{padding:0 12px!important}.academic-progress .stat-note{display:none}.academic-progress .stat-label{font-size:11px!important}.academic-progress .panel-head{padding:16px;gap:14px}.academic-progress .filters{padding:12px;gap:10px}.academic-progress .filter-field:first-child{flex-basis:100%}.academic-progress .filter-field{flex:1 1 130px}.academic-progress .filters>.btn{flex:0 0 auto}.academic-progress .summary-grid{grid-template-columns:1fr!important}.academic-progress .modal-overlay{padding:10px}.academic-progress .task-head{flex-wrap:wrap}}
+
+/* A single toolbar and document-like dialogs replace nested filter and summary cards. */
+body.portal-app .portal-content .academic-progress .ap-toolbar{display:flex;align-items:center;gap:10px;background:#fff!important;padding:0!important;border:0!important;border-radius:0!important;flex-wrap:wrap}
+.academic-progress .ap-search{display:flex;align-items:center;position:relative;flex:1 1 280px;min-width:0}.academic-progress .ap-search svg{position:absolute;left:14px;width:18px;height:18px;color:#6a8191;pointer-events:none;z-index:1}
+body.portal-app .portal-content .academic-progress .ap-search .input{height:46px!important;padding:0 14px 0 42px!important;background:#f7f9fb!important;border-color:#dce6ed!important;border-radius:9px!important;font-size:13px!important;box-shadow:none!important}
+.academic-progress .ap-search:focus-within svg{color:#0078b5}.academic-progress .ap-status-select{display:flex;align-items:center;gap:10px;border:1px solid #dce6ed;border-radius:9px;height:46px;padding-left:14px;min-width:225px;background:#fff}.academic-progress .ap-status-select label{font-size:12px!important;color:#607587;font-weight:500!important;white-space:nowrap}
+body.portal-app .portal-content .academic-progress .ap-status-select .input{width:auto!important;flex:1;min-width:0;height:44px!important;border:0!important;background:transparent!important;padding-left:0!important;font-weight:650!important;box-shadow:none!important;outline-offset:0}
+body.portal-app .portal-content .academic-progress .ap-toolbar>.btn{height:46px!important;border-radius:9px!important;padding:10px 20px!important;min-height:46px!important}.academic-progress .ap-clear{border-color:transparent!important}
+body.portal-app .portal-content .academic-progress .modal-box{border-radius:16px!important;width:min(820px,calc(100vw - 40px))!important}.academic-progress .modal-header{padding:24px 28px!important}.academic-progress .modal-body{padding:0 28px 24px!important}.academic-progress .modal-header{border-bottom:0!important}.academic-progress .modal-header h2{font-size:22px!important;letter-spacing:-.025em}.academic-progress .modal-header p{font-size:13px!important;margin-top:5px!important}.academic-progress .modal-close:hover{background:#e8eff4}
+body.portal-app .portal-content .academic-progress .modal-box .summary-grid{display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:0!important;padding:16px 0!important;margin:0 0 22px!important;border-top:1px solid #e3ebf0;border-bottom:1px solid #e3ebf0}
+body.portal-app .portal-content .academic-progress .modal-box .summary-card{padding:0 16px!important;border:0!important;border-right:1px solid #e3ebf0!important;border-radius:0!important;background:transparent!important}.academic-progress .modal-box .summary-card:first-child{padding-left:0!important}.academic-progress .modal-box .summary-card:last-child{border-right:0!important}
+body.portal-app .portal-content .academic-progress .modal-box .summary-card strong{font-size:12px!important;line-height:1.6!important}.academic-progress .modal-box .summary-card small{font-size:10px!important;margin-bottom:5px!important}
+body.portal-app .portal-content .academic-progress .modal-box .task-card{border:1px solid #dce6ed!important;border-radius:9px!important;padding:0!important;margin:0 0 12px!important;overflow:hidden}.academic-progress .task-card summary{padding:16px 18px;position:relative}.academic-progress .task-card summary:after{position:absolute;right:18px;bottom:16px;content:'+';font-size:19px;line-height:1;margin:0}.academic-progress .task-card[open] summary:after{content:'-'}
+body.portal-app .portal-content .academic-progress .modal-box .task-head{align-items:flex-start;gap:14px;flex-wrap:nowrap}.academic-progress .task-head>div{flex:1;min-width:0}.academic-progress .task-card .task-title{padding-right:8px}.academic-progress .task-card .task-date{padding-right:24px}.academic-progress .task-card[open] summary{background:#f7fafc;border-bottom:1px solid #e3ebf0}.academic-progress .ap-task-content{padding:18px}.academic-progress .ap-task-content .task-description{margin:0 0 16px!important;font-size:13px!important}
+body.portal-app .portal-content .academic-progress .modal-box .submission-box{border:0!important;background:#fff!important;padding:0!important;margin:0!important}.academic-progress .submission-box h4{margin:0 0 16px!important}.academic-progress .modal-box .detail-grid{grid-template-columns:1fr 1fr!important;gap:18px!important}.academic-progress .detail-item a{display:inline-block;color:#006799;font-size:12px;margin-left:5px}.academic-progress .modal-box .detail-item strong{font-size:12px!important;font-weight:500!important}.academic-progress .feedback-box{border:0!important;border-top:1px solid #e3ebf0!important;padding:16px 0 0!important;background:#fff!important}.academic-progress .feedback-box p{margin:0 0 10px!important;font-size:12px!important}
+body.portal-app .portal-content .academic-progress .ap-evaluation-dialog{width:min(660px,calc(100vw - 40px))!important}.academic-progress .evaluation-card{border:1px solid #dce6ed;border-radius:10px;padding:22px;background:#f8fafb}.academic-progress .ap-result-heading{display:flex;justify-content:space-between;align-items:center;gap:16px}.academic-progress .ap-result-heading>span:first-child{font-size:12px;color:#607587}
+body.portal-app .portal-content .academic-progress .ap-result-value{display:block;font-size:34px!important;letter-spacing:-.04em;font-weight:700!important;margin:14px 0!important;line-height:1.3;color:#19394f}.academic-progress .ap-evaluation-date{display:flex;gap:8px;font-size:11px;color:#607587}.academic-progress .ap-evaluation-feedback{padding:24px 0 0}.academic-progress .ap-evaluation-feedback h3{font-size:14px!important;margin:0 0 10px!important}.academic-progress .ap-evaluation-feedback p{font-size:13px!important;font-weight:400!important;line-height:1.8!important;color:#526b7d;white-space:pre-line;overflow-wrap:anywhere;margin:0!important}
+@media(max-width:650px){.academic-progress .ap-search{flex-basis:100%}.academic-progress .ap-status-select{flex:1 1 160px;min-width:0}.academic-progress .ap-status-select label{display:none}.academic-progress .ap-status-select .input{padding-left:12px!important}.academic-progress .ap-toolbar>.btn{padding:10px 14px!important}.academic-progress .ap-clear{padding-inline:7px!important}.academic-progress .modal-header{padding:20px!important}.academic-progress .modal-body{padding:0 20px 20px!important}.academic-progress .modal-header h2{font-size:20px!important}body.portal-app .portal-content .academic-progress .modal-box .summary-grid{grid-template-columns:minmax(0,1fr)!important;padding:10px 0!important;gap:12px!important}body.portal-app .portal-content .academic-progress .modal-box .summary-card{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0!important;border:0!important}.academic-progress .modal-box .summary-card small{margin:0!important}.academic-progress .modal-box .summary-card strong{text-align:right}.academic-progress .task-card summary{padding:14px}.academic-progress .task-card .task-head{flex-wrap:wrap!important}body.portal-app .portal-content .academic-progress .modal-box .detail-grid{grid-template-columns:minmax(0,1fr)!important}.academic-progress .evaluation-card{padding:18px}.academic-progress .ap-result-value{font-size:30px!important}}
+
+/* Unique names prevent the portal's generic panel and filter rules from reshaping this toolbar. */
+body.portal-app .portal-content .academic-progress .ap-student-panel{background:#fff!important;border:1px solid #dce6ed;border-radius:12px;overflow:hidden}
+body.portal-app .portal-content .academic-progress .ap-list-header{display:block!important;text-align:left!important;padding:24px!important;background:#fff!important;margin:0!important;width:100%!important;box-sizing:border-box}
+body.portal-app .portal-content .academic-progress .ap-list-header>div:first-child{margin:0 0 20px!important;text-align:left!important}
+body.portal-app .portal-content .academic-progress .ap-toolbar{display:grid!important;grid-template-columns:minmax(220px,1fr) 235px 100px 60px!important;gap:12px!important;align-items:center!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;background:transparent!important;border:0!important;box-sizing:border-box}
+body.portal-app .portal-content .academic-progress .ap-toolbar .ap-search{width:100%!important;margin:0!important;min-width:0!important;position:relative;display:flex;align-items:center}
+body.portal-app .portal-content .academic-progress .ap-search-input{display:block!important;box-sizing:border-box!important;width:100%!important;max-width:none!important;min-width:0!important;height:46px!important;min-height:46px!important;border:1px solid #d6e1e9!important;border-radius:8px!important;background:#f8fafb!important;padding:0 14px 0 43px!important;font-size:13px!important;font-weight:400!important;color:#19394f!important;box-shadow:none!important;margin:0!important}
+body.portal-app .portal-content .academic-progress .ap-search-input::placeholder{color:#718593!important;opacity:1}
+body.portal-app .portal-content .academic-progress .ap-status-select{display:flex!important;align-items:center!important;height:46px!important;min-width:0!important;width:100%!important;box-sizing:border-box!important;border:1px solid #d6e1e9!important;border-radius:8px!important;padding:0 12px!important;background:#fff!important;gap:12px!important;margin:0!important}
+body.portal-app .portal-content .academic-progress .ap-status-input{display:block!important;flex:1!important;width:100%!important;max-width:none!important;min-width:0!important;height:42px!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;font-size:13px!important;font-weight:500!important;color:#19394f!important}
+body.portal-app .portal-content .academic-progress .ap-toolbar>.btn{width:100%!important;max-width:none!important;margin:0!important;height:46px!important;min-height:46px!important;padding:10px 12px!important;font-size:12px!important;font-weight:600!important;border-radius:8px!important;box-sizing:border-box!important}
+body.portal-app .portal-content .academic-progress .ap-toolbar>.ap-clear{background:transparent!important;border-color:transparent!important;color:#607587!important;text-decoration:underline;text-underline-offset:3px;padding:0!important}
+body.portal-app .portal-content .academic-progress .ap-search-input:focus{border-color:#0078b5!important;outline:2px solid #0078b522!important;outline-offset:1px!important}
+@media(max-width:1000px){body.portal-app .portal-content .academic-progress .ap-toolbar{grid-template-columns:minmax(180px,1fr) 200px 85px 50px!important;gap:8px!important}}
+@media(max-width:700px){body.portal-app .portal-content .academic-progress .ap-list-header{padding:18px!important}body.portal-app .portal-content .academic-progress .ap-toolbar{grid-template-columns:minmax(0,1fr) 85px 45px!important;gap:10px 8px!important}body.portal-app .portal-content .academic-progress .ap-toolbar .ap-search{grid-column:1/-1!important}body.portal-app .portal-content .academic-progress .ap-status-select label{display:none!important}}
+
+/* One boundary for the status control, with no nested field frame. */
+body.portal-app .portal-content .academic-progress .ap-toolbar .ap-status-select{border:0!important;padding:0!important;background:transparent!important;border-radius:0!important;height:46px!important}
+body.portal-app .portal-content .academic-progress .ap-toolbar .ap-status-input{appearance:none!important;-webkit-appearance:none!important;box-sizing:border-box!important;height:46px!important;min-height:46px!important;border:1px solid #d6e1e9!important;border-radius:8px!important;padding:0 38px 0 14px!important;background-color:#fff!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23607587' stroke-width='1.6' viewBox='0 0 24 24'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E")!important;background-repeat:no-repeat!important;background-position:right 13px center!important;box-shadow:none!important;font-size:13px!important;font-weight:500!important;cursor:pointer}
+body.portal-app .portal-content .academic-progress .ap-toolbar .ap-status-input:hover{border-color:#9fb8ca!important}
+body.portal-app .portal-content .academic-progress .ap-toolbar .ap-status-input:focus-visible{border-color:#0078b5!important;outline:2px solid #0078b526!important;outline-offset:1px!important}
+
+body.portal-app .portal-content .academic-progress .action-cell .btn{display:inline-flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;height:40px!important;min-height:40px!important;padding:0 14px!important;line-height:1!important;vertical-align:middle!important;gap:0!important}
+body.portal-app .portal-content .academic-progress .action-cell .btn i{display:none!important}
+</style>
+</asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<div class="academic-progress">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
 
-        <div class="brand">
-            UIMS
-            <small>INTERNSHIP MANAGEMENT</small>
-        </div>
-
-        <div class="nav-title">Academic Supervisor</div>
-
-        <a class="nav-link" href="Dashboard.aspx">
-            <i class="bi bi-grid-1x2"></i>
-            Dashboard
-        </a>
-
-        <a class="nav-link active" href="StudentProgress.aspx">
-            <i class="bi bi-pie-chart"></i>
-            Student Progress
-        </a>
-
-        <a class="nav-link" href="FinalEvaluation.aspx">
-            <i class="bi bi-check2-circle"></i>
-            Final Evaluation
-        </a>
-
-        <a class="nav-link" href="ZommMeetings.html">
-            <i class="bi bi-camera-video"></i>
-            Zoom Meetings
-        </a>
-
-        <a class="nav-link" href="Account.aspx">
-            <i class="bi bi-person"></i>
-            My Account
-        </a>
-
-        <div class="sidebar-divider"></div>
-
-        <div class="nav-title">General</div>
-
-        <a class="nav-link" href="Default.aspx">
-            <i class="bi bi-arrow-return-left"></i>
-            Back to Home
-        </a>
-
-    </aside>
 
     <!-- MAIN -->
-    <main class="main">
+    <div class="ap-main">
 
-        <header class="topbar">
-            <strong>Academic Supervisor Portal</strong>
 
-            <div class="user-chip">
-                <i class="bi bi-circle-fill"></i>
-                <asp:Label ID="lblSupervisorName" runat="server" />
-            </div>
-        </header>
 
-        <section class="content">
+        <section class="ap-content">
             <asp:Label ID="lblPageError" runat="server" Visible="false" CssClass="error-banner" />
 
-            <div class="eyebrow">Student Monitoring</div>
+            <header class="ap-heading"><div>
 
-            <h1>Student Progress Monitor</h1>
+            <h1>Student progress</h1>
 
-            <p class="subtitle">
-                Monitor assigned students, training companies,
-                task submissions, academic evaluations,
-                training hours and progress.
-            </p>
+<p class="subtitle">Follow student training and review the latest submissions.</p></div><span class="ap-supervisor"><asp:Label ID="lblSupervisorName" runat="server" /></span></header>
 
             <!-- STATISTICS -->
             <div class="cards">
@@ -926,75 +165,27 @@
             </div>
 
             <!-- MONITORING PANEL -->
-            <div class="panel">
+            <div class="ap-student-panel">
 
-                <div class="panel-head">
+                <div class="ap-list-header">
 
                     <div>
-                        <h2>Student Internship Monitoring</h2>
+                        <h2>Assigned students</h2>
 
                         <div class="muted">
                             Review your assigned students and their progress
                         </div>
                     </div>
 
-                    <div class="filters">
-
-                        <div class="filter-field">
-                            <label>Search</label>
-
-                            <asp:TextBox
-                                ID="txtSearch"
-                                runat="server"
-                                CssClass="input"
-                                placeholder="Student, ID or company" />
+                    <div class="ap-toolbar">
+                        <div class="ap-search">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg>
+                            <asp:TextBox ID="txtSearch" runat="server" CssClass="ap-search-input" placeholder="Search student, ID or company" aria-label="Search student, ID or company" />
                         </div>
-
-                        <div class="filter-field">
-                            <label>Progress Status</label>
-
-                            <asp:DropDownList
-                                ID="ddlStatus"
-                                runat="server"
-                                CssClass="input">
-
-                                <asp:ListItem Value="All">
-                                    All
-                                </asp:ListItem>
-
-                                <asp:ListItem Value="On Track">
-                                    On Track
-                                </asp:ListItem>
-
-                                <asp:ListItem Value="At Risk">
-                                    At Risk
-                                </asp:ListItem>
-
-                                <asp:ListItem Value="Not Started">Not Started</asp:ListItem>
-
-                                <asp:ListItem Value="Completed">
-                                    Completed
-                                </asp:ListItem>
-
-                            </asp:DropDownList>
-                        </div>
-
-                        <asp:Button
-                            ID="btnFilter"
-                            runat="server"
-                            Text="Filter"
-                            CssClass="btn"
-                            OnClick="btnFilter_Click" />
-
-                        <asp:Button
-                            ID="btnReset"
-                            runat="server"
-                            Text="Reset"
-                            CssClass="btn btn-light"
-                            OnClick="btnReset_Click" />
-
+                        <div class="ap-status-select"><asp:DropDownList ID="ddlStatus" runat="server" CssClass="ap-status-input" aria-label="Filter students by progress status"><asp:ListItem Value="All">All students</asp:ListItem><asp:ListItem Value="On Track">On track</asp:ListItem><asp:ListItem Value="At Risk">Needs attention</asp:ListItem><asp:ListItem Value="Awaiting Certificate">Awaiting certificate</asp:ListItem><asp:ListItem Value="Not Started">Not started</asp:ListItem><asp:ListItem Value="Completed">Completed</asp:ListItem></asp:DropDownList></div>
+                        <asp:Button ID="btnFilter" runat="server" Text="Search" CssClass="btn ap-search-submit" OnClick="btnFilter_Click" />
+                        <asp:Button ID="btnReset" runat="server" Text="Clear" CssClass="btn btn-light ap-clear" OnClick="btnReset_Click" />
                     </div>
-
                 </div>
 
                 <!-- STUDENTS TABLE -->
@@ -1038,14 +229,7 @@
                                 </ItemTemplate>
                             </asp:TemplateField>
 
-                            <asp:TemplateField HeaderText="Training Hours">
-                                <ItemTemplate>
-                                    <%#: Eval("ApprovedHours") %> /
-                                    <%#: Eval("RequiredHours") %> hrs
-                                </ItemTemplate>
-                            </asp:TemplateField>
-
-                            <asp:TemplateField HeaderText="Progress">
+                            <asp:TemplateField HeaderText="Training progress">
                                 <ItemTemplate>
 
                                     <div class="progress-flex">
@@ -1059,7 +243,7 @@
                                             </span>
                                         </div>
 
-                                    </div>
+                                    </div><span class="hours-note"><%#: Eval("ApprovedHours") %> / <%#: Eval("RequiredHours") %> approved hours</span>
 
                                 </ItemTemplate>
                             </asp:TemplateField>
@@ -1088,7 +272,7 @@
                                             OnCommand="btnTasks_Command">
 
                                             <i class="bi bi-list-task"></i>
-                                            View Tasks
+                                            Tasks
 
                                         </asp:LinkButton>
 
@@ -1101,7 +285,7 @@
                                             OnCommand="btnEvaluation_Command">
 
                                             <i class="bi bi-clipboard-check"></i>
-                                            View Evaluation
+                                            Evaluation
 
                                         </asp:LinkButton>
 
@@ -1120,15 +304,13 @@
 
         </section>
 
-        <footer class="footer">
-            University Internship Management System
-            · Academic Supervisor
-        </footer>
 
-    </main>
+
+    </div>
 
 </div>
 
+<div class="academic-progress">
 <!-- TASKS MODAL -->
 <asp:Panel
     ID="pnlTasksModal"
@@ -1136,14 +318,14 @@
     Visible="false"
     CssClass="modal-overlay">
 
-    <div class="modal-box"
+    <div class="modal-box ap-tasks-dialog"
          role="dialog"
          aria-modal="true"
          aria-labelledby="tasksModalTitle">
 
         <div class="modal-header">
             <div>
-                <h2 id="tasksModalTitle">Assigned Tasks</h2>
+                <h2 id="tasksModalTitle">Student tasks</h2>
 
                 <p>
                     <asp:Label ID="lblTaskStudent"
@@ -1158,7 +340,7 @@
                 CausesValidation="false"
                 OnClick="btnCloseModal_Click"
                 aria-label="Close tasks">
-                <i class="bi bi-x-lg"></i>
+                <span aria-hidden="true">&times;</span>
             </asp:LinkButton>
 
         </div>
@@ -1195,7 +377,7 @@
             </div>
 
             <div class="section-heading">
-                <h3>All Assigned Tasks</h3>
+                <h3>Tasks &amp; submissions</h3>
 
                 <strong>
                     <asp:Label ID="lblTasksCount"
@@ -1210,7 +392,7 @@
 
                 <ItemTemplate>
 
-                    <article class="task-card">
+                    <details class="task-card"><summary>
 
                         <div class="task-head">
 
@@ -1219,9 +401,7 @@
                                     <%#: Eval("Title") %>
                                 </div>
 
-                                <div class="task-description">
-                                    <%#: Eval("Description") %>
-                                </div>
+
 
                                 <div class="task-date">
                                     <i class="bi bi-calendar3"></i>
@@ -1236,7 +416,9 @@
 
                         </div>
 
-                        <div class="submission-box">
+                        </summary><div class="ap-task-content">                                <div class="task-description">
+                                    <%#: Eval("Description") %>
+                                </div><div class="submission-box">
 
                             <h4>
                                 <i class="bi bi-cloud-arrow-up"></i>
@@ -1308,7 +490,7 @@
 
                             <div class="feedback-box">
 
-                                <strong>Company Supervisor Feedback</strong>
+                                <p>Task grade: <%#: Eval("Score") %></p><strong>Company Supervisor Feedback</strong>
 
                                 <div style="margin-top:7px">
                                     <%#: Eval("Feedback") %>
@@ -1318,7 +500,8 @@
 
                         </div>
 
-                    </article>
+                        </div>
+                    </details>
 
                 </ItemTemplate>
 
@@ -1358,7 +541,7 @@
     Visible="false"
     CssClass="modal-overlay">
 
-    <div class="modal-box"
+    <div class="modal-box ap-evaluation-dialog"
          role="dialog"
          aria-modal="true"
          aria-labelledby="evaluationModalTitle">
@@ -1366,7 +549,7 @@
         <div class="modal-header">
             <div>
                 <h2 id="evaluationModalTitle">
-                    Academic Evaluation
+                    Academic evaluation
                 </h2>
 
                 <p>
@@ -1384,7 +567,7 @@
                 OnClick="btnCloseModal_Click"
                 aria-label="Close evaluation">
 
-                <i class="bi bi-x-lg"></i>
+                <span aria-hidden="true">&times;</span>
 
             </asp:LinkButton>
 
@@ -1420,53 +603,13 @@
 
             </div>
 
-            <div class="evaluation-card">
-
-                <div class="task-head">
-
-                    <h3>Academic Supervisor Evaluation</h3>
-
-                    <asp:Label
-                        ID="lblEvaluationStatus"
-                        runat="server" />
-
-                </div>
-
-                <h3>
-                    <asp:Label
-                        ID="lblEvaluationRecommendation"
-                        runat="server" />
-                </h3>
-
-                <p>
-                    <asp:Label
-                        ID="lblEvaluationComments"
-                        runat="server" />
-                </p>
-
-                <div class="detail-grid">
-
-                    <div class="detail-item">
-                        <small>Academic Score</small>
-                        <strong>
-                            <asp:Label
-                                ID="lblEvaluationScore"
-                                runat="server" />
-                        </strong>
-                    </div>
-
-                    <div class="detail-item">
-                        <small>Submitted Date</small>
-                        <strong>
-                            <asp:Label
-                                ID="lblEvaluationDate"
-                                runat="server" />
-                        </strong>
-                    </div>
-
-                </div>
-
-            </div>
+            <section class="evaluation-card">
+                <div class="ap-result-heading"><span>Academic result</span><asp:Label ID="lblEvaluationStatus" runat="server" /></div>
+                <asp:Label ID="lblEvaluationRecommendation" runat="server" CssClass="ap-result-value" />
+                <div class="ap-evaluation-date"><span>Submitted on</span><asp:Label ID="lblEvaluationDate" runat="server" /></div>
+            </section>
+            <section class="ap-evaluation-feedback"><h3>Supervisor comments</h3><p><asp:Label ID="lblEvaluationComments" runat="server" /></p></section>
+            <asp:Label ID="lblEvaluationScore" runat="server" Visible="false" />
 
         </div>
 
@@ -1484,8 +627,5 @@
     </div>
 
 </asp:Panel>
-
-</form>
-
-</body>
-</html>
+</div>
+</asp:Content>

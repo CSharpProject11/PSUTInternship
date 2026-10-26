@@ -56,6 +56,11 @@
       "album": "New students",
       "bytes": 164234,
       "albumPage": "https://www.psut.edu.jo/ar/media/get-photos/21"
+    },
+    {
+      "file": "psut-footer-pattern.webp",
+      "source": "https://www.psut.edu.jo/images/footer-bg.webp",
+      "usage": "Shared user workspace footer; official PSUT geometric artwork"
     }
   ]
 }

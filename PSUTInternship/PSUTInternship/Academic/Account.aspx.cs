@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -7,20 +7,19 @@ using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.UI;
 
-namespace AcademicSupervisor
+namespace PSUTInternship.Academic
 {
-    public partial class Account : Page
+    public partial class Account : PSUTInternship.Shared.PortalPage
     {
-        private static readonly HttpClient Client = new HttpClient();
+        private static readonly HttpClient Client = PSUTInternship.Shared.FirebaseConfig.CreateClient();
         private readonly JavaScriptSerializer json = new JavaScriptSerializer();
 
         // Firebase project URL, without /.json at the end.
-        private const string DbUrl =
-            "https://project-d2551-default-rtdb.firebaseio.com";
+        private static readonly string DbUrl =
+            PSUTInternship.Shared.FirebaseConfig.DatabaseUrl.TrimEnd('/');
 
-        // Academic supervisor Sara Sawalmeh.
-        private const string SupervisorId =
-            "9A8jqXmuQthnfld1A9Lonba3QTI3";
+        // Profile identity comes from the authenticated session.
+        private string SupervisorId { get { return CurrentProfileId; } }
 
         private string ProfilePath
         {
@@ -29,6 +28,7 @@ namespace AcademicSupervisor
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            txtDepartment.ReadOnly = true;
             if (!IsPostBack)
             {
                 RegisterAsyncTask(new PageAsyncTask(LoadProfileAsync));
@@ -162,23 +162,25 @@ namespace AcademicSupervisor
 
         private void ShowPersonalEdit(bool editing)
         {
-            pnlPersonalView.Visible = !editing;
+            pnlPersonalView.Visible = true;
             pnlPersonalEdit.Visible = editing;
         }
 
         private void ShowAcademicEdit(bool editing)
         {
-            pnlAcademicView.Visible = !editing;
+            pnlAcademicView.Visible = true;
             pnlAcademicEdit.Visible = editing;
         }
 
         protected void btnEditPersonal_Click(object sender, EventArgs e)
         {
+            RegisterAsyncTask(new PageAsyncTask(LoadProfileAsync));
             ShowPersonalEdit(true);
         }
 
         protected void btnEditAcademic_Click(object sender, EventArgs e)
         {
+            RegisterAsyncTask(new PageAsyncTask(LoadProfileAsync));
             ShowAcademicEdit(true);
         }
 
@@ -204,8 +206,9 @@ namespace AcademicSupervisor
         {
             string name = (txtName.Text ?? "").Trim();
             string phone = (txtPhone.Text ?? "").Trim();
-            if (string.IsNullOrWhiteSpace(name))
-                return;
+            PersonalError.Text = "";
+            if (!PSUTInternship.Shared.TaskWorkflow.ValidText(name,3,100)) { PersonalError.Text = "Enter a name of 3–100 characters."; return; }
+            if (phone.Length > 0 && !System.Text.RegularExpressions.Regex.IsMatch(phone,@"\A[+0-9 ()-]{7,20}\z")) { PersonalError.Text = "Enter a valid phone number of 7–20 characters."; return; }
 
             try
             {
@@ -217,11 +220,11 @@ namespace AcademicSupervisor
                     });
 
                 await LoadProfileAsync();
-                ShowPersonalEdit(false);
+                ShowPersonalEdit(false); ProfileMessage.Text = "Personal information saved.";
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError("Account personal save failed: " + ex);
+                System.Diagnostics.Trace.TraceError("Account personal save failed: " + ex); PersonalError.Text = "Could not save personal information. Please retry.";
             }
         }
 
@@ -244,17 +247,16 @@ namespace AcademicSupervisor
                 await PatchFirebaseAsync(ProfilePath,
                     new Dictionary<string, object>
                     {
-                        { "department", department },
                         { "office", office },
                         { "officeHours", officeHours }
                     });
 
                 await LoadProfileAsync();
-                ShowAcademicEdit(false);
+                ShowAcademicEdit(false); ProfileMessage.Text = "Academic information saved.";
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError("Account academic save failed: " + ex);
+                System.Diagnostics.Trace.TraceError("Account academic save failed: " + ex); AcademicError.Text = "Could not save academic information. Please retry.";
             }
         }
     }

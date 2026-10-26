@@ -1,36 +1,19 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" Async="true" CodeBehind="EditTask.aspx.cs" Inherits="internship_manegment.EditTask" %>
-
-<!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
-    <title></title>
-</head>
-<body>
-    <form id="form1" runat="server">
-         <asp:Label ID="subject" runat="server" Text="Review Task Submission"></asp:Label>
-         <br />
-        <div id="describtion" runat="server">
-            <asp:Literal ID="TaskDetails" runat="server"></asp:Literal>
-        </div>
-
-        <p>
-            <asp:Label ID="State" runat="server" Text="State"></asp:Label>
-        </p>
-        <p>
-            <asp:DropDownList ID="stateDrop" runat="server">
-                <asp:ListItem>Select state</asp:ListItem>
-                <asp:ListItem>Resolve</asp:ListItem>
-                <asp:ListItem>Complete</asp:ListItem>
-            </asp:DropDownList>
-        </p>
-        <br />
-        <asp:Label ID="Feedback" runat="server" Text="Feedback"></asp:Label>
-        <p>
-            <textarea id="Feedbackinput" cols="20" name="S1" rows="2" runat="server"></textarea></p>
-        <asp:Button ID="Save" runat="server" Text="Save" OnClick="Save_Click" />
-        <asp:Button ID="Cansale" runat="server" Text="Cansale" OnClick="Cansale_Click" CausesValidation="false"/>
-
-    </form>
-</body>
-</html>
+<%@ Page Title="Review task" MasterPageFile="~/Portal.Master" Language="C#" AutoEventWireup="true" Async="true" CodeBehind="EditTask.aspx.cs" Inherits="PSUTInternship.Company.EditTask" %>
+<asp:Content ID="ReviewHead" ContentPlaceHolderID="PortalHead" runat="server">
+<script>if(new URLSearchParams(location.search).get('embedded')==='1')document.documentElement.classList.add('task-review-embedded');</script>
+<style>
+body.portal-app .portal-content .task-review-page{max-width:760px;margin:auto;color:#19394f}body.portal-app .portal-content .task-review-page h1{font-size:25px!important;margin:16px 0 22px!important}.task-review-page .review-surface{padding:24px;border:1px solid #dce6ed;border-radius:10px;background:#fff}.task-review-page .review-task-summary{padding:16px 18px;background:#f7f9fb;border:1px solid #e3ebf0;border-radius:8px;margin-bottom:24px}.task-review-page .review-task-summary h2{font-size:17px!important;margin:0 0 8px!important}.task-review-page .review-task-summary p{font-size:12px!important;font-weight:400!important;line-height:1.7;color:#607587;margin:0!important;overflow-wrap:anywhere}.task-review-page .review-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.task-review-page .review-fields .wide{grid-column:1/-1}.task-review-page .field label{display:block;font-size:12px!important;font-weight:600!important;color:#526b7d;margin:0 0 8px!important}
+body.portal-app .portal-content .task-review-page .field :is(select,input,textarea){box-sizing:border-box;width:100%!important;border:1px solid #cddce6!important;border-radius:7px!important;background:#fff!important;padding:11px 13px!important;min-height:44px!important;font-size:13px!important;font-weight:400!important;color:#19394f!important;box-shadow:none!important;margin:0!important}.task-review-page textarea{resize:vertical;line-height:1.7}.task-review-page .review-hint{font-size:11px!important;font-weight:400!important;color:#607587;line-height:1.7;margin:8px 0 0!important}.task-review-page .field-error{font-size:12px;color:#ae4040;display:block;margin-top:6px}.task-review-page .review-actions{display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #e5ecf1;padding-top:20px;margin-top:24px}body.portal-app .portal-content .task-review-page .review-actions .btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px!important;padding:10px 18px!important;font-size:12px!important;border:1px solid #003e73!important;background:#003e73!important;color:#fff!important;border-radius:7px!important;margin:0!important}body.portal-app .portal-content .task-review-page .review-actions .light{background:#fff!important;color:#526b7d!important;border-color:#cddce6!important}.task-review-page .message:empty{display:none}.task-review-page .message:not(:empty){display:block;padding:12px;margin-bottom:16px;font-size:12px;border-radius:7px}.task-review-page :focus-visible{outline:2px solid #0078b5;outline-offset:3px}
+html.task-review-embedded .portal-sidebar,html.task-review-embedded .portal-topbar,html.task-review-embedded .portal-footer,html.task-review-embedded .portal-skip{display:none!important}html.task-review-embedded body.portal-app{padding:0!important;margin:0!important;background:#fff!important;min-height:0!important}html.task-review-embedded .portal-shell,html.task-review-embedded .portal-page{display:block!important;margin:0!important;padding:0!important;min-height:0!important;width:100%!important}html.task-review-embedded body.portal-app .portal-content{padding:24px!important;margin:0!important;max-width:none!important;background:#fff!important}html.task-review-embedded .task-review-page>.sd-back,html.task-review-embedded .task-review-page>h1{display:none!important}html.task-review-embedded .task-review-page .review-surface{padding:0!important;border:0!important;border-radius:0!important}
+@media(max-width:550px){.task-review-page .review-fields{grid-template-columns:1fr}.task-review-page .review-fields .wide{grid-column:auto}html.task-review-embedded body.portal-app .portal-content{padding:18px!important}.task-review-page .review-actions .btn{flex:1}}
+</style></asp:Content>
+<asp:Content ID="PageContent" ContentPlaceHolderID="PortalContent" runat="server">
+<div class="task-review-page"><a class="sd-back" href="Tasks.aspx">Back to tasks</a><h1>Review task</h1>
+<asp:Label ID="subject" runat="server" CssClass="message" role="status" />
+<section class="review-surface"><div class="review-task-summary" id="describtion" runat="server"><asp:Literal ID="TaskDetails" runat="server" /></div>
+<div class="review-fields">
+<div class="field"><asp:Label ID="State" runat="server" AssociatedControlID="stateDrop" Text="Review decision" /><asp:DropDownList ID="stateDrop" runat="server" AutoPostBack="true" OnSelectedIndexChanged="State_Changed"><asp:ListItem Value="">Select status</asp:ListItem><asp:ListItem Value="Revision Requested">Resolve</asp:ListItem><asp:ListItem Value="Reviewed">Complete</asp:ListItem></asp:DropDownList><asp:Label ID="StateError" runat="server" CssClass="field-error" /></div>
+<asp:Panel ID="DeadlinePanel" runat="server" CssClass="field" Visible="false"><asp:Label runat="server" AssociatedControlID="NewDeadline" Text="New resubmission deadline" /><asp:TextBox ID="NewDeadline" runat="server" TextMode="Date" /><asp:Label ID="DeadlineError" runat="server" CssClass="field-error" /></asp:Panel>
+<div class="field wide"><label for="<%= Feedbackinput.ClientID %>">Feedback for the student</label><textarea ID="Feedbackinput" runat="server" rows="4" placeholder="Explain what needs changing or confirm why the work is complete."></textarea><asp:Label ID="FeedbackError" runat="server" CssClass="field-error" /></div></div>
+<div class="review-actions"><asp:Button ID="Cansale" runat="server" Text="Cancel" CssClass="btn light" OnClick="Cansale_Click" CausesValidation="false" formnovalidate="formnovalidate" /><asp:Button ID="Save" runat="server" Text="Save review" CssClass="btn" OnClick="Save_Click" /></div></section></div>
+</asp:Content>
