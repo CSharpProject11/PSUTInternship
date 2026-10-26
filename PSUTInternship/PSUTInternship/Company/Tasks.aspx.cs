@@ -13,13 +13,6 @@ namespace PSUTInternship.Company
             try
             {
                 var tasks = await PortalRepository.Collection("tasks");
-                string archive = Request.Form["archive"];
-                if (Request.HttpMethod == "POST" && !string.IsNullOrWhiteSpace(archive))
-                {
-                    var task = await PortalRepository.CompanyTask(archive);
-                    await PortalRepository.Patch("tasks/" + archive, new { active = !((bool?)task["active"] ?? true) });
-                    Response.Redirect("Tasks.aspx", false); Context.ApplicationInstance.CompleteRequest(); return;
-                }
                 TaskTablebody.Controls.Clear();
                 countTotal.Text = tasks.Count.ToString();
                 countPending.Text = tasks.Values.Count(x => (string)x["status"] == "Submitted").ToString();
@@ -42,14 +35,14 @@ namespace PSUTInternship.Company
                     action.Attributes["class"] = "task-actions";
                     var reviewLink = new HtmlAnchor { HRef = "EditTask.aspx?id=" + HttpUtility.UrlEncode(p.Key), InnerText = "Resolve" };
                     reviewLink.Attributes["data-task-review"] = "true"; action.Controls.Add(reviewLink);
-                    action.Controls.Add(new LiteralControl(" <button type='submit' name='archive' value='" + HttpUtility.HtmlAttributeEncode(p.Key) + "'>" + (((bool?)t["active"] ?? true) ? "Archive" : "Restore") + "</button>"));
                     row.Cells.Add(action); TaskTablebody.Controls.Add(row);
                 }
                 if (TaskTablebody.Controls.Count == 0) TaskTablebody.Controls.Add(new LiteralControl("<tr><td colspan='7'>No tasks match your filters.</td></tr>"));
             }
             catch (Exception ex) { TaskTablebody.Controls.Add(new LiteralControl("<tr><td colspan='7'>" + Server.HtmlEncode(ex.Message) + "</td></tr>")); }
         }
-        private static string CreatedDate(string value) {
+        private static string CreatedDate(string value)
+        {
             DateTimeOffset date;
             return DateTimeOffset.TryParse(value, out date) ? TimeZoneInfo.ConvertTime(date, TimeZoneInfo.FindSystemTimeZoneById("Jordan Standard Time")).ToString("yyyy-MM-dd") : "Not recorded";
         }

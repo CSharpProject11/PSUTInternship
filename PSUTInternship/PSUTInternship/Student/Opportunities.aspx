@@ -14,7 +14,7 @@
                 <div class="opportunity-filter-heading"><strong>Find your next step</strong><button type="button" id="opportunityReset">Reset filters</button></div>
                 <label class="opportunity-search">Search opportunities<input type="search" id="opportunitySearch" placeholder="Search by role, company, city or specialization" /></label>
                 <label>Work type<select id="opportunityWork"><option value="">All work types</option></select></label>
-                <label>Status<select id="opportunityStatus"><option value="open">Open opportunities</option><option value="">All opportunities</option><option value="closed">Closed opportunities</option></select></label>
+                <label>Status<select id="opportunityStatus"><option value="">All opportunities</option><option value="open">Open opportunities</option><option value="closed">Closed opportunities</option></select></label>
                 <label>Applications<select id="opportunityApplied"><option value="">All applications</option><option value="new">Not applied</option><option value="applied">Already applied</option></select></label>
             </div>
             <p id="opportunityCount" role="status" aria-live="polite"></p>

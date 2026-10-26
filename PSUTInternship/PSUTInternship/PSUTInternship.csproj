@@ -839,5 +839,7 @@
     <Content Include="Team\team_img\sara.jpeg" />
     <Content Include="Team\team_img\taimaa.jpeg" />
   </ItemGroup>
-  <ItemGroup><Content Include="Assets\certificate-psut-logo.png" /></ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\certificate-psut-logo.png" />
+  </ItemGroup>
 </Project>
