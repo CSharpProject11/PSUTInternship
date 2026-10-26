@@ -4,7 +4,7 @@ Figma: [Figma](https://www.figma.com/design/5Iz6Fk5UFJJCLVEaDF3gnu/project-1?nod
 <br>
 Trello: [Trello](https://trello.com/b/W23rG1YW/csharp-project)
 <br>
-Live Server: [Live Server]()
+Live Server: [Live Server](https://csharpproject11.github.io/PSUTInternship/)
 
 
 
