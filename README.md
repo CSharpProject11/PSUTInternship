@@ -1,3 +1,13 @@
+# Internship Management System for Princess Sumaya University for Technology
+
+Figma: [Figma](https://www.figma.com/design/5Iz6Fk5UFJJCLVEaDF3gnu/project-1?node-id=249-152&p=f&t=OzWPumvm08xH8VmO-0)
+<br>
+Trello: [Trello](https://trello.com/b/W23rG1YW/csharp-project)
+<br>
+Live Server: [Live Server]()
+
+
+
 ## Group Members
 
 - Amal Obaidat 
